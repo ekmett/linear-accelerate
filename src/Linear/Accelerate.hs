@@ -13,7 +13,7 @@ import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Tuple
 import Data.Array.Accelerate.Array.Sugar
 import Data.Complex
-import Data.Foldable as F
+import qualified Data.Foldable as F
 import Linear
 
 --------------------------------------------------------------------------------
@@ -136,6 +136,43 @@ instance (Elt a, e ~ Exp a) => Unlift Exp (V3 e) where
   unlift t = V3 (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
                 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
                 (Exp $ ZeroTupIdx `Prj` t)
+
+type instance ArrRepr (V3 a) = ArrRepr (Vector a)
+type instance ArrRepr' (V3 a) = ArrRepr' (Vector a)
+
+instance Elt a => Arrays (V3 a) where
+  arrays _  = arrays (undefined :: Vector a)
+  toArr ((), arr) = toArr' arr
+  fromArr = (,) () . fromArr'
+
+  arrays' _ = arrays' (undefined :: Vector a)
+  toArr' arr = case toList arr of
+    [a,b,c] -> V3 a b c
+    _       -> error "shape mismatch"
+  fromArr' = fromList 3 . F.toList
+
+-- $liftAcc
+--
+-- In theory we could support lifting these to 'Acc' array types as well, however
+-- since the class associated type for that ignores one of its arguments, this requires
+--
+-- @
+-- type 'Plain' ('V3' a) = 'Vector' a
+-- @
+--
+-- while in order to instantiate the @'Lift' 'Exp` (V3 a)@ above we need
+--
+-- @
+-- type 'Plain' ('V3' a) = V3 ('Plain' a)
+-- @
+--
+-- so due to limitations in the accelerate API, we can't support both!
+
+{-
+instance Elt a => Lift Acc (V3 a) where
+  type Plain (V3 a) = Vector a
+  lift = lift . toArr'
+-}
 
 --------------------------------------------------------------------------------
 -- * V4
