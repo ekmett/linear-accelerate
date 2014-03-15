@@ -152,7 +152,11 @@ instance IsTuple (V4 a) where
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V4 a) where
   type Plain (V4 a) = V4 (Plain a)
-  lift (V4 x y z w) = Exp $ Tuple $ NilTup `SnocTup` lift x `SnocTup` lift y `SnocTup` lift z `SnocTup` lift w
+  lift (V4 x y z w) = Exp $ Tuple $ NilTup `SnocTup` 
+                      lift x `SnocTup` 
+                      lift y `SnocTup` 
+                      lift z `SnocTup` 
+                      lift w
 
 instance (Elt a, e ~ Exp a) => Unlift Exp (V4 e) where
   unlift t = V4 (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx)) `Prj` t)
