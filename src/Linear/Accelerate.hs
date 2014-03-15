@@ -308,4 +308,4 @@ instance (Elt a, e ~ Exp a) => Unlift Exp (Plucker e) where
     (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx)) `Prj` t)
     (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
     (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
-    (Exp $ ZeroTupIdx `Prj` t))
+    (Exp $ ZeroTupIdx `Prj` t)
