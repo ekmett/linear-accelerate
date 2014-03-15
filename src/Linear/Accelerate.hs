@@ -13,6 +13,7 @@ import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Tuple
 import Data.Array.Accelerate.Array.Sugar
 import Data.Complex
+import Data.Foldable as F
 import Linear
 
 --------------------------------------------------------------------------------
@@ -97,7 +98,7 @@ instance IsTuple (V2 a) where
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V2 a) where
   type Plain (V2 a) = V2 (Plain a)
-  lift (V2 x y) = Exp $ Tuple $ NilTup `SnocTup` lift x `SnocTup` lift y
+  lift = Exp . Tuple . F.foldl SnocTup NilTup
 
 instance (Elt a, e ~ Exp a) => Unlift Exp (V2 e) where
   unlift t = V2 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
@@ -129,7 +130,7 @@ instance IsTuple (V3 a) where
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V3 a) where
   type Plain (V3 a) = V3 (Plain a)
-  lift (V3 x y z) = Exp $ Tuple $ NilTup `SnocTup` lift x `SnocTup` lift y `SnocTup` lift z
+  lift = Exp . Tuple . F.foldl SnocTup NilTup
 
 instance (Elt a, e ~ Exp a) => Unlift Exp (V3 e) where
   unlift t = V3 (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
@@ -162,11 +163,7 @@ instance IsTuple (V4 a) where
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V4 a) where
   type Plain (V4 a) = V4 (Plain a)
-  lift (V4 x y z w) = Exp $ Tuple $ NilTup `SnocTup`
-                      lift x `SnocTup`
-                      lift y `SnocTup`
-                      lift z `SnocTup`
-                      lift w
+  lift = Exp . Tuple . F.foldl SnocTup NilTup
 
 instance (Elt a, e ~ Exp a) => Unlift Exp (V4 e) where
   unlift t = V4 (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx)) `Prj` t)
@@ -200,11 +197,10 @@ instance IsTuple (Complex a) where
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Complex a) where
   type Plain (Complex a) = Complex (Plain a)
-  lift (x :+ y) = Exp $ Tuple $ NilTup `SnocTup` lift x `SnocTup` lift y
+  lift = Exp . Tuple . F.foldl SnocTup NilTup
 
 instance (Elt a, e ~ Exp a) => Unlift Exp (Complex e) where
   unlift t = (Exp $ SuccTupIdx ZeroTupIdx `Prj` t) :+ (Exp $ ZeroTupIdx `Prj` t)
-
 
 --------------------------------------------------------------------------------
 -- * Quaternion
@@ -232,11 +228,7 @@ instance IsTuple (Quaternion a) where
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Quaternion a) where
   type Plain (Quaternion a) = Quaternion (Plain a)
-  lift (Quaternion x (V3 y z w)) = Exp $ Tuple $ NilTup `SnocTup`
-                      lift x `SnocTup`
-                      lift y `SnocTup`
-                      lift z `SnocTup`
-                      lift w
+  lift = Exp . Tuple . F.foldl SnocTup NilTup
 
 instance (Elt a, e ~ Exp a) => Unlift Exp (Quaternion e) where
   unlift t = Quaternion (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx)) `Prj` t)
@@ -244,3 +236,39 @@ instance (Elt a, e ~ Exp a) => Unlift Exp (Quaternion e) where
                         (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
                         (Exp $ ZeroTupIdx `Prj` t))
 
+--------------------------------------------------------------------------------
+-- * Plücker
+--------------------------------------------------------------------------------
+
+type instance EltRepr (Plucker a)  = EltRepr (a, a, a, a, a, a)
+type instance EltRepr' (Plucker a) = EltRepr' (a, a, a, a, a, a)
+
+instance Elt a => Elt (Quaternion a) where
+  eltType _ = eltType (undefined :: (a,a,a,a,a,a))
+  toElt p = case toElt p of
+     (x, y, z, w, u, v) -> Plucker x y z w u v
+  fromElt (Plucker x y z w u v) = fromElt (x, y, z, w, u, v)
+
+  eltType' _ = eltType' (undefined :: (a,a,a,a,a,a))
+  toElt' p = case toElt' p of
+     (x, y, z, w, u, v) -> Plucker x y z w u v
+  fromElt' (Plucker x y z w u v) = fromElt' (x, y, z, w, u, v)
+
+instance IsTuple (Plucker a) where
+  type TupleRepr (Plucker a) = TupleRepr (a,a,a,a)
+  fromTuple (Plucker x y z w u v) = fromTuple (x, y, z, w, u, v)
+  toTuple t = case toTuple t of
+     (x, y, z, w, u, v) -> Plucker x y z w u v
+
+instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Plucker a) where
+  type Plain (Plucker a) = Plucker (Plain a)
+  lift = Exp . Tuple . F.foldl SnocTip NilTup
+
+instance (Elt a, e ~ Exp a) => Unlift Exp (Plucker e) where
+  unlift t = Plucker
+    (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx)))) `Prj` t)
+    (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx))) `Prj` t)
+    (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx)) `Prj` t)
+    (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
+    (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
+    (Exp $ ZeroTupIdx `Prj` t))
