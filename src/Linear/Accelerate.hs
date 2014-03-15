@@ -5,6 +5,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+
 module Linear.Accelerate () where
 
 import Data.Array.Accelerate
@@ -13,17 +14,19 @@ import Data.Array.Accelerate.Tuple
 import Data.Array.Accelerate.Array.Sugar
 import Linear
 
+{- V0 Accelerate Instances -}
+
 type instance EltRepr (V0 a)  = ()
 type instance EltRepr' (V0 a) = ()
 
-instance Elt (V0 a) where
+instance Elt a => Elt (V0 a) where
   eltType _ = eltType ()
-  toElt V0 = ()
-  fromElt () = V0
+  toElt () = V0
+  fromElt V0 = ()
 
   eltType' _ = eltType' ()
-  toElt' V0 = ()
-  fromElt' () = V0
+  toElt' () = V0
+  fromElt' V0 = ()
 
 instance IsTuple (V0 a) where
   type TupleRepr (V0 a) = ()
@@ -35,7 +38,9 @@ instance Lift Exp (V0 a) where
   lift V0 = Exp (Tuple NilTup)
 
 instance Unlift Exp (V0 a) where
-  unlift t = V0
+  unlift _ = V0
+
+{- V1 Accelerate Instances -}
 
 type instance EltRepr (V1 a) = EltRepr a
 type instance EltRepr' (V1 a) = EltRepr' a
@@ -54,12 +59,14 @@ instance IsTuple (V1 a) where
   fromTuple (V1 x) = ((), x)
   toTuple ((), x) = V1 x
 
-instance Lift Exp a => Lift Exp (V1 a) where
+instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V1 a) where
   type Plain (V1 a) = V1 (Plain a)
-  lift (V1 a) = lift a
+  lift (V1 x) = Exp . Tuple $ NilTup `SnocTup` lift x
 
-instance Unlift Exp a => Unlift Exp (V1 a) where
-  unlift = V1 . unlift
+instance (Elt a, e ~ Exp a) => Unlift Exp (V1 e) where
+  unlift t = V1 $ Exp $ ZeroTupIdx `Prj` t
+
+{- V2 Accelerate Instances -}
 
 type instance EltRepr (V2 a)  = EltRepr (a, a)
 type instance EltRepr' (V2 a) = EltRepr' (a, a)
@@ -88,3 +95,71 @@ instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V2 a) where
 instance (Elt a, e ~ Exp a) => Unlift Exp (V2 e) where
   unlift t = V2 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
                 (Exp $ ZeroTupIdx `Prj` t)
+
+{- V3 Accelerate Instances -}
+
+type instance EltRepr (V3 a)  = EltRepr (a, a, a)
+type instance EltRepr' (V3 a) = EltRepr' (a, a, a)
+
+instance Elt a => Elt (V3 a) where
+  eltType _ = eltType (undefined :: (a,a,a))
+  toElt p = case toElt p of
+     (x, y, z) -> V3 x y z
+  fromElt (V3 x y z) = fromElt (x, y, z)
+
+  eltType' _ = eltType' (undefined :: (a,a,a))
+  toElt' p = case toElt' p of
+     (x, y, z) -> V3 x y z
+  fromElt' (V3 x y z) = fromElt' (x, y, z)
+
+instance IsTuple (V3 a) where
+  type TupleRepr (V3 a) = TupleRepr (a,a,a)
+  fromTuple (V3 x y z) = fromTuple (x,y,z)
+  toTuple t = case toTuple t of
+     (x, y, z) -> V3 x y z
+
+instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V3 a) where
+  type Plain (V3 a) = V3 (Plain a)
+  lift (V3 x y z) = Exp $ Tuple $ NilTup `SnocTup` lift x `SnocTup` lift y `SnocTup` lift z
+
+instance (Elt a, e ~ Exp a) => Unlift Exp (V3 e) where
+  unlift t = V3 (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
+                (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
+                (Exp $ ZeroTupIdx `Prj` t)
+
+{- V4 Accelerate Instances -}
+
+type instance EltRepr (V4 a)  = EltRepr (a, a, a, a)
+type instance EltRepr' (V4 a) = EltRepr' (a, a, a, a)
+
+instance Elt a => Elt (V4 a) where
+  eltType _ = eltType (undefined :: (a,a,a,a))
+  toElt p = case toElt p of
+     (x, y, z, w) -> V4 x y z w
+  fromElt (V4 x y z w) = fromElt (x, y, z, w)
+
+  eltType' _ = eltType' (undefined :: (a,a,a,a))
+  toElt' p = case toElt' p of
+     (x, y, z, w) -> V4 x y z w
+  fromElt' (V4 x y z w) = fromElt' (x, y, z, w)
+
+instance IsTuple (V4 a) where
+  type TupleRepr (V4 a) = TupleRepr (a,a,a,a)
+  fromTuple (V4 x y z w) = fromTuple (x,y,z,w)
+  toTuple t = case toTuple t of
+     (x, y, z, w) -> V4 x y z w
+
+instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V4 a) where
+  type Plain (V4 a) = V4 (Plain a)
+  lift (V4 x y z w) = Exp $ Tuple $ NilTup `SnocTup` 
+                      lift x `SnocTup` 
+                      lift y `SnocTup` 
+                      lift z `SnocTup` 
+                      lift w
+
+instance (Elt a, e ~ Exp a) => Unlift Exp (V4 e) where
+  unlift t = V4 (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx)) `Prj` t)
+                (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
+                (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
+                (Exp $ ZeroTupIdx `Prj` t)
+               
