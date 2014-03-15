@@ -14,7 +14,9 @@ import Data.Array.Accelerate.Tuple
 import Data.Array.Accelerate.Array.Sugar
 import Linear
 
-{- V0 Accelerate Instances -}
+--------------------------------------------------------------------------------
+-- * V0
+--------------------------------------------------------------------------------
 
 type instance EltRepr (V0 a)  = ()
 type instance EltRepr' (V0 a) = ()
@@ -40,7 +42,9 @@ instance Lift Exp (V0 a) where
 instance Unlift Exp (V0 a) where
   unlift _ = V0
 
-{- V1 Accelerate Instances -}
+--------------------------------------------------------------------------------
+-- * V1
+--------------------------------------------------------------------------------
 
 type instance EltRepr (V1 a) = EltRepr a
 type instance EltRepr' (V1 a) = EltRepr' a
@@ -66,7 +70,9 @@ instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V1 a) where
 instance (Elt a, e ~ Exp a) => Unlift Exp (V1 e) where
   unlift t = V1 $ Exp $ ZeroTupIdx `Prj` t
 
-{- V2 Accelerate Instances -}
+--------------------------------------------------------------------------------
+-- * V2
+--------------------------------------------------------------------------------
 
 type instance EltRepr (V2 a)  = EltRepr (a, a)
 type instance EltRepr' (V2 a) = EltRepr' (a, a)
@@ -96,7 +102,9 @@ instance (Elt a, e ~ Exp a) => Unlift Exp (V2 e) where
   unlift t = V2 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
                 (Exp $ ZeroTupIdx `Prj` t)
 
-{- V3 Accelerate Instances -}
+--------------------------------------------------------------------------------
+-- * V3
+--------------------------------------------------------------------------------
 
 type instance EltRepr (V3 a)  = EltRepr (a, a, a)
 type instance EltRepr' (V3 a) = EltRepr' (a, a, a)
@@ -127,7 +135,9 @@ instance (Elt a, e ~ Exp a) => Unlift Exp (V3 e) where
                 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
                 (Exp $ ZeroTupIdx `Prj` t)
 
-{- V4 Accelerate Instances -}
+--------------------------------------------------------------------------------
+-- * V4
+--------------------------------------------------------------------------------
 
 type instance EltRepr (V4 a)  = EltRepr (a, a, a, a)
 type instance EltRepr' (V4 a) = EltRepr' (a, a, a, a)
@@ -162,6 +172,10 @@ instance (Elt a, e ~ Exp a) => Unlift Exp (V4 e) where
                 (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
                 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
                 (Exp $ ZeroTupIdx `Prj` t)
+
+--------------------------------------------------------------------------------
+-- * Quaternion
+--------------------------------------------------------------------------------
 
 type instance EltRepr (Quaternion a)  = EltRepr (a, a, a, a)
 type instance EltRepr' (Quaternion a) = EltRepr' (a, a, a, a)
