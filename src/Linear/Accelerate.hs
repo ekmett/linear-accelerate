@@ -151,10 +151,10 @@ instance IsTuple (V4 a) where
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V4 a) where
   type Plain (V4 a) = V4 (Plain a)
-  lift (V4 x y z w) = Exp $ Tuple $ NilTup `SnocTup` 
-                      lift x `SnocTup` 
-                      lift y `SnocTup` 
-                      lift z `SnocTup` 
+  lift (V4 x y z w) = Exp $ Tuple $ NilTup `SnocTup`
+                      lift x `SnocTup`
+                      lift y `SnocTup`
+                      lift z `SnocTup`
                       lift w
 
 instance (Elt a, e ~ Exp a) => Unlift Exp (V4 e) where
@@ -162,4 +162,38 @@ instance (Elt a, e ~ Exp a) => Unlift Exp (V4 e) where
                 (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
                 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
                 (Exp $ ZeroTupIdx `Prj` t)
-               
+
+type instance EltRepr (Quaternion a)  = EltRepr (a, a, a, a)
+type instance EltRepr' (Quaternion a) = EltRepr' (a, a, a, a)
+
+instance Elt a => Elt (Quaternion a) where
+  eltType _ = eltType (undefined :: (a,a,a,a))
+  toElt p = case toElt p of
+     (x, y, z, w) -> Quaternion x (V3 y z w)
+  fromElt (Quaternion x (V3 y z w)) = fromElt (x, y, z, w)
+
+  eltType' _ = eltType' (undefined :: (a,a,a,a))
+  toElt' p = case toElt' p of
+     (x, y, z, w) -> Quaternion x (V3 y z w)
+  fromElt' (Quaternion x (V3 y z w)) = fromElt' (x, y, z, w)
+
+instance IsTuple (Quaternion a) where
+  type TupleRepr (Quaternion a) = TupleRepr (a,a,a,a)
+  fromTuple (Quaternion x (V3 y z w)) = fromTuple (x,y,z,w)
+  toTuple t = case toTuple t of
+     (x, y, z, w) -> Quaternion x (V3 y z w)
+
+instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Quaternion a) where
+  type Plain (Quaternion a) = Quaternion (Plain a)
+  lift (Quaternion x (V3 y z w)) = Exp $ Tuple $ NilTup `SnocTup`
+                      lift x `SnocTup`
+                      lift y `SnocTup`
+                      lift z `SnocTup`
+                      lift w
+
+instance (Elt a, e ~ Exp a) => Unlift Exp (Quaternion e) where
+  unlift t = Quaternion (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx)) `Prj` t)
+                    (V3 (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
+                        (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
+                        (Exp $ ZeroTupIdx `Prj` t))
+
