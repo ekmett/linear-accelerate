@@ -1,13 +1,18 @@
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-module Linear.Accelerate
-  (
-  ) where
+{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+module Linear.Accelerate () where
 
-import Linear
 import Data.Array.Accelerate
 import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Tuple
 import Data.Array.Accelerate.Array.Sugar
+import Linear
 
 type instance EltRepr (V0 a)  = ()
 type instance EltRepr' (V0 a) = ()
