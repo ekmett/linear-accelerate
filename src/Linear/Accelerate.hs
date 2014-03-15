@@ -12,6 +12,7 @@ import Data.Array.Accelerate
 import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Tuple
 import Data.Array.Accelerate.Array.Sugar
+import Data.Complex
 import Linear
 
 --------------------------------------------------------------------------------
@@ -172,6 +173,38 @@ instance (Elt a, e ~ Exp a) => Unlift Exp (V4 e) where
                 (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
                 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
                 (Exp $ ZeroTupIdx `Prj` t)
+
+--------------------------------------------------------------------------------
+-- * Complex
+--------------------------------------------------------------------------------
+
+type instance EltRepr (Complex a)  = EltRepr (a, a)
+type instance EltRepr' (Complex a) = EltRepr' (a, a)
+
+instance Elt a => Elt (Complex a) where
+  eltType _ = eltType (undefined :: (a,a))
+  toElt p = case toElt p of
+     (x, y) -> x :+ y
+  fromElt (x :+ y) = fromElt (x, y)
+
+  eltType' _ = eltType' (undefined :: (a,a))
+  toElt' p = case toElt' p of
+     (x, y) -> x :+ y
+  fromElt' (x :+ y) = fromElt' (x, y)
+
+instance IsTuple (Complex a) where
+  type TupleRepr (Complex a) = TupleRepr (a,a)
+  fromTuple (x :+ y) = fromTuple (x,y)
+  toTuple t = case toTuple t of
+     (x, y) -> x :+ y
+
+instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Complex a) where
+  type Plain (Complex a) = Complex (Plain a)
+  lift (x :+ y) = Exp $ Tuple $ NilTup `SnocTup` lift x `SnocTup` lift y
+
+instance (Elt a, e ~ Exp a) => Unlift Exp (Complex e) where
+  unlift t = (Exp $ SuccTupIdx ZeroTupIdx `Prj` t) :+ (Exp $ ZeroTupIdx `Prj` t)
+
 
 --------------------------------------------------------------------------------
 -- * Quaternion
