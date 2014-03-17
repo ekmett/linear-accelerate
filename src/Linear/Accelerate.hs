@@ -15,6 +15,7 @@ import Data.Array.Accelerate.Array.Sugar
 import Data.Complex
 import qualified Data.Foldable as F
 import Linear
+--import Linear.Plucker (Plucker(..))
 
 --------------------------------------------------------------------------------
 -- * V0
@@ -98,7 +99,8 @@ instance IsTuple (V2 a) where
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V2 a) where
   type Plain (V2 a) = V2 (Plain a)
-  lift = Exp . Tuple . F.foldl SnocTup NilTup
+  --lift = Exp . Tuple . F.foldl SnocTup NilTup
+  lift (V2 x y) = Exp $ Tuple $ NilTup `SnocTup` lift x `SnocTup` lift y
 
 instance (Elt a, e ~ Exp a) => Unlift Exp (V2 e) where
   unlift t = V2 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
@@ -130,7 +132,8 @@ instance IsTuple (V3 a) where
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V3 a) where
   type Plain (V3 a) = V3 (Plain a)
-  lift = Exp . Tuple . F.foldl SnocTup NilTup
+  --lift = Exp . Tuple . F.foldl SnocTup NilTup
+  lift (V3 x y z) = Exp $ Tuple $ NilTup `SnocTup` lift x `SnocTup` lift y `SnocTup` lift z
 
 instance (Elt a, e ~ Exp a) => Unlift Exp (V3 e) where
   unlift t = V3 (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
@@ -149,7 +152,7 @@ instance Elt a => Arrays (V3 a) where
   toArr' arr = case toList arr of
     [a,b,c] -> V3 a b c
     _       -> error "shape mismatch"
-  fromArr' = fromList 3 . F.toList
+  fromArr' = fromList (Z :. 3) . F.toList
 
 -- $liftAcc
 --
@@ -200,7 +203,12 @@ instance IsTuple (V4 a) where
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V4 a) where
   type Plain (V4 a) = V4 (Plain a)
-  lift = Exp . Tuple . F.foldl SnocTup NilTup
+  --  lift = Exp . Tuple . F.foldl SnocTup NilTup
+  lift (V4 x y z w) = Exp $ Tuple $ NilTup `SnocTup`
+                      lift x `SnocTup`
+                      lift y `SnocTup`
+                      lift z `SnocTup`
+                      lift w
 
 instance (Elt a, e ~ Exp a) => Unlift Exp (V4 e) where
   unlift t = V4 (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx)) `Prj` t)
@@ -234,7 +242,8 @@ instance IsTuple (Complex a) where
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Complex a) where
   type Plain (Complex a) = Complex (Plain a)
-  lift = Exp . Tuple . F.foldl SnocTup NilTup
+--  lift = Exp . Tuple . F.foldl SnocTup NilTup
+  lift (x :+ y) = Exp $ Tuple $ NilTup `SnocTup` lift x `SnocTup` lift y
 
 instance (Elt a, e ~ Exp a) => Unlift Exp (Complex e) where
   unlift t = (Exp $ SuccTupIdx ZeroTupIdx `Prj` t) :+ (Exp $ ZeroTupIdx `Prj` t)
@@ -265,7 +274,12 @@ instance IsTuple (Quaternion a) where
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Quaternion a) where
   type Plain (Quaternion a) = Quaternion (Plain a)
-  lift = Exp . Tuple . F.foldl SnocTup NilTup
+  --lift = Exp . Tuple . F.foldl SnocTup NilTup
+  lift (Quaternion x (V3 y z w)) = Exp $ Tuple $ NilTup `SnocTup`
+                                   lift x `SnocTup`
+                                   lift y `SnocTup`
+                                   lift z `SnocTup`
+                                   lift w
 
 instance (Elt a, e ~ Exp a) => Unlift Exp (Quaternion e) where
   unlift t = Quaternion (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx)) `Prj` t)
@@ -276,11 +290,11 @@ instance (Elt a, e ~ Exp a) => Unlift Exp (Quaternion e) where
 --------------------------------------------------------------------------------
 -- * Plücker
 --------------------------------------------------------------------------------
-
+{-
 type instance EltRepr (Plucker a)  = EltRepr (a, a, a, a, a, a)
 type instance EltRepr' (Plucker a) = EltRepr' (a, a, a, a, a, a)
 
-instance Elt a => Elt (Quaternion a) where
+instance Elt a => Elt (Plucker a) where
   eltType _ = eltType (undefined :: (a,a,a,a,a,a))
   toElt p = case toElt p of
      (x, y, z, w, u, v) -> Plucker x y z w u v
@@ -299,7 +313,7 @@ instance IsTuple (Plucker a) where
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Plucker a) where
   type Plain (Plucker a) = Plucker (Plain a)
-  lift = Exp . Tuple . F.foldl SnocTip NilTup
+  lift = Exp . Tuple . F.foldl SnocTup NilTup
 
 instance (Elt a, e ~ Exp a) => Unlift Exp (Plucker e) where
   unlift t = Plucker
@@ -309,3 +323,4 @@ instance (Elt a, e ~ Exp a) => Unlift Exp (Plucker e) where
     (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
     (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
     (Exp $ ZeroTupIdx `Prj` t)
+-}
