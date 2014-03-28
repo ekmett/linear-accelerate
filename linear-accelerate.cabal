@@ -29,29 +29,10 @@ library
     accelerate           >= 0.14  && < 0.15,
     base                 >= 4.5   && < 5,
     lens                 >= 4     && < 5,
-    linear               >= 1.9   && < 2
+    linear               >= 1.10  && < 2
 
   exposed-modules:
     Linear.Accelerate
 
   ghc-options: -Wall -fwarn-tabs -O2
   hs-source-dirs: src
-
--- Verify the results of the examples
-{-
-test-suite doctests
-  type:           exitcode-stdio-1.0
-  main-is:        doctests.hs
-  ghc-options:    -Wall -Werror -threaded
-  hs-source-dirs: tests
-  build-depends:
-    accelerate,
-    base,
-    directory >= 1.0 && < 1.3,
-    doctest   >= 0.8 && < 0.10,
-    filepath  >= 1.3 && < 1.4,
-    lens,
-    linear,
-    simple-reflect >= 0.3.1
--}
-
