@@ -27,6 +27,10 @@ import qualified Linear.Vector                  as L
 infixl 6 ^+^, ^-^
 infixl 7 ^*, *^, ^/
 
+-- | A vector is an additive group with additional structure.
+--
+-- TODO: Support both 'Exp' and 'Acc'
+--
 class L.Additive f => Additive f where
 
   -- | The zero vector
@@ -56,7 +60,7 @@ class L.Additive f => Additive f where
         -> Exp (f a)
   (^-^) = lift2 ((L.^-^) :: f (Exp a) -> f (Exp a) -> f (Exp a))
 
-  -- | Linearly interpolate between two vectors.
+  -- | Linearly interpolate between two vectors
   --
   lerp :: forall a. (Elt a, IsNum a, Box f a)
        => Exp a
