@@ -20,6 +20,7 @@ module Data.Array.Accelerate.Linear.Metric
   where
 
 import Data.Array.Accelerate
+import Data.Array.Accelerate.Linear.Epsilon
 import qualified Linear.Metric                  as L
 
 -- | Free and sparse inner product/metric spaces.
@@ -88,9 +89,15 @@ type IsMetric f a = (Metric f, Unlift Exp (f (Exp a)), Plain (f (Exp a)) ~ f a)
 -- | Normalize a 'Metric' functor to have unit 'norm'. This function does not
 -- change the functor if its 'norm' is 0 or 1.
 --
--- normalize :: (Floating a, Metric f, Epsilon a) => f a -> f a
--- normalize v = if nearZero l || nearZero (1-l) then v else fmap (/sqrt l) v
---   where l = quadrance v
+normalize
+    :: (Elt a, Elt (f a), IsFloating a, IsMetric f a, Epsilon a)
+    => Exp (f a)
+    -> Exp (f a)
+normalize v
+  = nearZero l ||* nearZero (1-l)
+  ? ( v, undefined {- fmap (/sqrt l) v -} )
+  where
+    l = quadrance v
 
 -- | @project u v@ computes the projection of @v@ onto @u@.
 --

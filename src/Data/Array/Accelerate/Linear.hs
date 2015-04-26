@@ -15,6 +15,7 @@
 
 module Data.Array.Accelerate.Linear (
 
+  module Data.Array.Accelerate.Linear.Epsilon,
   module Data.Array.Accelerate.Linear.Metric,
   module Data.Array.Accelerate.Linear.V0,
   module Data.Array.Accelerate.Linear.V1,
@@ -25,6 +26,7 @@ module Data.Array.Accelerate.Linear (
 
 ) where
 
+import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Metric
 import Data.Array.Accelerate.Linear.V0
 import Data.Array.Accelerate.Linear.V1
