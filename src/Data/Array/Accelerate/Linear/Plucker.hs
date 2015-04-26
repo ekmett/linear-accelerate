@@ -31,6 +31,7 @@ import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Metric
+import Data.Array.Accelerate.Linear.Vector
 import Data.Array.Accelerate.Linear.V3
 import Data.Array.Accelerate.Linear.V4
 
@@ -71,6 +72,7 @@ plucker3D = lift2 L.plucker3D
 -- ---------
 
 instance Metric Plucker
+instance Additive Plucker
 
 type instance EltRepr (Plucker a) = EltRepr (a, a, a, a, a, a)
 

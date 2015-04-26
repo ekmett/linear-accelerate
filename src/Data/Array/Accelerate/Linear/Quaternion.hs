@@ -31,6 +31,7 @@ import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Metric
+import Data.Array.Accelerate.Linear.Vector
 import Data.Array.Accelerate.Linear.V3
 
 import Linear.Quaternion                        ( Quaternion(..) )
@@ -40,6 +41,7 @@ import Linear.Quaternion                        ( Quaternion(..) )
 -- ---------
 
 instance Metric Quaternion
+instance Additive Quaternion
 
 type instance EltRepr (Quaternion a) = EltRepr (a, a, a, a)
 

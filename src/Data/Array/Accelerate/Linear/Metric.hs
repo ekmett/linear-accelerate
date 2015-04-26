@@ -22,7 +22,10 @@ module Data.Array.Accelerate.Linear.Metric
 import Data.Array.Accelerate
 import Data.Array.Accelerate.Linear.Box
 import Data.Array.Accelerate.Linear.Epsilon
+import Data.Array.Accelerate.Linear.Vector
+
 import qualified Linear.Metric                  as L
+
 
 -- | Free and sparse inner product/metric spaces.
 --
@@ -94,12 +97,16 @@ normalize
     -> Exp (f a)
 normalize v
   = nearZero l ||* nearZero (1-l)
-  ? ( v, undefined {- fmap (/sqrt l) v -} )
+  ? ( v, v ^/ sqrt l )
   where
     l = quadrance v
 
 -- | @project u v@ computes the projection of @v@ onto @u@.
 --
-project :: forall v a. (Elt a, IsFloating a, IsMetric v a) => Exp (v a) -> Exp (v a) -> Exp (v a)
-project = lift2 (L.project :: v (Exp a) -> v (Exp a) -> v (Exp a))
+project
+    :: forall f a. (Elt a, IsFloating a, IsMetric f a)
+    => Exp (f a)
+    -> Exp (f a)
+    -> Exp (f a)
+project = lift2 (L.project :: f (Exp a) -> f (Exp a) -> f (Exp a))
 

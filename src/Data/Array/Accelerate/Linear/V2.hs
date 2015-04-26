@@ -31,6 +31,7 @@ import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Metric
+import Data.Array.Accelerate.Linear.Vector
 
 import Linear.V2                                ( V2(..) )
 import qualified Linear.V2                      as L
@@ -55,6 +56,7 @@ angle = lift . L.angle
 -- ---------
 
 instance Metric V2
+instance Additive V2
 
 type instance EltRepr (V2 a) = EltRepr (a, a)
 

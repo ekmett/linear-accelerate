@@ -31,6 +31,7 @@ import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Metric
+import Data.Array.Accelerate.Linear.Vector
 
 import Linear.V3                                ( V3(..) )
 import qualified Linear.V3                      as L
@@ -52,7 +53,7 @@ triple a b c = dot a (cross b c)
 -- ---------
 
 instance Metric V3
-
+instance Additive V3
 
 type instance EltRepr (V3 a) = EltRepr (a, a, a)
 

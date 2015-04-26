@@ -42,6 +42,7 @@ library
     Data.Array.Accelerate.Linear.V2
     Data.Array.Accelerate.Linear.V3
     Data.Array.Accelerate.Linear.V4
+    Data.Array.Accelerate.Linear.Vector
 
   ghc-options: -Wall -fwarn-tabs -O2
   hs-source-dirs: src

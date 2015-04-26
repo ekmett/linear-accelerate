@@ -31,6 +31,7 @@ import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Metric
+import Data.Array.Accelerate.Linear.Vector
 
 import Linear.V0                                ( V0(..) )
 
@@ -39,6 +40,7 @@ import Linear.V0                                ( V0(..) )
 -- ---------
 
 instance Metric V0
+instance Additive V0
 
 type instance EltRepr (V0 a) = ()
 

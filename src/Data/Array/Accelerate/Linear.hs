@@ -18,22 +18,26 @@ module Data.Array.Accelerate.Linear (
   module Data.Array.Accelerate.Linear.Box,
   module Data.Array.Accelerate.Linear.Epsilon,
   module Data.Array.Accelerate.Linear.Metric,
+  module Data.Array.Accelerate.Linear.Plucker,
+  module Data.Array.Accelerate.Linear.Quaternion,
   module Data.Array.Accelerate.Linear.V0,
   module Data.Array.Accelerate.Linear.V1,
   module Data.Array.Accelerate.Linear.V2,
   module Data.Array.Accelerate.Linear.V3,
-  module Data.Array.Accelerate.Linear.Plucker,
-  module Data.Array.Accelerate.Linear.Quaternion,
+  module Data.Array.Accelerate.Linear.V4,
+  module Data.Array.Accelerate.Linear.Vector,
 
 ) where
 
 import Data.Array.Accelerate.Linear.Box
 import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Metric
+import Data.Array.Accelerate.Linear.Plucker
+import Data.Array.Accelerate.Linear.Quaternion
 import Data.Array.Accelerate.Linear.V0
 import Data.Array.Accelerate.Linear.V1
 import Data.Array.Accelerate.Linear.V2
 import Data.Array.Accelerate.Linear.V3
-import Data.Array.Accelerate.Linear.Plucker
-import Data.Array.Accelerate.Linear.Quaternion
+import Data.Array.Accelerate.Linear.V4
+import Data.Array.Accelerate.Linear.Vector
 

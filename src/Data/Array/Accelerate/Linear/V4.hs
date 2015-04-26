@@ -31,6 +31,7 @@ import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Metric
+import Data.Array.Accelerate.Linear.Vector
 import Data.Array.Accelerate.Linear.V3
 
 import Linear.V4                                ( V4(..) )
@@ -62,6 +63,7 @@ normalizePoint = lift1 L.normalizePoint
 -- ---------
 
 instance Metric V4
+instance Additive V4
 
 type instance EltRepr (V4 a) = EltRepr (a, a, a, a)
 
