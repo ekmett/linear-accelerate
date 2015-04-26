@@ -20,6 +20,7 @@ module Data.Array.Accelerate.Linear.Metric
   where
 
 import Data.Array.Accelerate
+import Data.Array.Accelerate.Linear.Box
 import Data.Array.Accelerate.Linear.Epsilon
 import qualified Linear.Metric                  as L
 
@@ -33,7 +34,7 @@ class L.Metric f => Metric f where
   -- >>> V2 1 2 `dot` V2 3 4
   -- 11
   --
-  dot :: forall a. (Elt a, IsNum a, IsMetric f a)
+  dot :: forall a. (Elt a, IsNum a, Box f a)
       => Exp (f a)
       -> Exp (f a)
       -> Exp a
@@ -43,14 +44,14 @@ class L.Metric f => Metric f where
   -- Wildberger's rational trigonometry.
   --
   quadrance
-      :: forall a. (Elt a, IsNum a, IsMetric f a)
+      :: forall a. (Elt a, IsNum a, Box f a)
       => Exp (f a)
       -> Exp a
   quadrance = lift1 (L.quadrance :: f (Exp a) -> Exp a)
 
   -- | Compute the 'quadrance' of the difference
   --
-  qd :: forall a. (Elt a, IsNum a, IsMetric f a)
+  qd :: forall a. (Elt a, IsNum a, Box f a)
      => Exp (f a)
      -> Exp (f a)
      -> Exp a
@@ -59,7 +60,7 @@ class L.Metric f => Metric f where
   -- | Compute the distance between two vectors in a metric space
   --
   distance
-      :: forall a. (Elt a, IsFloating a, IsMetric f a)
+      :: forall a. (Elt a, IsFloating a, Box f a)
       => Exp (f a)
       -> Exp (f a)
       -> Exp a
@@ -67,7 +68,7 @@ class L.Metric f => Metric f where
 
   -- | Compute the norm of a vector in a metric space
   --
-  norm :: forall a. (Elt a, IsFloating a, IsMetric f a)
+  norm :: forall a. (Elt a, IsFloating a, Box f a)
        => Exp (f a)
        -> Exp a
   norm = lift1 (L.norm :: f (Exp a) -> Exp a)
@@ -75,15 +76,13 @@ class L.Metric f => Metric f where
   -- | Convert a non-zero vector to unit vector.
   --
   signorm
-      :: forall a. (Elt a, IsFloating a, IsMetric f a)
+      :: forall a. (Elt a, IsFloating a, Box f a)
       => Exp (f a)
       -> Exp (f a)
   signorm = lift1 (L.signorm :: f (Exp a) -> f (Exp a))
 
 
--- This type is awful, so at least make some shorthand for it. ugh.
---
-type IsMetric f a = (Metric f, Unlift Exp (f (Exp a)), Plain (f (Exp a)) ~ f a)
+type IsMetric f a = (Metric f, Box f a)
 
 
 -- | Normalize a 'Metric' functor to have unit 'norm'. This function does not

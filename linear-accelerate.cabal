@@ -32,6 +32,7 @@ library
 
   exposed-modules:
     Data.Array.Accelerate.Linear
+    Data.Array.Accelerate.Linear.Box
     Data.Array.Accelerate.Linear.Epsilon
     Data.Array.Accelerate.Linear.Metric
     Data.Array.Accelerate.Linear.Plucker
