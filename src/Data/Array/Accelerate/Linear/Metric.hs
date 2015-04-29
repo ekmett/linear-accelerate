@@ -20,7 +20,7 @@ module Data.Array.Accelerate.Linear.Metric
   where
 
 import Data.Array.Accelerate
-import Data.Array.Accelerate.Linear.Box
+import Data.Array.Accelerate.Linear.Type
 import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Vector
 

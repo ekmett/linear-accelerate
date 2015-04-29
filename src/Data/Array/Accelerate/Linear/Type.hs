@@ -3,9 +3,8 @@
 {-# LANGUAGE TypeFamilies     #-}
 -----------------------------------------------------------------------------
 -- |
--- Module      : Data.Array.Accelerate.Linear.Box
--- Copyright   : 2014 Edward Kmett, Charles Durham,
---               2015 Trevor L. McDonell
+-- Module      : Data.Array.Accelerate.Linear.Type
+-- Copyright   : 2015 Trevor L. McDonell
 -- License     : BSD-style (see the file LICENSE)
 --
 -- Maintainer  : Edward Kmett <ekmett@gmail.com>
@@ -13,10 +12,13 @@
 -- Portability : non-portable
 ----------------------------------------------------------------------------
 
-module Data.Array.Accelerate.Linear.Box
+module Data.Array.Accelerate.Linear.Type
   where
 
 import Data.Array.Accelerate
 
-type Box f a = (Unlift Exp (f (Exp a)), Plain (f (Exp a)) ~ f a)
+type Box f a            = (Unlift Exp (f (Exp a)), Plain (f (Exp a)) ~ f a)
+
+type IsLens' s a        = IsLens s s a a
+type IsLens s t a b     = (Lift Exp t, Lift Exp a, Unlift Exp s, Unlift Exp b)
 

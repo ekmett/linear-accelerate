@@ -1,7 +1,8 @@
 {-# LANGUAGE ConstraintKinds     #-}
 {-# LANGUAGE FlexibleContexts    #-}
-{-# LANGUAGE TypeFamilies        #-}
+{-# LANGUAGE RankNTypes          #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeFamilies        #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      : Data.Array.Accelerate.Linear.Vector
@@ -20,8 +21,9 @@ module Data.Array.Accelerate.Linear.Vector
   where
 
 import Data.Array.Accelerate
-import Data.Array.Accelerate.Linear.Box
+import Data.Array.Accelerate.Linear.Type
 
+import Control.Lens
 import qualified Linear.Vector                  as L
 
 infixl 6 ^+^, ^-^
@@ -71,6 +73,29 @@ class L.Additive f => Additive f where
 
 
 type IsAdditive f a = (Additive f, Box f a)
+
+
+-- | Basis element
+--
+newtype E t = E {
+    el :: forall a. (Elt a, IsLens' (t a) a) => Lens' (Exp (t a)) (Exp a)
+  }
+
+-- | Lift a 'Lens'' into 'Exp' terms
+--
+liftLens
+    :: (Elt a, Elt b, IsLens s t a b)
+    => Lens s t a b
+    -> Lens (Exp (Plain s)) (Exp (Plain t)) (Exp (Plain a)) (Exp (Plain b))
+liftLens l f = fmap lift . l (fsink1 f) . unlift
+
+fsink1
+    :: (Functor f, Unlift Exp b, Lift Exp a)
+    => (Exp (Plain a) -> f (Exp (Plain b)))
+    -> a
+    -> f b
+fsink1 f = fmap unlift . f . lift
+
 
 -- | Compute the negation of a vector
 --

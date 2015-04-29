@@ -28,15 +28,16 @@ library
   build-depends:
     accelerate           >= 0.16,
     base                 >= 4.5   && < 5,
+    lens                 >= 4     && < 5,
     linear               >= 1.10  && < 2
 
   exposed-modules:
     Data.Array.Accelerate.Linear
-    Data.Array.Accelerate.Linear.Box
     Data.Array.Accelerate.Linear.Epsilon
     Data.Array.Accelerate.Linear.Metric
     Data.Array.Accelerate.Linear.Plucker
     Data.Array.Accelerate.Linear.Quaternion
+    Data.Array.Accelerate.Linear.Type
     Data.Array.Accelerate.Linear.V0
     Data.Array.Accelerate.Linear.V1
     Data.Array.Accelerate.Linear.V2

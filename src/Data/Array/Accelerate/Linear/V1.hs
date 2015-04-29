@@ -1,9 +1,11 @@
 {-# LANGUAGE ConstraintKinds       #-}
+{-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
+{-# LANGUAGE ViewPatterns          #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 -----------------------------------------------------------------------------
 -- |
@@ -21,7 +23,7 @@
 
 module Data.Array.Accelerate.Linear.V1 (
 
-  V1(..),
+  V1(..), R1(..), ex,
 
 ) where
 
@@ -30,10 +32,29 @@ import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
+import Data.Array.Accelerate.Linear.Type
 import Data.Array.Accelerate.Linear.Metric
 import Data.Array.Accelerate.Linear.Vector
 
+import Control.Lens
 import Linear.V1                                ( V1(..) )
+
+
+-- | A space that has at least 1 basis vector '_x'.
+--
+class R1 t where
+  -- |
+  -- >>> V1 2 ^._x
+  -- 2
+  --
+  -- >>> V1 2 & _x .~ 3
+  -- V1 3
+  --
+  _x :: (Elt a, IsLens' (t a) a) => Lens' (Exp (t a)) (Exp a)
+
+
+ex :: R1 t => E t
+ex = E _x
 
 
 -- Instances
@@ -41,6 +62,9 @@ import Linear.V1                                ( V1(..) )
 
 instance Metric V1
 instance Additive V1
+
+instance R1 V1 where
+   _x f (unlift -> V1 x) = lift . V1 <$> f x
 
 type instance EltRepr (V1 a) = EltRepr a
 
@@ -61,5 +85,4 @@ instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V1 a) where
 
 instance (Elt a, e ~ Exp a) => Unlift Exp (V1 e) where
   unlift t = V1 $ Exp $ ZeroTupIdx `Prj` t
-
 
