@@ -4,6 +4,7 @@
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
+{-# LANGUAGE ViewPatterns          #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 -----------------------------------------------------------------------------
 -- |
@@ -21,7 +22,10 @@
 
 module Data.Array.Accelerate.Linear.V2 (
 
-  V2(..), perp, angle,
+  V2(..), R1(..), R2(..),
+  _yx,
+  ex, ey,
+  perp, angle,
 
 ) where
 
@@ -31,8 +35,10 @@ import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Metric
+import Data.Array.Accelerate.Linear.V1
 import Data.Array.Accelerate.Linear.Vector
 
+import Control.Lens
 import Linear.V2                                ( V2(..) )
 import qualified Linear.V2                      as L
 
@@ -52,11 +58,47 @@ angle :: (Elt a, IsFloating a) => Exp a -> Exp (V2 a)
 angle = lift . L.angle
 
 
+-- | A space that distinguishes 2 orthogonal basis vectors '_x' and '_y', but
+-- may have more.
+--
+class R1 t => R2 t where
+  -- |
+  -- >>> V2 1 2 ^._y
+  -- 2
+  --
+  -- >>> V2 1 2 & _y .~ 3
+  -- V2 1 3
+  --
+  _y :: Elt a => Lens' (Exp (t a)) (Exp a)
+  _y = _xy._y
+
+  _xy :: forall a. Elt a => Lens' (Exp (t a)) (Exp (V2 a))
+
+
+-- |
+-- >>> V2 1 2 ^. _yx
+-- V2 2 1
+--
+_yx :: (R2 t, Elt a) => Lens' (Exp (t a)) (Exp (V2 a))
+_yx f = _xy $ \(unlift -> V2 a b) -> f (lift (V2 b a)) <&> \(unlift -> V2 b' a') -> lift (V2 a' b')
+
+
+ey :: R2 t => E t
+ey = E _y
+
+
 -- Instances
 -- ---------
 
 instance Metric V2
 instance Additive V2
+
+instance R1 V2 where
+  _x f (unlift -> V2 a b) = (\a' -> lift $ V2 a' b) <$> f a
+
+instance R2 V2 where
+  _y f (unlift -> V2 a b) = (\b' -> lift $ V2 a b') <$> f b
+  _xy = id
 
 type instance EltRepr (V2 a) = EltRepr (a, a)
 
