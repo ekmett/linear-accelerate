@@ -78,7 +78,7 @@ type IsAdditive f a = (Additive f, Box f a)
 -- | Basis element
 --
 newtype E t = E {
-    el :: forall a. (Elt a, IsLens' (t a) a) => Lens' (Exp (t a)) (Exp a)
+    el :: forall a. Elt a => Lens' (Exp (t a)) (Exp a)
   }
 
 -- | Lift a 'Lens'' into 'Exp' terms

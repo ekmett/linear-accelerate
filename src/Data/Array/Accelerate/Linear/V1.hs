@@ -1,5 +1,4 @@
 {-# LANGUAGE ConstraintKinds       #-}
-{-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
@@ -32,7 +31,6 @@ import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
-import Data.Array.Accelerate.Linear.Type
 import Data.Array.Accelerate.Linear.Metric
 import Data.Array.Accelerate.Linear.Vector
 
@@ -50,7 +48,7 @@ class R1 t where
   -- >>> V1 2 & _x .~ 3
   -- V1 3
   --
-  _x :: (Elt a, IsLens' (t a) a) => Lens' (Exp (t a)) (Exp a)
+  _x :: Elt a => Lens' (Exp (t a)) (Exp a)
 
 
 ex :: R1 t => E t
