@@ -85,7 +85,7 @@ class R3 t => R4 t where
   -- 4
   --
   _w :: Elt a => Lens' (Exp (t a)) (Exp a)
-  _xyzw :: Lens' (Exp (t a)) (Exp (V4 a))
+  _xyzw :: Elt a => Lens' (Exp (t a)) (Exp (V4 a))
 
 _xw, _yw, _zw, _wx, _wy, _wz :: (R4 t, Elt a) => Lens' (Exp (t a)) (Exp (V2 a))
 _xw f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V2 a d)) <&> lift1 (\(V2 a' d') -> V4 a' b c d')
