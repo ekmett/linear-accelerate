@@ -70,7 +70,6 @@ class R1 t => R2 t where
   -- V2 1 3
   --
   _y :: Elt a => Lens' (Exp (t a)) (Exp a)
-
   _xy :: forall a. Elt a => Lens' (Exp (t a)) (Exp (V2 a))
 
 

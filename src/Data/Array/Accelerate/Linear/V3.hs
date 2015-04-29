@@ -23,8 +23,10 @@
 module Data.Array.Accelerate.Linear.V3 (
 
   V3(..), cross, triple,
-  R1(..), R2(..), R3(..),
+  R1(..),
+  R2(..),
   _yx,
+  R3(..),
   _xz, _yz, _zx, _zy,
   _xzy, _yxz, _yzx, _zxy, _zyx,
   ex, ey, ez,
@@ -57,8 +59,8 @@ triple :: (Elt a, IsNum a) => Exp (V3 a) -> Exp (V3 a) -> Exp (V3 a) -> Exp a
 triple a b c = dot a (cross b c)
 
 
--- | A space that distinguishes 3 orthogonal basis vectors: '_x', '_y', and
--- '_z'. (Although it may have more)
+-- | A space that distinguishes 3 orthogonal basis vectors: '_x', '_y', and '_z'.
+-- (Although it may have more)
 --
 class R2 t => R3 t where
   -- |
@@ -66,7 +68,6 @@ class R2 t => R3 t where
   -- 3
   --
   _z :: Elt a => Lens' (Exp (t a)) (Exp a)
-
   _xyz :: Elt a => Lens' (Exp (t a)) (Exp (V3 a))
 
 _xz, _yz, _zx, _zy :: (R3 t, Elt a) => Lens' (Exp (t a)) (Exp (V2 a))
