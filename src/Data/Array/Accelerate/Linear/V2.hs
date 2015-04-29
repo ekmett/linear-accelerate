@@ -70,7 +70,6 @@ class R1 t => R2 t where
   -- V2 1 3
   --
   _y :: Elt a => Lens' (Exp (t a)) (Exp a)
-  _y = _xy._y
 
   _xy :: forall a. Elt a => Lens' (Exp (t a)) (Exp (V2 a))
 
@@ -94,10 +93,10 @@ instance Metric V2
 instance Additive V2
 
 instance R1 V2 where
-  _x f (unlift -> V2 a b) = (\a' -> lift $ V2 a' b) <$> f a
+  _x f (unlift -> V2 a b) = lift . (\a' -> V2 a' b) <$> f a
 
 instance R2 V2 where
-  _y f (unlift -> V2 a b) = (\b' -> lift $ V2 a b') <$> f b
+  _y f (unlift -> V2 a b) = lift . V2 a <$> f b
   _xy = id
 
 type instance EltRepr (V2 a) = EltRepr (a, a)

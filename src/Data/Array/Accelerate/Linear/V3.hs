@@ -4,6 +4,7 @@
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
+{-# LANGUAGE ViewPatterns          #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 -----------------------------------------------------------------------------
 -- |
@@ -22,6 +23,11 @@
 module Data.Array.Accelerate.Linear.V3 (
 
   V3(..), cross, triple,
+  R1(..), R2(..), R3(..),
+  _yx,
+  _xz, _yz, _zx, _zy,
+  _xzy, _yxz, _yzx, _zxy, _zyx,
+  ex, ey, ez,
 
 ) where
 
@@ -31,11 +37,13 @@ import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Metric
+import Data.Array.Accelerate.Linear.V1
+import Data.Array.Accelerate.Linear.V2
 import Data.Array.Accelerate.Linear.Vector
 
+import Control.Lens
 import Linear.V3                                ( V3(..) )
 import qualified Linear.V3                      as L
-import qualified Data.Foldable                  as F
 
 
 -- | cross product
@@ -49,11 +57,51 @@ triple :: (Elt a, IsNum a) => Exp (V3 a) -> Exp (V3 a) -> Exp (V3 a) -> Exp a
 triple a b c = dot a (cross b c)
 
 
+-- | A space that distinguishes 3 orthogonal basis vectors: '_x', '_y', and
+-- '_z'. (Although it may have more)
+--
+class R2 t => R3 t where
+  -- |
+  -- >>> V3 1 2 3 ^. _z
+  -- 3
+  --
+  _z :: Elt a => Lens' (Exp (t a)) (Exp a)
+
+  _xyz :: Elt a => Lens' (Exp (t a)) (Exp (V3 a))
+
+_xz, _yz, _zx, _zy :: (R3 t, Elt a) => Lens' (Exp (t a)) (Exp (V2 a))
+_xz f = _xyz $ \(unlift -> V3 a b c) -> f (lift (V2 a c)) <&> lift1 (\(V2 a' c') -> V3 a' b c')
+_yz f = _xyz $ \(unlift -> V3 a b c) -> f (lift (V2 b c)) <&> lift1 (\(V2 b' c') -> V3 a b' c')
+_zx f = _xyz $ \(unlift -> V3 a b c) -> f (lift (V2 c a)) <&> lift1 (\(V2 c' a') -> V3 a' b c')
+_zy f = _xyz $ \(unlift -> V3 a b c) -> f (lift (V2 c b)) <&> lift1 (\(V2 c' b') -> V3 a b' c')
+
+_xzy, _yxz, _yzx, _zxy, _zyx :: (R3 t, Elt a) => Lens' (Exp (t a)) (Exp (V3 a))
+_xzy f = _xyz $ \(unlift -> V3 a b c) -> f (lift (V3 a c b)) <&> lift1 (\(V3 a' c' b') -> V3 a' b' c')
+_yxz f = _xyz $ \(unlift -> V3 a b c) -> f (lift (V3 b a c)) <&> lift1 (\(V3 b' a' c') -> V3 a' b' c')
+_yzx f = _xyz $ \(unlift -> V3 a b c) -> f (lift (V3 b c a)) <&> lift1 (\(V3 b' c' a') -> V3 a' b' c')
+_zxy f = _xyz $ \(unlift -> V3 a b c) -> f (lift (V3 c a b)) <&> lift1 (\(V3 c' a' b') -> V3 a' b' c')
+_zyx f = _xyz $ \(unlift -> V3 a b c) -> f (lift (V3 c b a)) <&> lift1 (\(V3 c' b' a') -> V3 a' b' c')
+
+ez :: R3 t => E t
+ez = E _z
+
+
 -- Instances
 -- ---------
 
 instance Metric V3
 instance Additive V3
+
+instance R1 V3 where
+  _x f (unlift -> V3 a b c) = (\a' -> lift $ V3 a' b c) <$> f a
+
+instance R2 V3 where
+  _y  f (unlift -> V3 a b c) = lift. (\b' -> V3 a b' c) <$> f b
+  _xy f (unlift -> V3 a b c) = lift1 (\(V2 a' b') -> V3 a' b' c) <$> f (lift $ V2 a b)
+
+instance R3 V3 where
+  _z f (unlift -> V3 a b c) = lift . V3 a b <$> f c
+  _xyz = id
 
 type instance EltRepr (V3 a) = EltRepr (a, a, a)
 
