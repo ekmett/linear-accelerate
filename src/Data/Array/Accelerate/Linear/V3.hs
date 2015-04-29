@@ -80,16 +80,6 @@ instance (Elt a, e ~ Exp a) => Unlift Exp (V3 e) where
                 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
                 (Exp $ ZeroTupIdx `Prj` t)
 
-type instance ArrRepr (V3 a) = ArrRepr (Vector a)
-
-instance Elt a => Arrays (V3 a) where
-  arrays _ = arrays (undefined :: Vector a)
-  toArr arr = case toList arr of
-    [a,b,c] -> V3 a b c
-    _       -> error "shape mismatch"
-  fromArr = fromList (Z :. 3) . F.toList
-  flavour _ = error "https://github.com/AccelerateHS/accelerate/issues/263"
-
 -- $liftAcc
 --
 -- In theory we could support lifting these to 'Acc' array types as well, however
@@ -106,10 +96,19 @@ instance Elt a => Arrays (V3 a) where
 -- @
 --
 -- so due to limitations in the accelerate API, we can't support both!
+{--
+type instance ArrRepr (V3 a) = ArrRepr (Vector a)
 
-{-
+instance Elt a => Arrays (V3 a) where
+  arrays _ = arrays (undefined :: Vector a)
+  toArr arr = case toList arr of
+    [a,b,c] -> V3 a b c
+    _       -> error "shape mismatch"
+  fromArr = fromList (Z :. 3) . F.toList
+  flavour _ = error "https://github.com/AccelerateHS/accelerate/issues/263"
+
 instance Elt a => Lift Acc (V3 a) where
   type Plain (V3 a) = Vector a
   lift = lift . toArr'
--}
+--}
 
