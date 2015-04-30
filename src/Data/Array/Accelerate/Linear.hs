@@ -15,7 +15,7 @@
 
 module Data.Array.Accelerate.Linear (
 
-  module Data.Array.Accelerate.Linear.Box,
+  module Data.Array.Accelerate.Linear.Type,
   module Data.Array.Accelerate.Linear.Epsilon,
   module Data.Array.Accelerate.Linear.Metric,
   module Data.Array.Accelerate.Linear.Plucker,
@@ -29,7 +29,7 @@ module Data.Array.Accelerate.Linear (
 
 ) where
 
-import Data.Array.Accelerate.Linear.Box
+import Data.Array.Accelerate.Linear.Type
 import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Metric
 import Data.Array.Accelerate.Linear.Plucker
