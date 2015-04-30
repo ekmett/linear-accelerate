@@ -19,6 +19,6 @@ import Data.Array.Accelerate
 
 type Box f a            = (Unlift Exp (f (Exp a)), Plain (f (Exp a)) ~ f a)
 
-type IsLens' s a        = IsLens s s a a
-type IsLens s t a b     = (Lift Exp t, Lift Exp a, Unlift Exp s, Unlift Exp b)
+-- type IsLens' s a        = IsLens s s a a
+-- type IsLens s t a b     = (Lift Exp t, Lift Exp a, Unlift Exp s, Unlift Exp b)
 

@@ -1,4 +1,5 @@
 {-# LANGUAGE ConstraintKinds       #-}
+{-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE IncoherentInstances   #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -33,15 +34,17 @@ import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Metric
+import Data.Array.Accelerate.Linear.Type
 import Data.Array.Accelerate.Linear.Vector
 
 import Control.Lens
 import Linear.V1                                ( V1(..) )
+import qualified Linear.V1                      as L
 
 
 -- | A space that has at least 1 basis vector '_x'.
 --
-class R1 t where
+class L.R1 t => R1 t where
   -- |
   -- >>> V1 2 ^._x
   -- 2
@@ -49,7 +52,8 @@ class R1 t where
   -- >>> V1 2 & _x .~ 3
   -- V1 3
   --
-  _x :: Elt a => Lens' (Exp (t a)) (Exp a)
+  _x :: (Elt a, Box t a) => Lens' (Exp (t a)) (Exp a)
+  _x = liftLens (L._x :: Lens' (t (Exp a)) (Exp a))
 
 
 ex :: R1 t => E t
@@ -61,9 +65,7 @@ ex = E _x
 
 instance Metric V1
 instance Additive V1
-
-instance R1 V1 where
-   _x f (unlift -> V1 x) = lift . V1 <$> f x
+instance R1 V1
 
 type instance EltRepr (V1 a) = EltRepr a
 

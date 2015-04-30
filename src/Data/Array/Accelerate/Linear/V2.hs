@@ -1,4 +1,5 @@
 {-# LANGUAGE ConstraintKinds       #-}
+{-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE IncoherentInstances   #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -36,6 +37,7 @@ import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Metric
+import Data.Array.Accelerate.Linear.Type
 import Data.Array.Accelerate.Linear.V1
 import Data.Array.Accelerate.Linear.Vector
 
@@ -62,7 +64,7 @@ angle = lift . L.angle
 -- | A space that distinguishes 2 orthogonal basis vectors '_x' and '_y', but
 -- may have more.
 --
-class R1 t => R2 t where
+class (L.R2 t, R1 t) => R2 t where
   -- |
   -- >>> V2 1 2 ^._y
   -- 2
@@ -70,16 +72,19 @@ class R1 t => R2 t where
   -- >>> V2 1 2 & _y .~ 3
   -- V2 1 3
   --
-  _y :: Elt a => Lens' (Exp (t a)) (Exp a)
-  _xy :: forall a. Elt a => Lens' (Exp (t a)) (Exp (V2 a))
+  _y :: (Elt a, Box t a) => Lens' (Exp (t a)) (Exp a)
+  _y = liftLens (L._y :: Lens' (t (Exp a)) (Exp a))
+
+  _xy :: (Elt a, Box t a) => Lens' (Exp (t a)) (Exp (V2 a))
+  _xy f = liftLens (L._xy :: Lens' (t (Exp a)) (V2 (Exp a))) (fsink1 f)
 
 
 -- |
 -- >>> V2 1 2 ^. _yx
 -- V2 2 1
 --
-_yx :: (R2 t, Elt a) => Lens' (Exp (t a)) (Exp (V2 a))
-_yx f = _xy $ \(unlift -> V2 a b) -> f (lift (V2 b a)) <&> lift1 (\(V2 b' a') -> (V2 a' b'))
+_yx :: forall t a. (R2 t, Elt a, Box t a) => Lens' (Exp (t a)) (Exp (V2 a))
+_yx f = liftLens (L._yx :: Lens' (t (Exp a)) (V2 (Exp a))) (fsink1 f)
 
 
 ey :: R2 t => E t
@@ -91,13 +96,8 @@ ey = E _y
 
 instance Metric V2
 instance Additive V2
-
-instance R1 V2 where
-  _x f (unlift -> V2 a b) = lift . (\a' -> V2 a' b) <$> f a
-
-instance R2 V2 where
-  _y f (unlift -> V2 a b) = lift . V2 a <$> f b
-  _xy = id
+instance R1 V2
+instance R2 V2
 
 type instance EltRepr (V2 a) = EltRepr (a, a)
 

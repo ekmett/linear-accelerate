@@ -1,4 +1,5 @@
 {-# LANGUAGE ConstraintKinds       #-}
+{-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE IncoherentInstances   #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -47,6 +48,7 @@ import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Metric
+import Data.Array.Accelerate.Linear.Type
 import Data.Array.Accelerate.Linear.V1
 import Data.Array.Accelerate.Linear.V2
 import Data.Array.Accelerate.Linear.V3
@@ -80,68 +82,78 @@ normalizePoint = lift1 L.normalizePoint
 -- | A space that distinguishes orthogonal basis vectors '_x', '_y', '_z', and '_w'.
 -- (Although it may have more.)
 --
-class R3 t => R4 t where
+class (L.R4 t, R3 t) => R4 t where
   -- |
   -- >>> V4 1 2 3 4 ^._w
   -- 4
   --
-  _w :: Elt a => Lens' (Exp (t a)) (Exp a)
-  _xyzw :: Elt a => Lens' (Exp (t a)) (Exp (V4 a))
+  _w :: forall a. (Elt a, Box t a) => Lens' (Exp (t a)) (Exp a)
+  _w = liftLens (L._w :: Lens' (t (Exp a)) (Exp a))
 
-_xw, _yw, _zw, _wx, _wy, _wz :: (R4 t, Elt a) => Lens' (Exp (t a)) (Exp (V2 a))
-_xw f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V2 a d)) <&> lift1 (\(V2 a' d') -> V4 a' b c d')
-_yw f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V2 b d)) <&> lift1 (\(V2 b' d') -> V4 a b' c d')
-_zw f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V2 c d)) <&> lift1 (\(V2 c' d') -> V4 a b c' d')
-_wx f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V2 d a)) <&> lift1 (\(V2 d' a') -> V4 a' b c d')
-_wy f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V2 d b)) <&> lift1 (\(V2 d' b') -> V4 a b' c d')
-_wz f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V2 d c)) <&> lift1 (\(V2 d' c') -> V4 a b c' d')
+  _xyzw :: forall a. (Elt a, Box t a) => Lens' (Exp (t a)) (Exp (V4 a))
+  _xyzw f = liftLens (L._xyzw :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
 
-_xyw, _xzw, _xwy, _xwz, _yxw, _yzw, _ywx, _ywz, _zxw, _zyw, _zwx, _zwy, _wxy, _wxz, _wyx, _wyz, _wzx, _wzy :: (R4 t, Elt a) => Lens' (Exp (t a)) (Exp (V3 a))
-_xyw f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V3 a b d)) <&> lift1 (\(V3 a' b' d') -> V4 a' b' c d')
-_xzw f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V3 a c d)) <&> lift1 (\(V3 a' c' d') -> V4 a' b c' d')
-_xwy f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V3 a d b)) <&> lift1 (\(V3 a' d' b') -> V4 a' b' c d')
-_xwz f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V3 a d c)) <&> lift1 (\(V3 a' d' c') -> V4 a' b c' d')
-_yxw f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V3 b a d)) <&> lift1 (\(V3 b' a' d') -> V4 a' b' c d')
-_yzw f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V3 b c d)) <&> lift1 (\(V3 b' c' d') -> V4 a b' c' d')
-_ywx f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V3 b d a)) <&> lift1 (\(V3 b' d' a') -> V4 a' b' c d')
-_ywz f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V3 b d c)) <&> lift1 (\(V3 b' d' c') -> V4 a b' c' d')
-_zxw f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V3 c a d)) <&> lift1 (\(V3 c' a' d') -> V4 a' b c' d')
-_zyw f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V3 c b d)) <&> lift1 (\(V3 c' b' d') -> V4 a b' c' d')
-_zwx f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V3 c d a)) <&> lift1 (\(V3 c' d' a') -> V4 a' b c' d')
-_zwy f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V3 c d b)) <&> lift1 (\(V3 c' d' b') -> V4 a b' c' d')
-_wxy f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V3 d a b)) <&> lift1 (\(V3 d' a' b') -> V4 a' b' c d')
-_wxz f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V3 d a c)) <&> lift1 (\(V3 d' a' c') -> V4 a' b c' d')
-_wyx f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V3 d b a)) <&> lift1 (\(V3 d' b' a') -> V4 a' b' c d')
-_wyz f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V3 d b c)) <&> lift1 (\(V3 d' b' c') -> V4 a b' c' d')
-_wzx f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V3 d c a)) <&> lift1 (\(V3 d' c' a') -> V4 a' b c' d')
-_wzy f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V3 d c b)) <&> lift1 (\(V3 d' c' b') -> V4 a b' c' d')
 
-_xywz, _xzyw, _xzwy, _xwyz, _xwzy, _yxzw , _yxwz, _yzxw, _yzwx, _ywxz
-  , _ywzx, _zxyw, _zxwy, _zyxw, _zywx, _zwxy, _zwyx, _wxyz, _wxzy, _wyxz
-  , _wyzx, _wzxy, _wzyx :: (R4 t, Elt a) => Lens' (Exp (t a)) (Exp (V4 a))
-_xywz f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 a b d c)) <&> lift1 (\(V4 a' b' d' c') -> V4 a' b' c' d')
-_xzyw f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 a c b d)) <&> lift1 (\(V4 a' c' b' d') -> V4 a' b' c' d')
-_xzwy f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 a c d b)) <&> lift1 (\(V4 a' c' d' b') -> V4 a' b' c' d')
-_xwyz f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 a d b c)) <&> lift1 (\(V4 a' d' b' c') -> V4 a' b' c' d')
-_xwzy f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 a d c b)) <&> lift1 (\(V4 a' d' c' b') -> V4 a' b' c' d')
-_yxzw f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 b a c d)) <&> lift1 (\(V4 b' a' c' d') -> V4 a' b' c' d')
-_yxwz f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 b a d c)) <&> lift1 (\(V4 b' a' d' c') -> V4 a' b' c' d')
-_yzxw f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 b c a d)) <&> lift1 (\(V4 b' c' a' d') -> V4 a' b' c' d')
-_yzwx f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 b c d a)) <&> lift1 (\(V4 b' c' d' a') -> V4 a' b' c' d')
-_ywxz f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 b d a c)) <&> lift1 (\(V4 b' d' a' c') -> V4 a' b' c' d')
-_ywzx f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 b d c a)) <&> lift1 (\(V4 b' d' c' a') -> V4 a' b' c' d')
-_zxyw f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 c a b d)) <&> lift1 (\(V4 c' a' b' d') -> V4 a' b' c' d')
-_zxwy f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 c a d b)) <&> lift1 (\(V4 c' a' d' b') -> V4 a' b' c' d')
-_zyxw f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 c b a d)) <&> lift1 (\(V4 c' b' a' d') -> V4 a' b' c' d')
-_zywx f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 c b d a)) <&> lift1 (\(V4 c' b' d' a') -> V4 a' b' c' d')
-_zwxy f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 c d a b)) <&> lift1 (\(V4 c' d' a' b') -> V4 a' b' c' d')
-_zwyx f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 c d b a)) <&> lift1 (\(V4 c' d' b' a') -> V4 a' b' c' d')
-_wxyz f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 d a b c)) <&> lift1 (\(V4 d' a' b' c') -> V4 a' b' c' d')
-_wxzy f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 d a c b)) <&> lift1 (\(V4 d' a' c' b') -> V4 a' b' c' d')
-_wyxz f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 d b a c)) <&> lift1 (\(V4 d' b' a' c') -> V4 a' b' c' d')
-_wyzx f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 d b c a)) <&> lift1 (\(V4 d' b' c' a') -> V4 a' b' c' d')
-_wzxy f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 d c a b)) <&> lift1 (\(V4 d' c' a' b') -> V4 a' b' c' d')
-_wzyx f = _xyzw $ \(unlift -> V4 a b c d) -> f (lift (V4 d c b a)) <&> lift1 (\(V4 d' c' b' a') -> V4 a' b' c' d')
+_xw, _yw, _zw, _wx, _wy, _wz
+    :: forall t a. (R4 t, Elt a, Box t a)
+    => Lens' (Exp (t a)) (Exp (V2 a))
+_xw f = liftLens (L._xw :: Lens' (t (Exp a)) (V2 (Exp a))) (fsink1 f)
+_yw f = liftLens (L._yw :: Lens' (t (Exp a)) (V2 (Exp a))) (fsink1 f)
+_zw f = liftLens (L._zw :: Lens' (t (Exp a)) (V2 (Exp a))) (fsink1 f)
+_wx f = liftLens (L._wx :: Lens' (t (Exp a)) (V2 (Exp a))) (fsink1 f)
+_wy f = liftLens (L._wy :: Lens' (t (Exp a)) (V2 (Exp a))) (fsink1 f)
+_wz f = liftLens (L._wz :: Lens' (t (Exp a)) (V2 (Exp a))) (fsink1 f)
+
+_xyw, _xzw, _xwy, _xwz, _yxw, _yzw, _ywx, _ywz, _zxw, _zyw, _zwx, _zwy, _wxy, _wxz, _wyx, _wyz, _wzx, _wzy
+    :: forall t a. (R4 t, Elt a, Box t a)
+    => Lens' (Exp (t a)) (Exp (V3 a))
+_xyw f = liftLens (L._xyw :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_xzw f = liftLens (L._xzw :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_xwy f = liftLens (L._xwy :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_xwz f = liftLens (L._xwz :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_yxw f = liftLens (L._yxw :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_yzw f = liftLens (L._yzw :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_ywx f = liftLens (L._ywx :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_ywz f = liftLens (L._ywz :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_zxw f = liftLens (L._zxw :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_zyw f = liftLens (L._zyw :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_zwx f = liftLens (L._zwx :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_zwy f = liftLens (L._zwy :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_wxy f = liftLens (L._wxy :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_wxz f = liftLens (L._wxz :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_wyx f = liftLens (L._wyx :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_wyz f = liftLens (L._wyz :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_wzx f = liftLens (L._wzx :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_wzy f = liftLens (L._wzy :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+
+_xywz, _xzyw, _xzwy, _xwyz, _xwzy, _yxzw , _yxwz, _yzxw, _yzwx, _ywxz , _ywzx, _zxyw,
+    _zxwy, _zyxw, _zywx, _zwxy, _zwyx, _wxyz, _wxzy, _wyxz, _wyzx, _wzxy, _wzyx
+  :: forall t a. (R4 t, Elt a, Box t a)
+  => Lens' (Exp (t a)) (Exp (V4 a))
+_xywz f = liftLens (L._xywz :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_xzyw f = liftLens (L._xzyw :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_xzwy f = liftLens (L._xzwy :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_xwyz f = liftLens (L._xwyz :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_xwzy f = liftLens (L._xwzy :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_yxzw f = liftLens (L._yxzw :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_yxwz f = liftLens (L._yxwz :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_yzxw f = liftLens (L._yzxw :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_yzwx f = liftLens (L._yzwx :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_ywxz f = liftLens (L._ywxz :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_ywzx f = liftLens (L._ywzx :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_zxyw f = liftLens (L._zxyw :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_zxwy f = liftLens (L._zxwy :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_zyxw f = liftLens (L._zyxw :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_zywx f = liftLens (L._zywx :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_zwxy f = liftLens (L._zwxy :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_zwyx f = liftLens (L._zwyx :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_wxyz f = liftLens (L._wxyz :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_wxzy f = liftLens (L._wxzy :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_wyxz f = liftLens (L._wyxz :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_wyzx f = liftLens (L._wyzx :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_wzxy f = liftLens (L._wzxy :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+_wzyx f = liftLens (L._wzyx :: Lens' (t (Exp a)) (V4 (Exp a))) (fsink1 f)
+
 
 ew :: R4 t => E t
 ew = E _w
@@ -152,21 +164,10 @@ ew = E _w
 
 instance Metric V4
 instance Additive V4
-
-instance R1 V4 where
-  _x f (unlift -> V4 a b c d) = lift . (\a' -> V4 a' b c d) <$> f a
-
-instance R2 V4 where
-  _y  f (unlift -> V4 a b c d) = lift. (\b' -> V4 a b' c d) <$> f b
-  _xy f (unlift -> V4 a b c d) = lift1 (\(V2 a' b') -> V4 a' b' c d) <$> f (lift (V2 a b))
-
-instance R3 V4 where
-  _z   f (unlift -> V4 a b c d) = lift. (\c' -> V4 a b c' d) <$> f c
-  _xyz f (unlift -> V4 a b c d) = lift1 (\(V3 a' b' c') -> V4 a' b' c' d) <$> f (lift (V3 a b c))
-
-instance R4 V4 where
-  _w f (unlift -> V4 a b c d) = lift . V4 a b c <$> f d
-  _xyzw = id
+instance R1 V4
+instance R2 V4
+instance R3 V4
+instance R4 V4
 
 type instance EltRepr (V4 a) = EltRepr (a, a, a, a)
 
@@ -185,7 +186,6 @@ instance cst a => IsProduct cst (V4 a) where
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V4 a) where
   type Plain (V4 a) = V4 (Plain a)
-  --  lift = Exp . Tuple . F.foldl SnocTup NilTup
   lift (V4 x y z w) =
     Exp $ Tuple $ NilTup `SnocTup` lift x
                          `SnocTup` lift y

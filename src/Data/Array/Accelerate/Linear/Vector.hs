@@ -3,6 +3,7 @@
 {-# LANGUAGE RankNTypes          #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies        #-}
+{-# LANGUAGE ViewPatterns        #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      : Data.Array.Accelerate.Linear.Vector
@@ -78,22 +79,27 @@ type IsAdditive f a = (Additive f, Box f a)
 -- | Basis element
 --
 newtype E t = E {
-    el :: forall a. Elt a => Lens' (Exp (t a)) (Exp a)
+    el :: forall a. (Elt a, Box t a) => Lens' (Exp (t a)) (Exp a)
   }
 
--- | Lift a 'Lens'' into 'Exp' terms
+
+-- | Lift a 'Lens' into 'Exp' terms
 --
 liftLens
-    :: (Elt a, Elt b, IsLens s t a b)
-    => Lens s t a b
-    -> Lens (Exp (Plain s)) (Exp (Plain t)) (Exp (Plain a)) (Exp (Plain b))
-liftLens l f = fmap lift . l (fsink1 f) . unlift
+    :: (Functor f, Unlift Exp s, Unlift Exp t)
+    => (l -> s -> f t)
+    -> l
+    -> Exp (Plain s)
+    -> f (Exp (Plain t))
+liftLens l f (unlift -> x) = lift <$> l f x
 
-fsink1
-    :: (Functor f, Unlift Exp b, Lift Exp a)
-    => (Exp (Plain a) -> f (Exp (Plain b)))
-    -> a
-    -> f b
+
+-- | Sink a unary functor from 'Exp'
+--
+fsink1 :: (Functor f, Unlift Exp b, Lift Exp a)
+       => (Exp (Plain a) -> f (Exp (Plain b)))
+       -> a
+       -> f b
 fsink1 f = fmap unlift . f . lift
 
 

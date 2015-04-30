@@ -1,4 +1,5 @@
 {-# LANGUAGE ConstraintKinds       #-}
+{-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE IncoherentInstances   #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -40,6 +41,7 @@ import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Metric
+import Data.Array.Accelerate.Linear.Type
 import Data.Array.Accelerate.Linear.V1
 import Data.Array.Accelerate.Linear.V2
 import Data.Array.Accelerate.Linear.Vector
@@ -57,32 +59,37 @@ cross = lift2 L.cross
 -- | scalar triple product
 --
 triple :: (Elt a, IsNum a) => Exp (V3 a) -> Exp (V3 a) -> Exp (V3 a) -> Exp a
-triple a b c = dot a (cross b c)
+triple = lift3 L.triple
 
 
 -- | A space that distinguishes 3 orthogonal basis vectors: '_x', '_y', and '_z'.
 -- (Although it may have more)
 --
-class R2 t => R3 t where
+class (L.R3 t, R2 t) => R3 t where
   -- |
   -- >>> V3 1 2 3 ^. _z
   -- 3
   --
-  _z :: Elt a => Lens' (Exp (t a)) (Exp a)
-  _xyz :: Elt a => Lens' (Exp (t a)) (Exp (V3 a))
+  _z :: forall a. (Elt a, Box t a) => Lens' (Exp (t a)) (Exp a)
+  _z = liftLens (L._z :: Lens' (t (Exp a)) (Exp a))
 
-_xz, _yz, _zx, _zy :: (R3 t, Elt a) => Lens' (Exp (t a)) (Exp (V2 a))
-_xz f = _xyz $ \(unlift -> V3 a b c) -> f (lift (V2 a c)) <&> lift1 (\(V2 a' c') -> V3 a' b c')
-_yz f = _xyz $ \(unlift -> V3 a b c) -> f (lift (V2 b c)) <&> lift1 (\(V2 b' c') -> V3 a b' c')
-_zx f = _xyz $ \(unlift -> V3 a b c) -> f (lift (V2 c a)) <&> lift1 (\(V2 c' a') -> V3 a' b c')
-_zy f = _xyz $ \(unlift -> V3 a b c) -> f (lift (V2 c b)) <&> lift1 (\(V2 c' b') -> V3 a b' c')
+  _xyz :: forall a. (Elt a, Box t a) => Lens' (Exp (t a)) (Exp (V3 a))
+  _xyz f = liftLens (L._xyz :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
 
-_xzy, _yxz, _yzx, _zxy, _zyx :: (R3 t, Elt a) => Lens' (Exp (t a)) (Exp (V3 a))
-_xzy f = _xyz $ \(unlift -> V3 a b c) -> f (lift (V3 a c b)) <&> lift1 (\(V3 a' c' b') -> V3 a' b' c')
-_yxz f = _xyz $ \(unlift -> V3 a b c) -> f (lift (V3 b a c)) <&> lift1 (\(V3 b' a' c') -> V3 a' b' c')
-_yzx f = _xyz $ \(unlift -> V3 a b c) -> f (lift (V3 b c a)) <&> lift1 (\(V3 b' c' a') -> V3 a' b' c')
-_zxy f = _xyz $ \(unlift -> V3 a b c) -> f (lift (V3 c a b)) <&> lift1 (\(V3 c' a' b') -> V3 a' b' c')
-_zyx f = _xyz $ \(unlift -> V3 a b c) -> f (lift (V3 c b a)) <&> lift1 (\(V3 c' b' a') -> V3 a' b' c')
+
+_xz, _yz, _zx, _zy :: forall t a. (R3 t, Elt a, Box t a) => Lens' (Exp (t a)) (Exp (V2 a))
+_xz f = liftLens (L._xz :: Lens' (t (Exp a)) (V2 (Exp a))) (fsink1 f)
+_yz f = liftLens (L._yz :: Lens' (t (Exp a)) (V2 (Exp a))) (fsink1 f)
+_zx f = liftLens (L._zx :: Lens' (t (Exp a)) (V2 (Exp a))) (fsink1 f)
+_zy f = liftLens (L._zy :: Lens' (t (Exp a)) (V2 (Exp a))) (fsink1 f)
+
+_xzy, _yxz, _yzx, _zxy, _zyx :: forall t a. (R3 t, Elt a, Box t a) => Lens' (Exp (t a)) (Exp (V3 a))
+_xzy f = liftLens (L._xzy :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_yxz f = liftLens (L._yxz :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_yzx f = liftLens (L._yzx :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_zxy f = liftLens (L._zxy :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_zyx f = liftLens (L._zyx :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+
 
 ez :: R3 t => E t
 ez = E _z
@@ -93,17 +100,9 @@ ez = E _z
 
 instance Metric V3
 instance Additive V3
-
-instance R1 V3 where
-  _x f (unlift -> V3 a b c) = (\a' -> lift $ V3 a' b c) <$> f a
-
-instance R2 V3 where
-  _y  f (unlift -> V3 a b c) = lift. (\b' -> V3 a b' c) <$> f b
-  _xy f (unlift -> V3 a b c) = lift1 (\(V2 a' b') -> V3 a' b' c) <$> f (lift $ V2 a b)
-
-instance R3 V3 where
-  _z f (unlift -> V3 a b c) = lift . V3 a b <$> f c
-  _xyz = id
+instance R1 V3
+instance R2 V3
+instance R3 V3
 
 type instance EltRepr (V3 a) = EltRepr (a, a, a)
 
