@@ -1,5 +1,6 @@
 {-# LANGUAGE ConstraintKinds       #-}
 {-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE IncoherentInstances   #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
@@ -78,7 +79,7 @@ class R1 t => R2 t where
 -- V2 2 1
 --
 _yx :: (R2 t, Elt a) => Lens' (Exp (t a)) (Exp (V2 a))
-_yx f = _xy $ \(unlift -> V2 a b) -> f (lift (V2 b a)) <&> \(unlift -> V2 b' a') -> lift (V2 a' b')
+_yx f = _xy $ \(unlift -> V2 a b) -> f (lift (V2 b a)) <&> lift1 (\(V2 b' a') -> (V2 a' b'))
 
 
 ey :: R2 t => E t
@@ -115,10 +116,40 @@ instance cst a => IsProduct cst (V2 a) where
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V2 a) where
   type Plain (V2 a) = V2 (Plain a)
-  --lift = Exp . Tuple . F.foldl SnocTup NilTup
   lift (V2 x y) = Exp $ Tuple $ NilTup `SnocTup` lift x `SnocTup` lift y
 
 instance (Elt a, e ~ Exp a) => Unlift Exp (V2 e) where
   unlift t = V2 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
                 (Exp $ ZeroTupIdx `Prj` t)
+
+instance (Elt a, IsNum a) => Num (Exp (V2 a)) where
+  (+)           = lift2 ((+) :: V2 (Exp a) -> V2 (Exp a) -> V2 (Exp a))
+  (-)           = lift2 ((-) :: V2 (Exp a) -> V2 (Exp a) -> V2 (Exp a))
+  (*)           = lift2 ((*) :: V2 (Exp a) -> V2 (Exp a) -> V2 (Exp a))
+  negate        = lift1 (negate :: V2 (Exp a) -> V2 (Exp a))
+  signum        = lift1 (signum :: V2 (Exp a) -> V2 (Exp a))
+  abs           = lift1 (signum :: V2 (Exp a) -> V2 (Exp a))
+  fromInteger   = constant . fromInteger
+
+instance (Elt a, IsFloating a) => Fractional (Exp (V2 a)) where
+  (/)           = lift2 ((/) :: V2 (Exp a) -> V2 (Exp a) -> V2 (Exp a))
+  recip         = lift1 (recip :: V2 (Exp a) -> V2 (Exp a))
+  fromRational  = constant . fromRational
+
+instance (Elt a, IsFloating a) => Floating (Exp (V2 a)) where
+  pi            = lift (pi :: V2 (Exp a))
+  log           = lift1 (log :: V2 (Exp a) -> V2 (Exp a))
+  exp           = lift1 (exp :: V2 (Exp a) -> V2 (Exp a))
+  sin           = lift1 (sin :: V2 (Exp a) -> V2 (Exp a))
+  cos           = lift1 (cos :: V2 (Exp a) -> V2 (Exp a))
+  tan           = lift1 (tan :: V2 (Exp a) -> V2 (Exp a))
+  sinh          = lift1 (sinh :: V2 (Exp a) -> V2 (Exp a))
+  cosh          = lift1 (cosh :: V2 (Exp a) -> V2 (Exp a))
+  tanh          = lift1 (tanh :: V2 (Exp a) -> V2 (Exp a))
+  asin          = lift1 (asin :: V2 (Exp a) -> V2 (Exp a))
+  acos          = lift1 (acos :: V2 (Exp a) -> V2 (Exp a))
+  atan          = lift1 (atan :: V2 (Exp a) -> V2 (Exp a))
+  asinh         = lift1 (asinh :: V2 (Exp a) -> V2 (Exp a))
+  acosh         = lift1 (acosh :: V2 (Exp a) -> V2 (Exp a))
+  atanh         = lift1 (atanh :: V2 (Exp a) -> V2 (Exp a))
 

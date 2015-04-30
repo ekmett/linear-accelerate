@@ -1,5 +1,6 @@
 {-# LANGUAGE ConstraintKinds       #-}
 {-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE IncoherentInstances   #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
@@ -83,4 +84,35 @@ instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V1 a) where
 
 instance (Elt a, e ~ Exp a) => Unlift Exp (V1 e) where
   unlift t = V1 $ Exp $ ZeroTupIdx `Prj` t
+
+instance (Elt a, IsNum a) => Num (Exp (V1 a)) where
+  (+)           = lift2 ((+) :: V1 (Exp a) -> V1 (Exp a) -> V1 (Exp a))
+  (-)           = lift2 ((-) :: V1 (Exp a) -> V1 (Exp a) -> V1 (Exp a))
+  (*)           = lift2 ((*) :: V1 (Exp a) -> V1 (Exp a) -> V1 (Exp a))
+  negate        = lift1 (negate :: V1 (Exp a) -> V1 (Exp a))
+  signum        = lift1 (signum :: V1 (Exp a) -> V1 (Exp a))
+  abs           = lift1 (signum :: V1 (Exp a) -> V1 (Exp a))
+  fromInteger   = constant . fromInteger
+
+instance (Elt a, IsFloating a) => Fractional (Exp (V1 a)) where
+  (/)           = lift2 ((/) :: V1 (Exp a) -> V1 (Exp a) -> V1 (Exp a))
+  recip         = lift1 (recip :: V1 (Exp a) -> V1 (Exp a))
+  fromRational  = constant . fromRational
+
+instance (Elt a, IsFloating a) => Floating (Exp (V1 a)) where
+  pi            = lift (pi :: V1 (Exp a))
+  log           = lift1 (log :: V1 (Exp a) -> V1 (Exp a))
+  exp           = lift1 (exp :: V1 (Exp a) -> V1 (Exp a))
+  sin           = lift1 (sin :: V1 (Exp a) -> V1 (Exp a))
+  cos           = lift1 (cos :: V1 (Exp a) -> V1 (Exp a))
+  tan           = lift1 (tan :: V1 (Exp a) -> V1 (Exp a))
+  sinh          = lift1 (sinh :: V1 (Exp a) -> V1 (Exp a))
+  cosh          = lift1 (cosh :: V1 (Exp a) -> V1 (Exp a))
+  tanh          = lift1 (tanh :: V1 (Exp a) -> V1 (Exp a))
+  asin          = lift1 (asin :: V1 (Exp a) -> V1 (Exp a))
+  acos          = lift1 (acos :: V1 (Exp a) -> V1 (Exp a))
+  atan          = lift1 (atan :: V1 (Exp a) -> V1 (Exp a))
+  asinh         = lift1 (asinh :: V1 (Exp a) -> V1 (Exp a))
+  acosh         = lift1 (acosh :: V1 (Exp a) -> V1 (Exp a))
+  atanh         = lift1 (atanh :: V1 (Exp a) -> V1 (Exp a))
 

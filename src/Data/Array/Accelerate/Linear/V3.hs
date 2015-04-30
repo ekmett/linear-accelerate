@@ -1,5 +1,6 @@
 {-# LANGUAGE ConstraintKinds       #-}
 {-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE IncoherentInstances   #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
@@ -121,13 +122,43 @@ instance cst a => IsProduct cst (V3 a) where
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V3 a) where
   type Plain (V3 a) = V3 (Plain a)
-  --lift = Exp . Tuple . F.foldl SnocTup NilTup
   lift (V3 x y z) = Exp $ Tuple $ NilTup `SnocTup` lift x `SnocTup` lift y `SnocTup` lift z
 
 instance (Elt a, e ~ Exp a) => Unlift Exp (V3 e) where
   unlift t = V3 (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
                 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
                 (Exp $ ZeroTupIdx `Prj` t)
+
+instance (Elt a, IsNum a) => Num (Exp (V3 a)) where
+  (+)           = lift2 ((+) :: V3 (Exp a) -> V3 (Exp a) -> V3 (Exp a))
+  (-)           = lift2 ((-) :: V3 (Exp a) -> V3 (Exp a) -> V3 (Exp a))
+  (*)           = lift2 ((*) :: V3 (Exp a) -> V3 (Exp a) -> V3 (Exp a))
+  negate        = lift1 (negate :: V3 (Exp a) -> V3 (Exp a))
+  signum        = lift1 (signum :: V3 (Exp a) -> V3 (Exp a))
+  abs           = lift1 (signum :: V3 (Exp a) -> V3 (Exp a))
+  fromInteger   = constant . fromInteger
+
+instance (Elt a, IsFloating a) => Fractional (Exp (V3 a)) where
+  (/)           = lift2 ((/) :: V3 (Exp a) -> V3 (Exp a) -> V3 (Exp a))
+  recip         = lift1 (recip :: V3 (Exp a) -> V3 (Exp a))
+  fromRational  = constant . fromRational
+
+instance (Elt a, IsFloating a) => Floating (Exp (V3 a)) where
+  pi            = lift (pi :: V3 (Exp a))
+  log           = lift1 (log :: V3 (Exp a) -> V3 (Exp a))
+  exp           = lift1 (exp :: V3 (Exp a) -> V3 (Exp a))
+  sin           = lift1 (sin :: V3 (Exp a) -> V3 (Exp a))
+  cos           = lift1 (cos :: V3 (Exp a) -> V3 (Exp a))
+  tan           = lift1 (tan :: V3 (Exp a) -> V3 (Exp a))
+  sinh          = lift1 (sinh :: V3 (Exp a) -> V3 (Exp a))
+  cosh          = lift1 (cosh :: V3 (Exp a) -> V3 (Exp a))
+  tanh          = lift1 (tanh :: V3 (Exp a) -> V3 (Exp a))
+  asin          = lift1 (asin :: V3 (Exp a) -> V3 (Exp a))
+  acos          = lift1 (acos :: V3 (Exp a) -> V3 (Exp a))
+  atan          = lift1 (atan :: V3 (Exp a) -> V3 (Exp a))
+  asinh         = lift1 (asinh :: V3 (Exp a) -> V3 (Exp a))
+  acosh         = lift1 (acosh :: V3 (Exp a) -> V3 (Exp a))
+  atanh         = lift1 (atanh :: V3 (Exp a) -> V3 (Exp a))
 
 -- $liftAcc
 --

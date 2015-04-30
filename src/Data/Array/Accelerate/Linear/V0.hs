@@ -62,3 +62,11 @@ instance Lift Exp (V0 a) where
 instance Unlift Exp (V0 a) where
   unlift _ = V0
 
+instance (Elt a, IsNum a) => Num (Exp (V0 a)) where
+  _ + _ = constant V0
+  _ - _ = constant V0
+  _ * _ = constant V0
+  abs _ = constant V0
+  signum _ = constant V0
+  fromInteger _ = constant V0
+
