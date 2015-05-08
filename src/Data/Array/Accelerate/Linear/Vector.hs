@@ -83,26 +83,6 @@ newtype E t = E {
   }
 
 
--- | Lift a 'Lens' into 'Exp' terms
---
-liftLens
-    :: (Functor f, Unlift Exp s, Unlift Exp t)
-    => (l -> s -> f t)
-    -> l
-    -> Exp (Plain s)
-    -> f (Exp (Plain t))
-liftLens l f (unlift -> x) = lift <$> l f x
-
-
--- | Sink a unary functor from 'Exp'
---
-fsink1 :: (Functor f, Unlift Exp b, Lift Exp a)
-       => (Exp (Plain a) -> f (Exp (Plain b)))
-       -> a
-       -> f b
-fsink1 f = fmap unlift . f . lift
-
-
 -- | Compute the negation of a vector
 --
 -- >>> negated (V2 2 4)

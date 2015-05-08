@@ -40,6 +40,7 @@ import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
+import Data.Array.Accelerate.Linear.Lift
 import Data.Array.Accelerate.Linear.Metric
 import Data.Array.Accelerate.Linear.Type
 import Data.Array.Accelerate.Linear.V1
@@ -74,21 +75,21 @@ class (L.R3 t, R2 t) => R3 t where
   _z = liftLens (L._z :: Lens' (t (Exp a)) (Exp a))
 
   _xyz :: forall a. (Elt a, Box t a) => Lens' (Exp (t a)) (Exp (V3 a))
-  _xyz f = liftLens (L._xyz :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+  _xyz = liftLens (L._xyz :: Lens' (t (Exp a)) (V3 (Exp a)))
 
 
 _xz, _yz, _zx, _zy :: forall t a. (R3 t, Elt a, Box t a) => Lens' (Exp (t a)) (Exp (V2 a))
-_xz f = liftLens (L._xz :: Lens' (t (Exp a)) (V2 (Exp a))) (fsink1 f)
-_yz f = liftLens (L._yz :: Lens' (t (Exp a)) (V2 (Exp a))) (fsink1 f)
-_zx f = liftLens (L._zx :: Lens' (t (Exp a)) (V2 (Exp a))) (fsink1 f)
-_zy f = liftLens (L._zy :: Lens' (t (Exp a)) (V2 (Exp a))) (fsink1 f)
+_xz = liftLens (L._xz :: Lens' (t (Exp a)) (V2 (Exp a)))
+_yz = liftLens (L._yz :: Lens' (t (Exp a)) (V2 (Exp a)))
+_zx = liftLens (L._zx :: Lens' (t (Exp a)) (V2 (Exp a)))
+_zy = liftLens (L._zy :: Lens' (t (Exp a)) (V2 (Exp a)))
 
 _xzy, _yxz, _yzx, _zxy, _zyx :: forall t a. (R3 t, Elt a, Box t a) => Lens' (Exp (t a)) (Exp (V3 a))
-_xzy f = liftLens (L._xzy :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
-_yxz f = liftLens (L._yxz :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
-_yzx f = liftLens (L._yzx :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
-_zxy f = liftLens (L._zxy :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
-_zyx f = liftLens (L._zyx :: Lens' (t (Exp a)) (V3 (Exp a))) (fsink1 f)
+_xzy = liftLens (L._xzy :: Lens' (t (Exp a)) (V3 (Exp a)))
+_yxz = liftLens (L._yxz :: Lens' (t (Exp a)) (V3 (Exp a)))
+_yzx = liftLens (L._yzx :: Lens' (t (Exp a)) (V3 (Exp a)))
+_zxy = liftLens (L._zxy :: Lens' (t (Exp a)) (V3 (Exp a)))
+_zyx = liftLens (L._zyx :: Lens' (t (Exp a)) (V3 (Exp a)))
 
 
 ez :: R3 t => E t

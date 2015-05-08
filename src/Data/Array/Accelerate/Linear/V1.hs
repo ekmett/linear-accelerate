@@ -33,6 +33,7 @@ import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
+import Data.Array.Accelerate.Linear.Lift
 import Data.Array.Accelerate.Linear.Metric
 import Data.Array.Accelerate.Linear.Type
 import Data.Array.Accelerate.Linear.Vector

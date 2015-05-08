@@ -36,6 +36,7 @@ import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
+import Data.Array.Accelerate.Linear.Lift
 import Data.Array.Accelerate.Linear.Metric
 import Data.Array.Accelerate.Linear.Type
 import Data.Array.Accelerate.Linear.V1
@@ -76,7 +77,7 @@ class (L.R2 t, R1 t) => R2 t where
   _y = liftLens (L._y :: Lens' (t (Exp a)) (Exp a))
 
   _xy :: (Elt a, Box t a) => Lens' (Exp (t a)) (Exp (V2 a))
-  _xy f = liftLens (L._xy :: Lens' (t (Exp a)) (V2 (Exp a))) (fsink1 f)
+  _xy = liftLens (L._xy :: Lens' (t (Exp a)) (V2 (Exp a)))
 
 
 -- |
@@ -84,7 +85,7 @@ class (L.R2 t, R1 t) => R2 t where
 -- V2 2 1
 --
 _yx :: forall t a. (R2 t, Elt a, Box t a) => Lens' (Exp (t a)) (Exp (V2 a))
-_yx f = liftLens (L._yx :: Lens' (t (Exp a)) (V2 (Exp a))) (fsink1 f)
+_yx = liftLens (L._yx :: Lens' (t (Exp a)) (V2 (Exp a)))
 
 
 ey :: R2 t => E t
