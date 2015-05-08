@@ -30,11 +30,13 @@ import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
+import Data.Array.Accelerate.Linear.Lift
 import Data.Array.Accelerate.Linear.Metric
 import Data.Array.Accelerate.Linear.Vector
 import Data.Array.Accelerate.Linear.V3
 import Data.Array.Accelerate.Linear.V4
 
+import Control.Lens
 import Linear.Plucker                           ( Plucker(..) )
 import qualified Linear.Plucker                 as L
 
@@ -109,4 +111,7 @@ instance (Elt a, e ~ Exp a) => Unlift Exp (Plucker e) where
     (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
     (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
     (Exp $ ZeroTupIdx `Prj` t)
+
+instance (Elt a, Elt b) => Each (Exp (Plucker a)) (Exp (Plucker b)) (Exp a) (Exp b) where
+  each = liftLens (each :: Traversal (Plucker (Exp a)) (Plucker (Exp b)) (Exp a) (Exp b))
 

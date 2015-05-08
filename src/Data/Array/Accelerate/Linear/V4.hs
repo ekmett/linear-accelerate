@@ -230,3 +230,6 @@ instance (Elt a, IsFloating a) => Floating (Exp (V4 a)) where
   acosh         = lift1 (acosh :: V4 (Exp a) -> V4 (Exp a))
   atanh         = lift1 (atanh :: V4 (Exp a) -> V4 (Exp a))
 
+instance (Elt a, Elt b) => Each (Exp (V4 a)) (Exp (V4 b)) (Exp a) (Exp b) where
+  each = liftLens (each :: Traversal (V4 (Exp a)) (V4 (Exp b)) (Exp a) (Exp b))
+

@@ -33,6 +33,7 @@ import Data.Array.Accelerate.Array.Sugar
 import Data.Array.Accelerate.Linear.Metric
 import Data.Array.Accelerate.Linear.Vector
 
+import Control.Lens
 import Linear.V0                                ( V0(..) )
 
 
@@ -69,4 +70,7 @@ instance (Elt a, IsNum a) => Num (Exp (V0 a)) where
   abs _ = constant V0
   signum _ = constant V0
   fromInteger _ = constant V0
+
+instance (Elt a, Elt b) => Each (Exp (V0 a)) (Exp (V0 b)) (Exp a) (Exp b) where
+  each _ _ = pure (constant V0)
 

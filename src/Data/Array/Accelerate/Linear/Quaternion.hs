@@ -30,10 +30,12 @@ import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
+import Data.Array.Accelerate.Linear.Lift
 import Data.Array.Accelerate.Linear.Metric
 import Data.Array.Accelerate.Linear.Vector
 import Data.Array.Accelerate.Linear.V3
 
+import Control.Lens
 import Linear.Quaternion                        ( Quaternion(..) )
 
 
@@ -72,4 +74,7 @@ instance (Elt a, e ~ Exp a) => Unlift Exp (Quaternion e) where
                     (V3 (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
                         (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
                         (Exp $ ZeroTupIdx `Prj` t))
+
+instance (Elt a, Elt b) => Each (Exp (Quaternion a)) (Exp (Quaternion b)) (Exp a) (Exp b) where
+  each = liftLens (each :: Traversal (Quaternion (Exp a)) (Quaternion (Exp b)) (Exp a) (Exp b))
 

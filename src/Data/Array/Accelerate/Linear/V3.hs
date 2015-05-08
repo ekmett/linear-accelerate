@@ -160,6 +160,9 @@ instance (Elt a, IsFloating a) => Floating (Exp (V3 a)) where
   acosh         = lift1 (acosh :: V3 (Exp a) -> V3 (Exp a))
   atanh         = lift1 (atanh :: V3 (Exp a) -> V3 (Exp a))
 
+instance (Elt a, Elt b) => Each (Exp (V3 a)) (Exp (V3 b)) (Exp a) (Exp b) where
+  each = liftLens (each :: Traversal (V3 (Exp a)) (V3 (Exp b)) (Exp a) (Exp b))
+
 -- $liftAcc
 --
 -- In theory we could support lifting these to 'Acc' array types as well, however
