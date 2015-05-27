@@ -17,6 +17,7 @@ module Data.Array.Accelerate.Linear (
 
   module Data.Array.Accelerate.Linear.Type,
   module Data.Array.Accelerate.Linear.Epsilon,
+  module Data.Array.Accelerate.Linear.Matrix,
   module Data.Array.Accelerate.Linear.Metric,
   module Data.Array.Accelerate.Linear.Plucker,
   module Data.Array.Accelerate.Linear.Quaternion,
@@ -31,6 +32,7 @@ module Data.Array.Accelerate.Linear (
 
 import Data.Array.Accelerate.Linear.Type
 import Data.Array.Accelerate.Linear.Epsilon
+import Data.Array.Accelerate.Linear.Matrix
 import Data.Array.Accelerate.Linear.Metric
 import Data.Array.Accelerate.Linear.Plucker
 import Data.Array.Accelerate.Linear.Quaternion
