@@ -1,5 +1,6 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE TypeFamilies     #-}
+{-# LANGUAGE FlexibleContexts    #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeFamilies        #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      : Data.Array.Accelerate.Linear.Matrix
@@ -19,6 +20,7 @@ module Data.Array.Accelerate.Linear.Matrix (
   M22, M23, M24, M32, M33, M34, M42, M43, M44,
   (!*!), (!+!), (!-!), (!*), (*!), (!!*), (*!!), (!!/),
   transpose,
+  identity,
   Trace(..),
 
 ) where
@@ -147,6 +149,18 @@ infixl 7 !!/
       -> Exp a
       -> Exp (m (r a))
 m !!/ s = lift (unlift' m L.!!/ unlift s)
+
+
+-- |The identity matrix for any dimension vector.
+--
+-- >>> identity :: M44 Int
+-- V4 (V4 1 0 0 0) (V4 0 1 0 0) (V4 0 0 1 0) (V4 0 0 0 1)
+--
+-- >>> identity :: V3 (V3 Int)
+-- V3 (V3 1 0 0) (V3 0 1 0) (V3 0 0 1)
+--
+identity :: forall t a. (Traversable t, Applicative t, Elt a, IsNum a, Box2 t t a) => Exp (t (t a))
+identity = lift (L.identity :: t (t (Exp a)))
 
 
 -- | 'transpose' is just an alias for 'distribute'
