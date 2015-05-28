@@ -24,6 +24,7 @@ module Data.Array.Accelerate.Linear.Matrix (
 ) where
 
 import Data.Array.Accelerate                    hiding ( transpose )
+import Data.Array.Accelerate.Data.Complex
 
 import Data.Array.Accelerate.Linear.Lift
 import Data.Array.Accelerate.Linear.Plucker
@@ -161,12 +162,15 @@ transpose = lift . L.transpose . unlift'
 
 
 class L.Trace m => Trace m where
+  -- | Compute the trace of a matrix
   trace :: (Elt a, IsNum a, Box2 m m a) => Exp (m (m a)) -> Exp a
   trace = lift . L.trace . unlift'
 
+  -- | Compute the diagonal of a matrix
   diagonal :: (Elt a, Box2 m m a, Box m a) => Exp (m (m a)) -> Exp (m a)
   diagonal = lift . L.diagonal . unlift'
 
+instance Trace Complex
 instance Trace V0
 instance Trace V1
 instance Trace V2
