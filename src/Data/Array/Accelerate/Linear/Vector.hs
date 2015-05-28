@@ -27,7 +27,7 @@ import Data.Array.Accelerate.Linear.Type
 import Control.Lens
 import qualified Linear.Vector                  as L
 
-infixl 6 ^+^, ^-^
+infixl 6 ^+^, ^+, +^, ^-^, ^-, -^
 infixl 7 ^*, *^, ^/
 
 -- | A vector is an additive group with additional structure.
@@ -123,4 +123,48 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
      -> Exp a
      -> Exp (f a)
 (^/) = lift2 ((L.^/) :: f (Exp a) -> Exp a -> f (Exp a))
+
+-- | Addition with a scalar on the left
+--
+-- >>> 2 +^ V2 3 4
+-- V2 5 4
+--
+(+^) :: forall f a. (Functor f, Elt a, IsNum a, Box f a)
+     => Exp a
+     -> Exp (f a)
+     -> Exp (f a)
+(+^) = lift2 ((\a f -> fmap (+a) f) :: Exp a -> f (Exp a) -> f (Exp a))
+
+-- | Addition with a scalar on the right
+--
+-- >>> V2 1 2 ^+ 3
+-- V2 4 3
+--
+(^+) :: forall f a. (Functor f, Elt a, IsNum a, Box f a)
+     => Exp (f a)
+     -> Exp a
+     -> Exp (f a)
+(^+) = lift2 ((\f a -> fmap (a+) f) :: f (Exp a) -> Exp a -> f (Exp a))
+
+-- | Subtraction with a scalar on the left
+--
+-- >>> 2 -^ V2 3 4
+-- V2 1 2
+--
+(-^) :: forall f a. (Functor f, Elt a, IsNum a, Box f a)
+     => Exp a
+     -> Exp (f a)
+     -> Exp (f a)
+(-^) = lift2 ((\a f -> fmap (subtract a) f) :: Exp a -> f (Exp a) -> f (Exp a))
+
+-- | Subtraction with a scalar on the right
+--
+-- >>> V2 1 2 ^- 3
+-- V2 (-2) (-1)
+--
+(^-) :: forall f a. (Functor f, Elt a, IsNum a, Box f a)
+     => Exp (f a)
+     -> Exp a
+     -> Exp (f a)
+(^-) = lift2 ((\f a -> fmap (a-) f) :: f (Exp a) -> Exp a -> f (Exp a))
 
