@@ -54,13 +54,13 @@ import qualified Linear.V3                      as L
 
 -- | cross product
 --
-cross :: (Elt a, IsNum a) => Exp (V3 a) -> Exp (V3 a) -> Exp (V3 a)
-cross = lift2 L.cross
+cross :: forall a. (Elt a, IsNum a) => Exp (V3 a) -> Exp (V3 a) -> Exp (V3 a)
+cross = lift2 (L.cross :: V3 (Exp a) -> V3 (Exp a) -> V3 (Exp a))
 
 -- | scalar triple product
 --
-triple :: (Elt a, IsNum a) => Exp (V3 a) -> Exp (V3 a) -> Exp (V3 a) -> Exp a
-triple = lift3 L.triple
+triple :: forall a. (Elt a, IsNum a) => Exp (V3 a) -> Exp (V3 a) -> Exp (V3 a) -> Exp a
+triple = lift3 (L.triple :: V3 (Exp a) -> V3 (Exp a) -> V3 (Exp a) -> Exp a)
 
 
 -- | A space that distinguishes 3 orthogonal basis vectors: '_x', '_y', and '_z'.
@@ -124,7 +124,7 @@ instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V3 a) where
   type Plain (V3 a) = V3 (Plain a)
   lift (V3 x y z) = Exp $ Tuple $ NilTup `SnocTup` lift x `SnocTup` lift y `SnocTup` lift z
 
-instance (Elt a, e ~ Exp a) => Unlift Exp (V3 e) where
+instance Elt a => Unlift Exp (V3 (Exp a)) where
   unlift t = V3 (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
                 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
                 (Exp $ ZeroTupIdx `Prj` t)

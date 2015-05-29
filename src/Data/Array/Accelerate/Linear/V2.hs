@@ -52,8 +52,8 @@ import qualified Linear.V2                      as L
 -- >>> perp $ V2 10 20
 -- V2 (-20) 10
 --
-perp :: (Elt a, IsNum a) => Exp (V2 a) -> Exp (V2 a)
-perp = lift1 L.perp
+perp :: forall a. (Elt a, IsNum a) => Exp (V2 a) -> Exp (V2 a)
+perp = lift1 (L.perp :: V2 (Exp a) -> V2 (Exp a))
 
 
 -- | Unit vector with given phase angle (modulo 2*'pi')
@@ -119,7 +119,7 @@ instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V2 a) where
   type Plain (V2 a) = V2 (Plain a)
   lift (V2 x y) = Exp $ Tuple $ NilTup `SnocTup` lift x `SnocTup` lift y
 
-instance (Elt a, e ~ Exp a) => Unlift Exp (V2 e) where
+instance Elt a => Unlift Exp (V2 (Exp a)) where
   unlift t = V2 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
                 (Exp $ ZeroTupIdx `Prj` t)
 

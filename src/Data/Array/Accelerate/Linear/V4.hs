@@ -63,22 +63,22 @@ import qualified Linear.V4                      as L
 -- | Convert a 3-dimensional affine vector into a 4-dimensional homogeneous
 -- vector.
 --
-vector :: (Elt a, IsNum a) => Exp (V3 a) -> Exp (V4 a)
-vector = lift1 L.vector
+vector :: forall a. (Elt a, IsNum a) => Exp (V3 a) -> Exp (V4 a)
+vector = lift1 (L.vector :: V3 (Exp a) -> V4 (Exp a))
 
 -- | Convert a 3-dimensional affine point into a 4-dimensional homogeneous
 -- vector.
 --
-point :: (Elt a, IsNum a) => Exp (V3 a) -> Exp (V4 a)
-point = lift1 L.point
+point :: forall a. (Elt a, IsNum a) => Exp (V3 a) -> Exp (V4 a)
+point = lift1 (L.point :: V3 (Exp a) -> V4 (Exp a))
 
 -- | Convert 4-dimensional projective coordinates to a 3-dimensional point. This
 -- operation may be denoted, @euclidean [x:y:z:w] = (x\/w, y\/w, z\/w)@ where
 -- the projective, homogenous, coordinate @[x:y:z:w]@ is one of many associated
 -- with a single point @(x\/w, y\/w, z\/w)@.
 --
-normalizePoint :: (Elt a, IsFloating a) => Exp (V4 a) -> Exp (V3 a)
-normalizePoint = lift1 L.normalizePoint
+normalizePoint :: forall a. (Elt a, IsFloating a) => Exp (V4 a) -> Exp (V3 a)
+normalizePoint = lift1 (L.normalizePoint :: V4 (Exp a) -> V3 (Exp a))
 
 -- | A space that distinguishes orthogonal basis vectors '_x', '_y', '_z', and '_w'.
 -- (Although it may have more.)
@@ -193,7 +193,7 @@ instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V4 a) where
                          `SnocTup` lift z
                          `SnocTup` lift w
 
-instance (Elt a, e ~ Exp a) => Unlift Exp (V4 e) where
+instance Elt a => Unlift Exp (V4 (Exp a)) where
   unlift t = V4 (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx)) `Prj` t)
                 (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
                 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)

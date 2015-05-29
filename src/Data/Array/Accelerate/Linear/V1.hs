@@ -85,7 +85,7 @@ instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V1 a) where
   type Plain (V1 a) = V1 (Plain a)
   lift (V1 x) = Exp . Tuple $ NilTup `SnocTup` lift x
 
-instance (Elt a, e ~ Exp a) => Unlift Exp (V1 e) where
+instance Elt a => Unlift Exp (V1 (Exp a)) where
   unlift t = V1 $ Exp $ ZeroTupIdx `Prj` t
 
 instance (Elt a, IsNum a) => Num (Exp (V1 a)) where

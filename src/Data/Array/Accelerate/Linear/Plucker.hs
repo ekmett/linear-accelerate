@@ -46,28 +46,28 @@ import qualified Linear.Plucker                 as L
 -- That said, floating point makes a mockery of this claim, so you may want to
 -- use 'nearZero'.
 --
-squaredError :: (Elt a, IsNum a) => Exp (Plucker a) -> Exp a
-squaredError = lift1 L.squaredError
+squaredError :: forall a. (Elt a, IsNum a) => Exp (Plucker a) -> Exp a
+squaredError = lift1 (L.squaredError :: Plucker (Exp a) -> Exp a)
 
 -- | This isn't the actual metric because this bilinear form gives rise to an
 -- isotropic quadratic space
 --
 infixl 5 ><
-(><) :: (Elt a, IsNum a) => Exp (Plucker a) -> Exp (Plucker a) -> Exp a
-(><) = lift2 (L.><)
+(><) :: forall a. (Elt a, IsNum a) => Exp (Plucker a) -> Exp (Plucker a) -> Exp a
+(><) = lift2 ((L.><) :: Plucker (Exp a) -> Plucker (Exp a) -> Exp a)
 
 -- | Given a pair of points represented by homogeneous coordinates generate
 -- Plücker coordinates for the line through them, directed from the second
 -- towards the first.
 --
-plucker :: (Elt a, IsNum a) => Exp (V4 a) -> Exp (V4 a) -> Exp (Plucker a)
-plucker = lift2 L.plucker
+plucker :: forall a. (Elt a, IsNum a) => Exp (V4 a) -> Exp (V4 a) -> Exp (Plucker a)
+plucker = lift2 (L.plucker :: V4 (Exp a) -> V4 (Exp a) -> Plucker (Exp a))
 
 -- | Given a pair of 3D points, generate Plücker coordinates for the line
 -- through them, directed from the second towards the first.
 --
-plucker3D :: (Elt a, IsNum a) => Exp (V3 a) -> Exp (V3 a) -> Exp (Plucker a)
-plucker3D = lift2 L.plucker3D
+plucker3D :: forall a. (Elt a, IsNum a) => Exp (V3 a) -> Exp (V3 a) -> Exp (Plucker a)
+plucker3D = lift2 (L.plucker3D :: V3 (Exp a) -> V3 (Exp a) -> Plucker (Exp a))
 
 
 -- Instances
@@ -103,7 +103,7 @@ instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Plucker a) where
              `SnocTup` lift u
              `SnocTup` lift v
 
-instance (Elt a, e ~ Exp a) => Unlift Exp (Plucker e) where
+instance Elt a => Unlift Exp (Plucker (Exp a)) where
   unlift t = Plucker
     (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx)))) `Prj` t)
     (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx))) `Prj` t)

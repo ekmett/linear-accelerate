@@ -69,7 +69,7 @@ instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Quaternion a) where
                                    lift z `SnocTup`
                                    lift w
 
-instance (Elt a, e ~ Exp a) => Unlift Exp (Quaternion e) where
+instance Elt a => Unlift Exp (Quaternion (Exp a)) where
   unlift t = Quaternion (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx)) `Prj` t)
                     (V3 (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
                         (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
