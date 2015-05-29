@@ -28,7 +28,7 @@ import Control.Lens
 import qualified Linear.Vector                  as L
 
 infixl 6 ^+^, ^+, +^, ^-^, ^-, -^
-infixl 7 ^*, *^, ^/
+infixl 7 ^*, *^, ^/, /^
 
 -- | A vector is an additive group with additional structure.
 --
@@ -116,13 +116,27 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
      -> Exp (f a)
 (^*) = lift2 ((L.^*) :: f (Exp a) -> Exp a -> f (Exp a))
 
--- | Compute division by a scalar on the right.
+-- | Compute division by a scalar on the right
+--
+-- V2 4 6 ^/ 2
+-- V2 2 3
 --
 (^/) :: forall f a. (Elt a, Functor f, IsFloating a, Box f a)
      => Exp (f a)
      -> Exp a
      -> Exp (f a)
 (^/) = lift2 ((L.^/) :: f (Exp a) -> Exp a -> f (Exp a))
+
+-- | Compute division of a scalar on the left
+--
+-- >>> 4 /^ V2 2 4
+-- V2 2 1
+--
+(/^) :: forall f a. (Elt a, Functor f, IsFloating a, Box f a)
+     => Exp a
+     -> Exp (f a)
+     -> Exp (f a)
+(/^) = lift2 ((\a f -> fmap (a/) f) :: Exp a -> f (Exp a) -> f (Exp a))
 
 -- | Addition with a scalar on the left
 --
