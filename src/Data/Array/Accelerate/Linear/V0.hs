@@ -34,8 +34,10 @@ import Data.Array.Accelerate.Array.Sugar
 import Data.Array.Accelerate.Linear.Metric
 import Data.Array.Accelerate.Linear.Vector
 
-import Control.Lens
 import Linear.V0                                ( V0(..) )
+import Control.Lens
+import Control.Applicative
+import Prelude
 
 
 -- Instances

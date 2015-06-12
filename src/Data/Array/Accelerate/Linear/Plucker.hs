@@ -1,7 +1,9 @@
 {-# LANGUAGE ConstraintKinds       #-}
+{-# LANGUAGE DeriveDataTypeable    #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE StandaloneDeriving    #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
@@ -36,6 +38,7 @@ import Data.Array.Accelerate.Linear.Vector
 import Data.Array.Accelerate.Linear.V3
 import Data.Array.Accelerate.Linear.V4
 
+import Data.Typeable
 import Control.Lens
 import Linear.Plucker                           ( Plucker(..) )
 import qualified Linear.Plucker                 as L
@@ -72,6 +75,8 @@ plucker3D = lift2 (L.plucker3D :: V3 (Exp a) -> V3 (Exp a) -> Plucker (Exp a))
 
 -- Instances
 -- ---------
+
+deriving instance Typeable Plucker
 
 instance Metric Plucker
 instance Additive Plucker

@@ -1,3 +1,4 @@
+{-# LANGUAGE ConstraintKinds     #-}
 {-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies        #-}
@@ -39,9 +40,14 @@ import Data.Array.Accelerate.Linear.V3
 import Data.Array.Accelerate.Linear.V4
 import Data.Array.Accelerate.Linear.Vector
 
-import Data.Distributive
 import Linear.Matrix                            ( M22, M23, M24, M32, M33, M34, M42, M43, M44 )
 import qualified Linear.Matrix                  as L
+
+import Data.Distributive
+import Data.Foldable
+import Data.Traversable
+import Control.Applicative
+import Prelude
 
 
 infixl 7 !*!
