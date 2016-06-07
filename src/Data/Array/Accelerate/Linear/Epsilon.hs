@@ -17,6 +17,7 @@ module Data.Array.Accelerate.Linear.Epsilon
 
 import Foreign.C.Types
 import Data.Array.Accelerate
+import Prelude                                  as P
 
 
 -- | Provides a fairly subjective test to see if a quantity is near zero.
@@ -33,7 +34,7 @@ import Data.Array.Accelerate
 -- >>> nearZero (1e-7 :: Float)
 -- True
 --
-class Num a => Epsilon a where
+class P.Num a => Epsilon a where
   -- | Determine if a quantity is near zero.
   nearZero :: Exp a -> Exp Bool
 

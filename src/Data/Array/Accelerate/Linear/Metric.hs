@@ -19,7 +19,7 @@
 module Data.Array.Accelerate.Linear.Metric
   where
 
-import Data.Array.Accelerate
+import Data.Array.Accelerate                    as A
 import Data.Array.Accelerate.Linear.Type
 import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Vector
@@ -37,7 +37,7 @@ class L.Metric f => Metric f where
   -- >>> V2 1 2 `dot` V2 3 4
   -- 11
   --
-  dot :: forall a. (Elt a, IsNum a, Box f a)
+  dot :: forall a. (A.Num a, Box f a)
       => Exp (f a)
       -> Exp (f a)
       -> Exp a
@@ -47,14 +47,14 @@ class L.Metric f => Metric f where
   -- Wildberger's rational trigonometry.
   --
   quadrance
-      :: forall a. (Elt a, IsNum a, Box f a)
+      :: forall a. (A.Num a, Box f a)
       => Exp (f a)
       -> Exp a
   quadrance = lift1 (L.quadrance :: f (Exp a) -> Exp a)
 
   -- | Compute the 'quadrance' of the difference
   --
-  qd :: forall a. (Elt a, IsNum a, Box f a)
+  qd :: forall a. (A.Num a, Box f a)
      => Exp (f a)
      -> Exp (f a)
      -> Exp a
@@ -63,7 +63,7 @@ class L.Metric f => Metric f where
   -- | Compute the distance between two vectors in a metric space
   --
   distance
-      :: forall a. (Elt a, IsFloating a, Box f a)
+      :: forall a. (A.Floating a, Box f a)
       => Exp (f a)
       -> Exp (f a)
       -> Exp a
@@ -71,7 +71,7 @@ class L.Metric f => Metric f where
 
   -- | Compute the norm of a vector in a metric space
   --
-  norm :: forall a. (Elt a, IsFloating a, Box f a)
+  norm :: forall a. (A.Floating a, Box f a)
        => Exp (f a)
        -> Exp a
   norm = lift1 (L.norm :: f (Exp a) -> Exp a)
@@ -79,7 +79,7 @@ class L.Metric f => Metric f where
   -- | Convert a non-zero vector to unit vector.
   --
   signorm
-      :: forall a. (Elt a, IsFloating a, Box f a)
+      :: forall a. (A.Floating a, Box f a)
       => Exp (f a)
       -> Exp (f a)
   signorm = lift1 (L.signorm :: f (Exp a) -> f (Exp a))
@@ -92,7 +92,7 @@ type IsMetric f a = (Metric f, Box f a)
 -- change the functor if its 'norm' is 0 or 1.
 --
 normalize
-    :: (Elt a, Elt (f a), IsFloating a, IsMetric f a, Epsilon a)
+    :: (Elt (f a), A.Floating a, IsMetric f a, Epsilon a)
     => Exp (f a)
     -> Exp (f a)
 normalize v
@@ -104,7 +104,7 @@ normalize v
 -- | @project u v@ computes the projection of @v@ onto @u@.
 --
 project
-    :: forall f a. (Elt a, IsFloating a, IsMetric f a)
+    :: forall f a. (A.Floating a, IsMetric f a)
     => Exp (f a)
     -> Exp (f a)
     -> Exp (f a)

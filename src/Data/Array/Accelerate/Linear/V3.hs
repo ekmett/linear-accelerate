@@ -35,7 +35,7 @@ module Data.Array.Accelerate.Linear.V3 (
 
 ) where
 
-import Data.Array.Accelerate
+import Data.Array.Accelerate                    as A
 import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
@@ -50,16 +50,17 @@ import Data.Array.Accelerate.Linear.Vector
 import Control.Lens
 import Linear.V3                                ( V3(..) )
 import qualified Linear.V3                      as L
+import Prelude                                  as P
 
 
 -- | cross product
 --
-cross :: forall a. (Elt a, IsNum a) => Exp (V3 a) -> Exp (V3 a) -> Exp (V3 a)
+cross :: forall a. A.Num a => Exp (V3 a) -> Exp (V3 a) -> Exp (V3 a)
 cross = lift2 (L.cross :: V3 (Exp a) -> V3 (Exp a) -> V3 (Exp a))
 
 -- | scalar triple product
 --
-triple :: forall a. (Elt a, IsNum a) => Exp (V3 a) -> Exp (V3 a) -> Exp (V3 a) -> Exp a
+triple :: forall a. A.Num a => Exp (V3 a) -> Exp (V3 a) -> Exp (V3 a) -> Exp a
 triple = lift3 (L.triple :: V3 (Exp a) -> V3 (Exp a) -> V3 (Exp a) -> Exp a)
 
 
@@ -129,21 +130,21 @@ instance Elt a => Unlift Exp (V3 (Exp a)) where
                 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
                 (Exp $ ZeroTupIdx `Prj` t)
 
-instance (Elt a, IsNum a) => Num (Exp (V3 a)) where
+instance A.Num a => P.Num (Exp (V3 a)) where
   (+)           = lift2 ((+) :: V3 (Exp a) -> V3 (Exp a) -> V3 (Exp a))
   (-)           = lift2 ((-) :: V3 (Exp a) -> V3 (Exp a) -> V3 (Exp a))
   (*)           = lift2 ((*) :: V3 (Exp a) -> V3 (Exp a) -> V3 (Exp a))
   negate        = lift1 (negate :: V3 (Exp a) -> V3 (Exp a))
   signum        = lift1 (signum :: V3 (Exp a) -> V3 (Exp a))
   abs           = lift1 (signum :: V3 (Exp a) -> V3 (Exp a))
-  fromInteger   = constant . fromInteger
+  fromInteger   = fromInteger
 
-instance (Elt a, IsFloating a) => Fractional (Exp (V3 a)) where
+instance A.Floating a => P.Fractional (Exp (V3 a)) where
   (/)           = lift2 ((/) :: V3 (Exp a) -> V3 (Exp a) -> V3 (Exp a))
   recip         = lift1 (recip :: V3 (Exp a) -> V3 (Exp a))
-  fromRational  = constant . fromRational
+  fromRational  = fromRational
 
-instance (Elt a, IsFloating a) => Floating (Exp (V3 a)) where
+instance A.Floating a => P.Floating (Exp (V3 a)) where
   pi            = lift (pi :: V3 (Exp a))
   log           = lift1 (log :: V3 (Exp a) -> V3 (Exp a))
   exp           = lift1 (exp :: V3 (Exp a) -> V3 (Exp a))

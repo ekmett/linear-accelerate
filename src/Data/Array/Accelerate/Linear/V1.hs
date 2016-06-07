@@ -28,7 +28,7 @@ module Data.Array.Accelerate.Linear.V1 (
 
 ) where
 
-import Data.Array.Accelerate
+import Data.Array.Accelerate                    as A
 import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
@@ -41,6 +41,7 @@ import Data.Array.Accelerate.Linear.Vector
 import Control.Lens
 import Linear.V1                                ( V1(..) )
 import qualified Linear.V1                      as L
+import Prelude                                  as P
 
 
 -- | A space that has at least 1 basis vector '_x'.
@@ -88,21 +89,21 @@ instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V1 a) where
 instance Elt a => Unlift Exp (V1 (Exp a)) where
   unlift t = V1 $ Exp $ ZeroTupIdx `Prj` t
 
-instance (Elt a, IsNum a) => Num (Exp (V1 a)) where
+instance A.Num a => P.Num (Exp (V1 a)) where
   (+)           = lift2 ((+) :: V1 (Exp a) -> V1 (Exp a) -> V1 (Exp a))
   (-)           = lift2 ((-) :: V1 (Exp a) -> V1 (Exp a) -> V1 (Exp a))
   (*)           = lift2 ((*) :: V1 (Exp a) -> V1 (Exp a) -> V1 (Exp a))
   negate        = lift1 (negate :: V1 (Exp a) -> V1 (Exp a))
   signum        = lift1 (signum :: V1 (Exp a) -> V1 (Exp a))
   abs           = lift1 (signum :: V1 (Exp a) -> V1 (Exp a))
-  fromInteger   = constant . fromInteger
+  fromInteger   = fromInteger
 
-instance (Elt a, IsFloating a) => Fractional (Exp (V1 a)) where
+instance A.Floating a => P.Fractional (Exp (V1 a)) where
   (/)           = lift2 ((/) :: V1 (Exp a) -> V1 (Exp a) -> V1 (Exp a))
   recip         = lift1 (recip :: V1 (Exp a) -> V1 (Exp a))
-  fromRational  = constant . fromRational
+  fromRational  = fromRational
 
-instance (Elt a, IsFloating a) => Floating (Exp (V1 a)) where
+instance A.Floating a => P.Floating (Exp (V1 a)) where
   pi            = lift (pi :: V1 (Exp a))
   log           = lift1 (log :: V1 (Exp a) -> V1 (Exp a))
   exp           = lift1 (exp :: V1 (Exp a) -> V1 (Exp a))

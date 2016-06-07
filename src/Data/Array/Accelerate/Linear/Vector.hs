@@ -21,10 +21,11 @@
 module Data.Array.Accelerate.Linear.Vector
   where
 
-import Data.Array.Accelerate
+import Data.Array.Accelerate                    as A
 import Data.Array.Accelerate.Linear.Type
 
 import Control.Lens
+import Prelude                                  as P
 import qualified Linear.Vector                  as L
 
 infixl 6 ^+^, ^+, +^, ^-^, ^-, -^
@@ -38,7 +39,7 @@ class L.Additive f => Additive f where
 
   -- | The zero vector
   --
-  zero :: (Elt (f a), IsNum a) => Exp (f a)
+  zero :: (Elt (f a), P.Num a) => Exp (f a)
   zero = constant (L.zero)
 
   -- | Compute the sum of two vectors
@@ -46,7 +47,7 @@ class L.Additive f => Additive f where
   -- >>> V2 1 2 ^+^ V2 3 4
   -- V2 4 6
   --
-  (^+^) :: forall a. (Elt a, IsNum a, Box f a)
+  (^+^) :: forall a. (A.Num a, Box f a)
         => Exp (f a)
         -> Exp (f a)
         -> Exp (f a)
@@ -57,7 +58,7 @@ class L.Additive f => Additive f where
   -- >>> V2 4 5 - V2 3 1
   -- V2 1 4
   --
-  (^-^) :: forall a. (Elt a, IsNum a, Box f a)
+  (^-^) :: forall a. (A.Num a, Box f a)
         => Exp (f a)
         -> Exp (f a)
         -> Exp (f a)
@@ -65,7 +66,7 @@ class L.Additive f => Additive f where
 
   -- | Linearly interpolate between two vectors
   --
-  lerp :: forall a. (Elt a, IsNum a, Box f a)
+  lerp :: forall a. (A.Num a, Box f a)
        => Exp a
        -> Exp (f a)
        -> Exp (f a)
@@ -89,7 +90,7 @@ newtype E t = E {
 -- V2 (-2) (-4)
 --
 negated
-    :: forall f a. (Elt a, Functor f, IsNum a, Box f a)
+    :: forall f a. (Functor f, A.Num a, Box f a)
     => Exp (f a)
     -> Exp (f a)
 negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
@@ -99,7 +100,7 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 -- >>> 2 *^ V2 3 4
 -- V2 6 8
 --
-(*^) :: forall f a. (Elt a, Functor f, IsNum a, Box f a)
+(*^) :: forall f a. (Functor f, A.Num a, Box f a)
      => Exp a
      -> Exp (f a)
      -> Exp (f a)
@@ -110,7 +111,7 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 -- >>> V2 3 4 ^* 2
 -- V2 6 8
 --
-(^*) :: forall f a. (Elt a, Functor f, IsNum a, Box f a)
+(^*) :: forall f a. (Functor f, A.Num a, Box f a)
      => Exp (f a)
      -> Exp a
      -> Exp (f a)
@@ -121,7 +122,7 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 -- V2 4 6 ^/ 2
 -- V2 2 3
 --
-(^/) :: forall f a. (Elt a, Functor f, IsFloating a, Box f a)
+(^/) :: forall f a. (Functor f, A.Fractional a, Box f a)
      => Exp (f a)
      -> Exp a
      -> Exp (f a)
@@ -132,7 +133,7 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 -- >>> 4 /^ V2 2 4
 -- V2 2 1
 --
-(/^) :: forall f a. (Elt a, Functor f, IsFloating a, Box f a)
+(/^) :: forall f a. (Functor f, A.Fractional a, Box f a)
      => Exp a
      -> Exp (f a)
      -> Exp (f a)
@@ -143,7 +144,7 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 -- >>> 2 +^ V2 3 4
 -- V2 5 4
 --
-(+^) :: forall f a. (Functor f, Elt a, IsNum a, Box f a)
+(+^) :: forall f a. (Functor f, A.Num a, Box f a)
      => Exp a
      -> Exp (f a)
      -> Exp (f a)
@@ -154,7 +155,7 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 -- >>> V2 1 2 ^+ 3
 -- V2 4 3
 --
-(^+) :: forall f a. (Functor f, Elt a, IsNum a, Box f a)
+(^+) :: forall f a. (Functor f, A.Num a, Box f a)
      => Exp (f a)
      -> Exp a
      -> Exp (f a)
@@ -165,7 +166,7 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 -- >>> 2 -^ V2 3 4
 -- V2 1 2
 --
-(-^) :: forall f a. (Functor f, Elt a, IsNum a, Box f a)
+(-^) :: forall f a. (Functor f, A.Num a, Box f a)
      => Exp a
      -> Exp (f a)
      -> Exp (f a)
@@ -176,7 +177,7 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 -- >>> V2 1 2 ^- 3
 -- V2 (-2) (-1)
 --
-(^-) :: forall f a. (Functor f, Elt a, IsNum a, Box f a)
+(^-) :: forall f a. (Functor f, A.Num a, Box f a)
      => Exp (f a)
      -> Exp a
      -> Exp (f a)

@@ -26,7 +26,7 @@ module Data.Array.Accelerate.Linear.Matrix (
 
 ) where
 
-import Data.Array.Accelerate                    hiding ( transpose )
+import Data.Array.Accelerate                    as A hiding ( transpose )
 import Data.Array.Accelerate.Data.Complex
 
 import Data.Array.Accelerate.Linear.Lift
@@ -47,7 +47,7 @@ import Data.Distributive
 import Data.Foldable
 import Data.Traversable
 import Control.Applicative
-import Prelude
+import Prelude                                  as P
 
 
 infixl 7 !*!
@@ -59,7 +59,7 @@ infixl 7 !*!
 -- >>> V2 (fromList [(1,2)]) (fromList [(2,3)]) !*! fromList [(1,V3 0 0 1), (2, V3 0 0 5)]
 -- V2 (V3 0 0 2) (V3 0 0 15)
 --
-(!*!) :: (Functor m, Foldable t, Additive t, Additive n, IsNum a, Elt a, Box2 m t a, Box2 t n a, Box2 m n a)
+(!*!) :: (Functor m, Foldable t, Additive t, Additive n, A.Num a, Box2 m t a, Box2 t n a, Box2 m n a)
       => Exp (m (t a))
       -> Exp (t (n a))
       -> Exp (m (n a))
@@ -72,7 +72,7 @@ infixl 6 !+!
 -- >>> V2 (V3 1 2 3) (V3 4 5 6) !+! V2 (V3 7 8 9) (V3 1 2 3)
 -- V2 (V3 8 10 12) (V3 5 7 9)
 --
-(!+!) :: (Additive m, Additive n, IsNum a, Elt a, Box2 m n a)
+(!+!) :: (Additive m, Additive n, A.Num a, Box2 m n a)
       => Exp (m (n a))
       -> Exp (m (n a))
       -> Exp (m (n a))
@@ -85,7 +85,7 @@ infixl 6 !-!
 -- >>> V2 (V3 1 2 3) (V3 4 5 6) !-! V2 (V3 7 8 9) (V3 1 2 3)
 -- V2 (V3 (-6) (-6) (-6)) (V3 3 3 3)
 --
-(!-!) :: (Additive m, Additive n, IsNum a, Elt a, Box2 m n a)
+(!-!) :: (Additive m, Additive n, A.Num a, Box2 m n a)
       => Exp (m (n a))
       -> Exp (m (n a))
       -> Exp (m (n a))
@@ -98,7 +98,7 @@ infixl 7 !*
 -- >>> V2 (V3 1 2 3) (V3 4 5 6) !* V3 7 8 9
 -- V2 50 122
 --
-(!*) :: (Functor m, Foldable r, Additive r, IsNum a, Elt a, Box2 m r a, Box r a, Box m a)
+(!*) :: (Functor m, Foldable r, Additive r, A.Num a, Box2 m r a, Box m a)
      => Exp (m (r a))
      -> Exp (r a)
      -> Exp (m a)
@@ -114,7 +114,7 @@ infixl 7 *!
 -- (*!) :: (Metric r, Additive n, Num a) => r a -> r (n a) -> n a
 -- f *! g = dot f <$> distribute g
 --
-(*!) :: (Foldable t, Additive f, Additive t, IsNum a, Elt a, Box t a, Box f a, Box2 t f a)
+(*!) :: (Foldable t, Additive f, Additive t, A.Num a, Box t a, Box f a, Box2 t f a)
      => Exp (t a)
      -> Exp (t (f a))
      -> Exp (f a)
@@ -127,7 +127,7 @@ infixl 7 *!!
 -- >>> 5 *!! V2 (V2 1 2) (V2 3 4)
 -- V2 (V2 5 10) (V2 15 20)
 --
-(*!!) :: (Functor m, Functor r, IsNum a, Elt a, Box2 m r a)
+(*!!) :: (Functor m, Functor r, A.Num a, Box2 m r a)
       => Exp a
       -> Exp (m (r a))
       -> Exp (m (r a))
@@ -140,7 +140,7 @@ infixl 7 !!*
 -- >>> V2 (V2 1 2) (V2 3 4) !!* 5
 -- V2 (V2 5 10) (V2 15 20)
 --
-(!!*) :: (Functor m, Functor r, IsNum a, Elt a, Box2 m r a)
+(!!*) :: (Functor m, Functor r, A.Num a, Box2 m r a)
       => Exp (m (r a))
       -> Exp a
       -> Exp (m (r a))
@@ -150,7 +150,7 @@ infixl 7 !!*
 infixl 7 !!/
 -- | Matrix-scalar division
 --
-(!!/) :: (Functor m, Functor r, IsFloating a, Elt a, Box2 m r a)
+(!!/) :: (Functor m, Functor r, A.Floating a, Box2 m r a)
       => Exp (m (r a))
       -> Exp a
       -> Exp (m (r a))
@@ -165,7 +165,7 @@ m !!/ s = lift (unlift' m L.!!/ unlift s)
 -- >>> identity :: V3 (V3 Int)
 -- V3 (V3 1 0 0) (V3 0 1 0) (V3 0 0 1)
 --
-identity :: forall t a. (Traversable t, Applicative t, Elt a, IsNum a, Box2 t t a) => Exp (t (t a))
+identity :: forall t a. (Traversable t, Applicative t, A.Num a, Box2 t t a) => Exp (t (t a))
 identity = lift (L.identity :: t (t (Exp a)))
 
 
@@ -175,7 +175,7 @@ identity = lift (L.identity :: t (t (Exp a)))
 -- V2 (V3 1 3 5) (V3 2 4 6)
 --
 transpose
-    :: (Distributive g, Functor f, Elt a, Box2 f g a, Box2 g f a)
+    :: (Distributive g, Functor f, Box2 f g a, Box2 g f a)
     => Exp (f (g a))
     -> Exp (g (f a))
 transpose = lift . L.transpose . unlift'
@@ -183,11 +183,11 @@ transpose = lift . L.transpose . unlift'
 
 class L.Trace m => Trace m where
   -- | Compute the trace of a matrix
-  trace :: (Elt a, IsNum a, Box2 m m a) => Exp (m (m a)) -> Exp a
+  trace :: (A.Num a, Box2 m m a) => Exp (m (m a)) -> Exp a
   trace = lift . L.trace . unlift'
 
   -- | Compute the diagonal of a matrix
-  diagonal :: (Elt a, Box2 m m a, Box m a) => Exp (m (m a)) -> Exp (m a)
+  diagonal :: Box2 m m a => Exp (m (m a)) -> Exp (m a)
   diagonal = lift . L.diagonal . unlift'
 
 instance Trace Complex

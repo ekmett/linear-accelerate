@@ -1,5 +1,6 @@
 {-# LANGUAGE ConstraintKinds       #-}
 {-# LANGUAGE DeriveDataTypeable    #-}
+{-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
@@ -27,7 +28,7 @@ module Data.Array.Accelerate.Linear.Plucker (
 
 ) where
 
-import Data.Array.Accelerate
+import Data.Array.Accelerate                    as A
 import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
@@ -49,27 +50,27 @@ import qualified Linear.Plucker                 as L
 -- That said, floating point makes a mockery of this claim, so you may want to
 -- use 'nearZero'.
 --
-squaredError :: forall a. (Elt a, IsNum a) => Exp (Plucker a) -> Exp a
+squaredError :: forall a. A.Num a => Exp (Plucker a) -> Exp a
 squaredError = lift1 (L.squaredError :: Plucker (Exp a) -> Exp a)
 
 -- | This isn't the actual metric because this bilinear form gives rise to an
 -- isotropic quadratic space
 --
 infixl 5 ><
-(><) :: forall a. (Elt a, IsNum a) => Exp (Plucker a) -> Exp (Plucker a) -> Exp a
+(><) :: forall a. A.Num a => Exp (Plucker a) -> Exp (Plucker a) -> Exp a
 (><) = lift2 ((L.><) :: Plucker (Exp a) -> Plucker (Exp a) -> Exp a)
 
 -- | Given a pair of points represented by homogeneous coordinates generate
 -- Plücker coordinates for the line through them, directed from the second
 -- towards the first.
 --
-plucker :: forall a. (Elt a, IsNum a) => Exp (V4 a) -> Exp (V4 a) -> Exp (Plucker a)
+plucker :: forall a. A.Num a => Exp (V4 a) -> Exp (V4 a) -> Exp (Plucker a)
 plucker = lift2 (L.plucker :: V4 (Exp a) -> V4 (Exp a) -> Plucker (Exp a))
 
 -- | Given a pair of 3D points, generate Plücker coordinates for the line
 -- through them, directed from the second towards the first.
 --
-plucker3D :: forall a. (Elt a, IsNum a) => Exp (V3 a) -> Exp (V3 a) -> Exp (Plucker a)
+plucker3D :: forall a. A.Num a => Exp (V3 a) -> Exp (V3 a) -> Exp (Plucker a)
 plucker3D = lift2 (L.plucker3D :: V3 (Exp a) -> V3 (Exp a) -> Plucker (Exp a))
 
 

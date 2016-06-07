@@ -26,7 +26,7 @@ module Data.Array.Accelerate.Linear.V0 (
 
 ) where
 
-import Data.Array.Accelerate
+import Data.Array.Accelerate                    as A
 import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
@@ -37,7 +37,7 @@ import Data.Array.Accelerate.Linear.Vector
 import Linear.V0                                ( V0(..) )
 import Control.Lens
 import Control.Applicative
-import Prelude
+import Prelude                                  as P
 
 
 -- Instances
@@ -66,7 +66,7 @@ instance Lift Exp (V0 a) where
 instance Unlift Exp (V0 a) where
   unlift _ = V0
 
-instance (Elt a, IsNum a) => Num (Exp (V0 a)) where
+instance A.Num a => P.Num (Exp (V0 a)) where
   _ + _ = constant V0
   _ - _ = constant V0
   _ * _ = constant V0

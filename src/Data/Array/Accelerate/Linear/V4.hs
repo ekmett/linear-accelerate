@@ -42,7 +42,7 @@ module Data.Array.Accelerate.Linear.V4 (
 
 ) where
 
-import Data.Array.Accelerate
+import Data.Array.Accelerate                    as A
 import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
@@ -58,18 +58,19 @@ import Data.Array.Accelerate.Linear.Vector
 import Control.Lens
 import Linear.V4                                ( V4(..) )
 import qualified Linear.V4                      as L
+import Prelude                                  as P
 
 
 -- | Convert a 3-dimensional affine vector into a 4-dimensional homogeneous
 -- vector.
 --
-vector :: forall a. (Elt a, IsNum a) => Exp (V3 a) -> Exp (V4 a)
+vector :: forall a. A.Num a => Exp (V3 a) -> Exp (V4 a)
 vector = lift1 (L.vector :: V3 (Exp a) -> V4 (Exp a))
 
 -- | Convert a 3-dimensional affine point into a 4-dimensional homogeneous
 -- vector.
 --
-point :: forall a. (Elt a, IsNum a) => Exp (V3 a) -> Exp (V4 a)
+point :: forall a. A.Num a => Exp (V3 a) -> Exp (V4 a)
 point = lift1 (L.point :: V3 (Exp a) -> V4 (Exp a))
 
 -- | Convert 4-dimensional projective coordinates to a 3-dimensional point. This
@@ -77,7 +78,7 @@ point = lift1 (L.point :: V3 (Exp a) -> V4 (Exp a))
 -- the projective, homogenous, coordinate @[x:y:z:w]@ is one of many associated
 -- with a single point @(x\/w, y\/w, z\/w)@.
 --
-normalizePoint :: forall a. (Elt a, IsFloating a) => Exp (V4 a) -> Exp (V3 a)
+normalizePoint :: forall a. A.Floating a => Exp (V4 a) -> Exp (V3 a)
 normalizePoint = lift1 (L.normalizePoint :: V4 (Exp a) -> V3 (Exp a))
 
 -- | A space that distinguishes orthogonal basis vectors '_x', '_y', '_z', and '_w'.
@@ -199,21 +200,21 @@ instance Elt a => Unlift Exp (V4 (Exp a)) where
                 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
                 (Exp $ ZeroTupIdx `Prj` t)
 
-instance (Elt a, IsNum a) => Num (Exp (V4 a)) where
+instance A.Num a => P.Num (Exp (V4 a)) where
   (+)           = lift2 ((+) :: V4 (Exp a) -> V4 (Exp a) -> V4 (Exp a))
   (-)           = lift2 ((-) :: V4 (Exp a) -> V4 (Exp a) -> V4 (Exp a))
   (*)           = lift2 ((*) :: V4 (Exp a) -> V4 (Exp a) -> V4 (Exp a))
   negate        = lift1 (negate :: V4 (Exp a) -> V4 (Exp a))
   signum        = lift1 (signum :: V4 (Exp a) -> V4 (Exp a))
   abs           = lift1 (signum :: V4 (Exp a) -> V4 (Exp a))
-  fromInteger   = constant . fromInteger
+  fromInteger   = fromInteger
 
-instance (Elt a, IsFloating a) => Fractional (Exp (V4 a)) where
+instance A.Floating a => P.Fractional (Exp (V4 a)) where
   (/)           = lift2 ((/) :: V4 (Exp a) -> V4 (Exp a) -> V4 (Exp a))
   recip         = lift1 (recip :: V4 (Exp a) -> V4 (Exp a))
-  fromRational  = constant . fromRational
+  fromRational  = fromRational
 
-instance (Elt a, IsFloating a) => Floating (Exp (V4 a)) where
+instance A.Floating a => P.Floating (Exp (V4 a)) where
   pi            = lift (pi :: V4 (Exp a))
   log           = lift1 (log :: V4 (Exp a) -> V4 (Exp a))
   exp           = lift1 (exp :: V4 (Exp a) -> V4 (Exp a))

@@ -31,7 +31,7 @@ module Data.Array.Accelerate.Linear.V2 (
 
 ) where
 
-import Data.Array.Accelerate
+import Data.Array.Accelerate                    as A
 import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
@@ -45,6 +45,7 @@ import Data.Array.Accelerate.Linear.Vector
 import Control.Lens
 import Linear.V2                                ( V2(..) )
 import qualified Linear.V2                      as L
+import Prelude                                  as P
 
 
 -- | the counter-clockwise perpendicular vector
@@ -52,13 +53,13 @@ import qualified Linear.V2                      as L
 -- >>> perp $ V2 10 20
 -- V2 (-20) 10
 --
-perp :: forall a. (Elt a, IsNum a) => Exp (V2 a) -> Exp (V2 a)
+perp :: forall a. A.Num a => Exp (V2 a) -> Exp (V2 a)
 perp = lift1 (L.perp :: V2 (Exp a) -> V2 (Exp a))
 
 
 -- | Unit vector with given phase angle (modulo 2*'pi')
 --
-angle :: (Elt a, IsFloating a) => Exp a -> Exp (V2 a)
+angle :: A.Floating a => Exp a -> Exp (V2 a)
 angle = lift . L.angle
 
 
@@ -123,21 +124,21 @@ instance Elt a => Unlift Exp (V2 (Exp a)) where
   unlift t = V2 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
                 (Exp $ ZeroTupIdx `Prj` t)
 
-instance (Elt a, IsNum a) => Num (Exp (V2 a)) where
+instance A.Num a => P.Num (Exp (V2 a)) where
   (+)           = lift2 ((+) :: V2 (Exp a) -> V2 (Exp a) -> V2 (Exp a))
   (-)           = lift2 ((-) :: V2 (Exp a) -> V2 (Exp a) -> V2 (Exp a))
   (*)           = lift2 ((*) :: V2 (Exp a) -> V2 (Exp a) -> V2 (Exp a))
   negate        = lift1 (negate :: V2 (Exp a) -> V2 (Exp a))
   signum        = lift1 (signum :: V2 (Exp a) -> V2 (Exp a))
   abs           = lift1 (signum :: V2 (Exp a) -> V2 (Exp a))
-  fromInteger   = constant . fromInteger
+  fromInteger   = fromInteger
 
-instance (Elt a, IsFloating a) => Fractional (Exp (V2 a)) where
+instance A.Floating a => P.Fractional (Exp (V2 a)) where
   (/)           = lift2 ((/) :: V2 (Exp a) -> V2 (Exp a) -> V2 (Exp a))
   recip         = lift1 (recip :: V2 (Exp a) -> V2 (Exp a))
-  fromRational  = constant . fromRational
+  fromRational  = fromRational
 
-instance (Elt a, IsFloating a) => Floating (Exp (V2 a)) where
+instance A.Floating a => P.Floating (Exp (V2 a)) where
   pi            = lift (pi :: V2 (Exp a))
   log           = lift1 (log :: V2 (Exp a) -> V2 (Exp a))
   exp           = lift1 (exp :: V2 (Exp a) -> V2 (Exp a))
