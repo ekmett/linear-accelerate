@@ -170,7 +170,7 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
      => Exp a
      -> Exp (f a)
      -> Exp (f a)
-(-^) = lift2 ((\a f -> fmap (subtract a) f) :: Exp a -> f (Exp a) -> f (Exp a))
+(-^) = lift2 ((\a f -> fmap (A.subtract a) f) :: Exp a -> f (Exp a) -> f (Exp a))
 
 -- | Subtraction with a scalar on the right
 --
