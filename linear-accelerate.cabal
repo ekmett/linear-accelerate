@@ -16,7 +16,6 @@ build-type:    Custom
 extra-source-files:
   .travis.yml
   .vim.custom
-  travis/config
   CHANGELOG.markdown
   README.markdown
 
