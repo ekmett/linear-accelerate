@@ -1,7 +1,8 @@
 {-# LANGUAGE ConstraintKinds     #-}
-{-# LANGUAGE TypeFamilies        #-}
 {-# LANGUAGE FlexibleContexts    #-}
+{-# LANGUAGE NoImplicitPrelude   #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeFamilies        #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      : Data.Array.Accelerate.Linear.Metric
@@ -96,7 +97,7 @@ normalize
     => Exp (f a)
     -> Exp (f a)
 normalize v
-  = nearZero l ||* nearZero (1-l)
+  = nearZero l || nearZero (1-l)
   ? ( v, v ^/ sqrt l )
   where
     l = quadrance v

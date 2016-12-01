@@ -1,3 +1,6 @@
+{-# LANGUAGE ConstraintKinds   #-}
+{-# LANGUAGE FlexibleContexts  #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      : Data.Array.Accelerate.Linear.Epsilon
@@ -15,9 +18,7 @@
 module Data.Array.Accelerate.Linear.Epsilon
   where
 
-import Foreign.C.Types
 import Data.Array.Accelerate
-import Prelude                                  as P
 
 
 -- | Provides a fairly subjective test to see if a quantity is near zero.
@@ -34,27 +35,27 @@ import Prelude                                  as P
 -- >>> nearZero (1e-7 :: Float)
 -- True
 --
-class P.Num a => Epsilon a where
+class Num a => Epsilon a where
   -- | Determine if a quantity is near zero.
   nearZero :: Exp a -> Exp Bool
 
 -- | @'abs' a '<=' 1e-6@
 --
 instance Epsilon Float where
-  nearZero a = abs a <=* 1.0e-6
+  nearZero a = abs a <= 1.0e-6
 
 -- | @'abs' a '<=' 1e-12@
 --
 instance Epsilon Double where
-  nearZero a = abs a <=* 1.0e-12
+  nearZero a = abs a <= 1.0e-12
 
 -- | @'abs' a '<=' 1e-6@
 --
 instance Epsilon CFloat where
-  nearZero a = abs a <=* 1.0e-6
+  nearZero a = abs a <= 1.0e-6
 
 -- | @'abs' a '<=' 1e-12@
 --
 instance Epsilon CDouble where
-  nearZero a = abs a <=* 1.0e-12
+  nearZero a = abs a <= 1.0e-12
 
