@@ -1,18 +1,75 @@
-language: haskell
-before_install:
-  # Uncomment whenever hackage is down.
-  # - mkdir -p ~/.cabal && cp travis/config ~/.cabal/config && cabal update
+# vim: nospell
+#
+# Basic template to test with GHC=[7.8, 7.10, 8.0]. Caches the 'stack' build
+# directory to speed subsequent compilations.
+#
+language: generic
+dist: precise
 
-  # Try installing some of the build-deps with apt-get for speed.
-  - travis/cabal-apt-install $mode
+cache:
+  directories:
+    - $HOME/.stack
+    - .stack-work/install
+
+addons:
+  apt:
+    sources: &apt_sources
+      - hvr-ghc
+      - ubuntu-toolchain-r-test
+    packages: &apt_packages
+      - libgmp-dev
+      - happy-1.19.5
+      - alex-3.1.7
+
+matrix:
+  include:
+    - env: GHC=7.8.4 CABAL=1.18
+      compiler: "GHC 7.8"
+      addons: { apt: { sources: [ *apt_sources ], packages: [ *apt_packages, cabal-install-1.18 ] }}
+
+    - env: GHC=7.10.3 CABAL=1.22
+      compiler: "GHC 7.10"
+      addons: { apt: { sources: [ *apt_sources ], packages: [ *apt_packages, cabal-install-1.22 ] }}
+
+    - env: GHC=8.0.2 CABAL=1.24
+      compiler: "GHC 8.0"
+      addons: { apt: { sources: [ *apt_sources ], packages: [ *apt_packages, cabal-install-1.24 ] }}
+
+    # - env: GHC=head CABAL=head
+    #   compiler: "GHC HEAD"
+    #   addons: { apt: { sources: [ *apt_sources ], packages: [ *apt_packages, ghc-head, cabal-install-head ] }}
+
+  # allow_failures:
+  #   - env: GHC=head CABAL=head
+
+  fast_finish: true
+
+before_install:
+  - export PATH=/opt/cabal/$CABAL/bin:/opt/alex/3.1.7/bin:/opt/happy/1.19.5/bin:$HOME/.cabal/bin:$PATH
+  - source .travis/install-stack.sh
 
 install:
-  - cabal configure $mode
-  - cabal build
+  - echo "$(ghc --version) [$(ghc --print-project-git-commit-id 2> /dev/null || echo '?')]"
+  - cabal --version
+  - stack --version
+  - |
+      if [ ${GHC} == head -o ! -e stack.yaml ]; then
+        travis_retry cabal install --only-dependencies
+      else
+        travis_retry stack build --only-dependencies --no-terminal --no-haddock-deps
+      fi
 
 script:
-  - $script
-  - hlint src --cpp-define HLINT
+  - |
+      if [ ${GHC} == head -o ! -e stack.yaml ]; then
+        cabal install
+        cabal haddock
+      else
+        stack build --no-terminal --haddock --no-haddock-deps
+      fi
+
+after_success:
+  - source .travis/update-accelerate-buildbot.sh
 
 notifications:
   irc:
@@ -22,5 +79,3 @@ notifications:
     template:
       - "\x0313linear-accelerate\x03/\x0306%{branch}\x03 \x0314%{commit}\x03 %{build_url} %{message}"
 
-env:
-  - mode="--enable-tests" script="cabal test"

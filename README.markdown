@@ -1,7 +1,7 @@
 linear-accelerate
 =================
 
-This package provides orphan instances that allows you to use `linear` vector spaces on `accelerate` backends
+This package provides orphan instances that allows you to use `linear` vector spaces in `accelerate`.
 
 Contact Information
 -------------------
