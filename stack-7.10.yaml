@@ -8,6 +8,7 @@ packages:
 
 extra-deps:
 - 'accelerate-1.0.0.0'
+- 'cabal-doctest-1'
 - 'unique-0'
 
 # Override default flag values for local packages and extra-deps
