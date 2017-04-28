@@ -64,10 +64,6 @@ library
   hs-source-dirs: src
 
 test-suite doctests
-  -- The doctests aren't functional at the moment.
-  -- See https://github.com/ekmett/linear-accelerate/issues/5
-  buildable: False
-
   type:    exitcode-stdio-1.0
   main-is: doctests.hs
   default-language: Haskell2010

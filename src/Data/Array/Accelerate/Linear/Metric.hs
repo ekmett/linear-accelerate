@@ -27,6 +27,9 @@ import Data.Array.Accelerate.Linear.Vector
 
 import qualified Linear.Metric                  as L
 
+-- $setup
+-- >>> import Data.Array.Accelerate.Linear.V2 ()
+-- >>> import Linear.V2
 
 -- | Free and sparse inner product/metric spaces.
 --
@@ -35,7 +38,7 @@ class L.Metric f => Metric f where
   -- | Compute the inner product of two vectors or (equivalently) convert a
   -- vector @f a@ into a covector @f a -> a@.
   --
-  -- >>> V2 1 2 `dot` V2 3 4
+  -- >>> lift (V2 1 2 :: V2 Int) `dot` lift (V2 3 4 :: V2 Int)
   -- 11
   --
   dot :: forall a. (A.Num a, Box f a)
