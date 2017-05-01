@@ -152,7 +152,7 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
      => Exp a
      -> Exp (f a)
      -> Exp (f a)
-(+^) = lift2 ((\a f -> fmap (+a) f) :: Exp a -> f (Exp a) -> f (Exp a))
+(+^) = lift2 ((\a f -> fmap (a+) f) :: Exp a -> f (Exp a) -> f (Exp a))
 
 -- | Addition with a scalar on the right
 --
@@ -163,27 +163,27 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
      => Exp (f a)
      -> Exp a
      -> Exp (f a)
-(^+) = lift2 ((\f a -> fmap (a+) f) :: f (Exp a) -> Exp a -> f (Exp a))
+(^+) = lift2 ((\f a -> fmap (+a) f) :: f (Exp a) -> Exp a -> f (Exp a))
 
 -- | Subtraction with a scalar on the left
 --
 -- >>> 2 -^ lift (V2 3 4 :: V2 Int)
--- (1,2)
+-- (-1,-2)
 --
 (-^) :: forall f a. (Functor f, A.Num a, Box f a)
      => Exp a
      -> Exp (f a)
      -> Exp (f a)
-(-^) = lift2 ((\a f -> fmap (A.subtract a) f) :: Exp a -> f (Exp a) -> f (Exp a))
+(-^) = lift2 ((\a f -> fmap (a-) f) :: Exp a -> f (Exp a) -> f (Exp a))
 
 -- | Subtraction with a scalar on the right
 --
 -- >>> lift (V2 1 2 :: V2 Int) ^- 3
--- (2,1)
+-- (-2,-1)
 --
 (^-) :: forall f a. (Functor f, A.Num a, Box f a)
      => Exp (f a)
      -> Exp a
      -> Exp (f a)
-(^-) = lift2 ((\f a -> fmap (a-) f) :: f (Exp a) -> Exp a -> f (Exp a))
+(^-) = lift2 ((\f a -> fmap (A.subtract a) f) :: f (Exp a) -> Exp a -> f (Exp a))
 
