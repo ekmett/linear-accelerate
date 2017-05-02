@@ -48,11 +48,11 @@ import Prelude                                  as P
 --
 class L.R1 t => R1 t where
   -- |
-  -- >>> V1 2 ^._x
+  -- >>> lift (V1 2 :: V1 Int) ^._x
   -- 2
   --
-  -- >>> V1 2 & _x .~ 3
-  -- V1 3
+  -- >>> lift (V1 2 :: V1 Int) & _x .~ 3
+  -- (3)
   --
   _x :: (Elt a, Box t a) => Lens' (Exp (t a)) (Exp a)
   _x = liftLens (L._x :: Lens' (t (Exp a)) (Exp a))

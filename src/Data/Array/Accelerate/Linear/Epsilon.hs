@@ -23,16 +23,16 @@ import Data.Array.Accelerate
 
 -- | Provides a fairly subjective test to see if a quantity is near zero.
 --
--- >>> nearZero (1e-11 :: Double)
+-- >>> nearZero (1e-11 :: Exp Double)
 -- False
 --
--- >>> nearZero (1e-17 :: Double)
+-- >>> nearZero (1e-17 :: Exp Double)
 -- True
 --
--- >>> nearZero (1e-5 :: Float)
+-- >>> nearZero (1e-5 :: Exp Float)
 -- False
 --
--- >>> nearZero (1e-7 :: Float)
+-- >>> nearZero (1e-7 :: Exp Float)
 -- True
 --
 class Num a => Epsilon a where

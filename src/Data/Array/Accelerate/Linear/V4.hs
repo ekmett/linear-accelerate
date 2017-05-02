@@ -86,7 +86,7 @@ normalizePoint = lift1 (L.normalizePoint :: V4 (Exp a) -> V3 (Exp a))
 --
 class (L.R4 t, R3 t) => R4 t where
   -- |
-  -- >>> V4 1 2 3 4 ^._w
+  -- >>> lift (V4 1 2 3 4 :: V4 Int) ^._w
   -- 4
   --
   _w :: forall a. (Elt a, Box t a) => Lens' (Exp (t a)) (Exp a)

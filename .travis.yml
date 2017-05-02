@@ -65,7 +65,7 @@ script:
         cabal install
         cabal haddock
       else
-        stack build --no-terminal --haddock --no-haddock-deps
+        stack test --no-terminal --haddock --no-haddock-deps
       fi
 
 after_success:
