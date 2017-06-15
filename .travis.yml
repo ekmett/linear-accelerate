@@ -35,6 +35,10 @@ matrix:
       compiler: "GHC 8.0"
       addons: { apt: { sources: [ *apt_sources ], packages: [ *apt_packages, cabal-install-1.24 ] }}
 
+    - env: GHC=8.2.0 CABAL=1.24
+      compiler: "GHC 8.2"
+      addons: { apt: { sources: [ *apt_sources ], packages: [ *apt_packages, cabal-install-1.24 ] }}
+
     # - env: GHC=head CABAL=head
     #   compiler: "GHC HEAD"
     #   addons: { apt: { sources: [ *apt_sources ], packages: [ *apt_packages, ghc-head, cabal-install-head ] }}
