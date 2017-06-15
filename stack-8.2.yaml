@@ -52,6 +52,7 @@ extra-deps:
 - 'comonad-5.0.1'
 - 'contravariant-1.4'
 - 'distributive-0.5.2'
+- 'doctest-0.11.3'
 - 'exceptions-0.8.3'
 - 'fail-4.9.0.0'
 - 'fclabels-2.0.3.2'
