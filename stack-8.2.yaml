@@ -40,7 +40,8 @@ setup-info:
 packages:
 - '.'
 
-extra-deps: []
+extra-deps:
+- 'accelerate-1.0.0.0'
 
 # Override default flag values for local packages and extra-deps
 flags:
