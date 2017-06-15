@@ -42,6 +42,18 @@ packages:
 
 extra-deps:
 - 'accelerate-1.0.0.0'
+- 'base-orphans-0.6'
+- 'cabal-doctest-1.0.2'
+- 'distributive-0.5.2'
+- 'exceptions-0.8.3'
+- 'fclabels-2.0.3.2'
+- 'hashable-1.2.6.0'
+- 'hashtables-1.2.1.1'
+- 'lens-4.15.3'
+- 'linear-1.20.6'
+- 'mtl-2.2.1'
+- 'unique-0'
+- 'unordered-containers-0.2.8.0'
 
 # Override default flag values for local packages and extra-deps
 flags:
