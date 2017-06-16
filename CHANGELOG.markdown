@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and the
 project adheres to the [Haskell Package Versioning Policy
 (PVP)](https://pvp.haskell.org)
 
+
+## [next]
+### Fixed
+### Changed
+### Added
+### Removed
+
 ## [0.4]
 
 * Revamp `Setup.hs` to use `cabal-doctest`. This makes `linear-accelerate`
@@ -26,6 +33,7 @@ project adheres to the [Haskell Package Versioning Policy
 * Repository initialized
 
 
+[next]:   https://github.com/ekmett/linear-accelerate/compare/v0.4...HEAD
 [0.4]:    https://github.com/ekmett/linear-accelerate/compare/v0.3...v0.4
 [0.3]:    https://github.com/ekmett/linear-accelerate/compare/v0.2...v0.3
 [0.2]:    https://github.com/ekmett/linear-accelerate/compare/v0.1...v0.2
