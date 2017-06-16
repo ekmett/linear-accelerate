@@ -69,7 +69,7 @@ triple = lift3 (L.triple :: V3 (Exp a) -> V3 (Exp a) -> V3 (Exp a) -> Exp a)
 --
 class (L.R3 t, R2 t) => R3 t where
   -- |
-  -- >>> V3 1 2 3 ^. _z
+  -- >>> lift (V3 1 2 3 :: V3 Int) ^. _z
   -- 3
   --
   _z :: forall a. (Elt a, Box t a) => Lens' (Exp (t a)) (Exp a)

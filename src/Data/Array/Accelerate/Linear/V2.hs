@@ -50,8 +50,8 @@ import Prelude                                  as P
 
 -- | the counter-clockwise perpendicular vector
 --
--- >>> perp $ V2 10 20
--- V2 (-20) 10
+-- >>> perp $ lift (V2 10 20 :: V2 Int)
+-- (-20,10)
 --
 perp :: forall a. A.Num a => Exp (V2 a) -> Exp (V2 a)
 perp = lift1 (L.perp :: V2 (Exp a) -> V2 (Exp a))
@@ -68,11 +68,11 @@ angle = lift . L.angle
 --
 class (L.R2 t, R1 t) => R2 t where
   -- |
-  -- >>> V2 1 2 ^._y
+  -- >>> lift (V2 1 2 :: V2 Int) ^._y
   -- 2
   --
-  -- >>> V2 1 2 & _y .~ 3
-  -- V2 1 3
+  -- >>> lift (V2 1 2 :: V2 Int) & _y .~ 3
+  -- (1,3)
   --
   _y :: (Elt a, Box t a) => Lens' (Exp (t a)) (Exp a)
   _y = liftLens (L._y :: Lens' (t (Exp a)) (Exp a))
@@ -82,8 +82,8 @@ class (L.R2 t, R1 t) => R2 t where
 
 
 -- |
--- >>> V2 1 2 ^. _yx
--- V2 2 1
+-- >>> lift (V2 1 2 :: V2 Int) ^. _yx
+-- (2,1)
 --
 _yx :: forall t a. (R2 t, Elt a, Box t a) => Lens' (Exp (t a)) (Exp (V2 a))
 _yx = liftLens (L._yx :: Lens' (t (Exp a)) (V2 (Exp a)))

@@ -5,12 +5,10 @@ resolver: lts-6.30
 
 packages:
 - '.'
-- location:
-    git:    https://github.com/AccelerateHS/accelerate.git
-    commit: 22d49629ade9b9b8e93985362323b1259155df37
-  extra-dep: true
 
 extra-deps:
+- 'accelerate-1.0.0.0'
+- 'cabal-doctest-1'
 - 'unique-0'
 
 # Override default flag values for local packages and extra-deps
