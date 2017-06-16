@@ -9,8 +9,9 @@ project adheres to the [Haskell Package Versioning Policy
 ## [next]
 
 * Revamp `Setup.hs` to use `cabal-doctest`. This makes `linear-accelerate`
-  build with `Cabal-1.25`.
+  build with `Cabal-2.0`.
 * Fix handedness of `(-^)` and `(^-)`.
+* Re-enable the `doctest`s.
 
 ## [0.3]
 
