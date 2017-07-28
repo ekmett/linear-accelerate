@@ -8,10 +8,8 @@ project adheres to the [Haskell Package Versioning Policy
 
 
 ## [next]
-### Fixed
-### Changed
-### Added
-### Removed
+
+* Support `doctest-0.12`
 
 ## [0.4]
 
