@@ -2,7 +2,7 @@ name:          linear-accelerate
 category:      Math, Algebra, Compilers/Interpreters, Concurrency, Data, Parallelism
 version:       0.4.1
 license:       BSD3
-cabal-version: >= 1.8
+cabal-version: >= 1.10
 license-file:  LICENSE
 author:        Edward A. Kmett, Charles Durham, Trevor L. McDonell
 maintainer:    Edward A. Kmett <ekmett@gmail.com>
@@ -61,6 +61,7 @@ library
   other-modules:
     Data.Array.Accelerate.Linear.Lift
 
+  default-language: Haskell2010
   ghc-options: -Wall -fwarn-tabs -O2
   hs-source-dirs: src
 
