@@ -29,9 +29,10 @@ module Data.Array.Accelerate.Linear.V1 (
 ) where
 
 import Data.Array.Accelerate                    as A
-import Data.Array.Accelerate.Smart
-import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
+import Data.Array.Accelerate.Product
+import Data.Array.Accelerate.Smart
+import Data.Array.Accelerate.Type
 
 import Data.Array.Accelerate.Linear.Lift
 import Data.Array.Accelerate.Linear.Metric
@@ -69,12 +70,12 @@ instance Metric V1
 instance Additive V1
 instance R1 V1
 
-type instance EltRepr (V1 a) = EltRepr a
+type instance EltRepr (V1 a) = ((), EltRepr a)
 
 instance Elt a => Elt (V1 a) where
-  eltType _ = eltType (undefined :: a)
-  toElt = V1 . toElt
-  fromElt (V1 a) = fromElt a
+  eltType _ = PairTuple UnitTuple (eltType (undefined :: a))
+  toElt ((), x) = V1 (toElt x)
+  fromElt (V1 x) = ((), fromElt x)
 
 instance cst a => IsProduct cst (V1 a) where
   type ProdRepr (V1 a) = ((), a)
