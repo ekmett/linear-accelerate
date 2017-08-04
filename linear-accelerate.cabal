@@ -1,8 +1,8 @@
 name:          linear-accelerate
 category:      Math, Algebra, Compilers/Interpreters, Concurrency, Data, Parallelism
-version:       0.4
+version:       0.4.1
 license:       BSD3
-cabal-version: >= 1.8
+cabal-version: >= 1.10
 license-file:  LICENSE
 author:        Edward A. Kmett, Charles Durham, Trevor L. McDonell
 maintainer:    Edward A. Kmett <ekmett@gmail.com>
@@ -26,7 +26,7 @@ source-repository head
 
 source-repository this
   type: git
-  tag: v0.4
+  tag: v0.4.1
   location: git://github.com/ekmett/linear-accelerate.git
 
 custom-setup
@@ -61,6 +61,7 @@ library
   other-modules:
     Data.Array.Accelerate.Linear.Lift
 
+  default-language: Haskell2010
   ghc-options: -Wall -fwarn-tabs -O2
   hs-source-dirs: src
 
@@ -70,6 +71,7 @@ test-suite doctests
   default-language: Haskell2010
   build-depends:
     base    == 4.*,
-    doctest >= 0.11.1 && < 0.12
+    doctest >= 0.11.1 && < 0.14,
+    linear-accelerate
   ghc-options: -Wall -threaded
   hs-source-dirs: tests
