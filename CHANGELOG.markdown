@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and the
 project adheres to the [Haskell Package Versioning Policy
 (PVP)](https://pvp.haskell.org)
 
+
+## [0.5]
+
+* Fix [#25][acc-llvm#25]: "impossible evaluation" error with accelerate-llvm-native
+
+## [0.4.1]
+
+* Support `doctest-0.12`.
+
 ## [0.4]
 
 * Revamp `Setup.hs` to use `cabal-doctest`. This makes `linear-accelerate`
@@ -25,11 +34,13 @@ project adheres to the [Haskell Package Versioning Policy
 
 * Repository initialized
 
+[0.5]:              https://github.com/ekmett/linear-accelerate/compare/v0.4.1...v0.5
+[0.4.1]:            https://github.com/ekmett/linear-accelerate/compare/v0.4...v0.4.1
+[0.4]:              https://github.com/ekmett/linear-accelerate/compare/v0.3...v0.4
+[0.3]:              https://github.com/ekmett/linear-accelerate/compare/v0.2...v0.3
+[0.2]:              https://github.com/ekmett/linear-accelerate/compare/v0.1...v0.2
+[0.1]:              https://github.com/ekmett/linear-accelerate/compare/3db20f05af0a1488fcbc3ea28f8561ce73289b73...v0.1
 
-[0.4]:    https://github.com/ekmett/linear-accelerate/compare/v0.3...v0.4
-[0.3]:    https://github.com/ekmett/linear-accelerate/compare/v0.2...v0.3
-[0.2]:    https://github.com/ekmett/linear-accelerate/compare/v0.1...v0.2
-[0.1]:    https://github.com/ekmett/linear-accelerate/compare/3db20f05af0a1488fcbc3ea28f8561ce73289b73...v0.1
-
-[#1]:     https://github.com/ekmett/linear-accelerate/issues/1
+[#1]:               https://github.com/ekmett/linear-accelerate/issues/1
+[acc-llvm#25]:      https://github.com/AccelerateHS/accelerate-llvm/issues/25
 
