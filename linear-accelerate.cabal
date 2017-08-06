@@ -1,6 +1,6 @@
 name:          linear-accelerate
 category:      Math, Algebra, Compilers/Interpreters, Concurrency, Data, Parallelism
-version:       0.4.1
+version:       0.5
 license:       BSD3
 cabal-version: >= 1.10
 license-file:  LICENSE
@@ -26,7 +26,7 @@ source-repository head
 
 source-repository this
   type: git
-  tag: v0.4.1
+  tag: v0.5
   location: git://github.com/ekmett/linear-accelerate.git
 
 custom-setup
@@ -75,3 +75,5 @@ test-suite doctests
     linear-accelerate
   ghc-options: -Wall -threaded
   hs-source-dirs: tests
+
+-- vim: nospell
