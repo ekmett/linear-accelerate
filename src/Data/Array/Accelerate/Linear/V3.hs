@@ -52,6 +52,13 @@ import Linear.V3                                ( V3(..) )
 import qualified Linear.V3                      as L
 import Prelude                                  as P
 
+-- $setup
+-- >>> import Data.Array.Accelerate.Interpreter
+-- >>> :{
+--   let test :: Elt e => Exp e -> e
+--       test e = indexArray (run (unit e)) Z
+-- :}
+
 
 -- | cross product
 --
@@ -69,8 +76,11 @@ triple = lift3 (L.triple :: V3 (Exp a) -> V3 (Exp a) -> V3 (Exp a) -> Exp a)
 --
 class (L.R3 t, R2 t) => R3 t where
   -- |
-  -- >>> lift (V3 1 2 3 :: V3 Int) ^. _z
+  -- >>> test $ lift (V3 1 2 3 :: V3 Int) ^. _z
   -- 3
+  --
+  -- >>> test $ lift (V3 1 2 3 :: V3 Int) & _z .~ 42
+  -- V3 1 2 42
   --
   _z :: forall a. (Elt a, Box t a) => Lens' (Exp (t a)) (Exp a)
   _z = liftLens (L._z :: Lens' (t (Exp a)) (Exp a))

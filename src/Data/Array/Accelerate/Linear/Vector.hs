@@ -32,8 +32,13 @@ infixl 6 ^+^, ^+, +^, ^-^, ^-, -^
 infixl 7 ^*, *^, ^/, /^
 
 -- $setup
--- >>> import Data.Array.Accelerate.Linear.V2 ()
 -- >>> import Linear.V2
+-- >>> import Data.Array.Accelerate.Linear.V2 ()
+-- >>> import Data.Array.Accelerate.Interpreter
+-- >>> :{
+--   let test :: Elt e => Exp e -> e
+--       test e = indexArray (run (unit e)) Z
+-- :}
 
 -- | A vector is an additive group with additional structure.
 --
@@ -48,8 +53,8 @@ class L.Additive f => Additive f where
 
   -- | Compute the sum of two vectors
   --
-  -- >>> lift (V2 1 2 :: V2 Int) ^+^ lift (V2 3 4 :: V2 Int)
-  -- (4,6)
+  -- >>> test $ lift (V2 1 2 :: V2 Int) ^+^ lift (V2 3 4 :: V2 Int)
+  -- V2 4 6
   --
   (^+^) :: forall a. (A.Num a, Box f a)
         => Exp (f a)
@@ -59,8 +64,8 @@ class L.Additive f => Additive f where
 
   -- | Compute the difference between two vectors
   --
-  -- >>> lift (V2 4 5 :: V2 Int) ^-^ lift (V2 3 1 :: V2 Int)
-  -- (1,4)
+  -- >>> test $ lift (V2 4 5 :: V2 Int) ^-^ lift (V2 3 1 :: V2 Int)
+  -- V2 1 4
   --
   (^-^) :: forall a. (A.Num a, Box f a)
         => Exp (f a)
@@ -90,8 +95,8 @@ newtype E t = E {
 
 -- | Compute the negation of a vector
 --
--- >>> negated (lift (V2 2 4 :: V2 Int))
--- (-2,-4)
+-- >>> test $ negated (lift (V2 2 4 :: V2 Int))
+-- V2 (-2) (-4)
 --
 negated
     :: forall f a. (Functor f, A.Num a, Box f a)
@@ -101,8 +106,8 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 
 -- | Compute the left scalar product
 --
--- >>> 2 *^ lift (V2 3 4 :: V2 Int)
--- (6,8)
+-- >>> test $ 2 *^ lift (V2 3 4 :: V2 Int)
+-- V2 6 8
 --
 (*^) :: forall f a. (Functor f, A.Num a, Box f a)
      => Exp a
@@ -112,8 +117,8 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 
 -- | Compute the right scalar product
 --
--- >>> lift (V2 3 4 :: V2 Int) ^* 2
--- (6,8)
+-- >>> test $ lift (V2 3 4 :: V2 Int) ^* 2
+-- V2 6 8
 --
 (^*) :: forall f a. (Functor f, A.Num a, Box f a)
      => Exp (f a)
@@ -123,8 +128,8 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 
 -- | Compute division by a scalar on the right
 --
--- lift (V2 4 6 :: V2 Double) ^/ 2
--- V2 2 3
+-- >>> test $ lift (V2 4 6 :: V2 Double) ^/ 2
+-- V2 2.0 3.0
 --
 (^/) :: forall f a. (Functor f, A.Fractional a, Box f a)
      => Exp (f a)
@@ -134,8 +139,8 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 
 -- | Compute division of a scalar on the left
 --
--- >>> 4 /^ lift (V2 2 4 :: V2 Double)
--- (2.0,1.0)
+-- >>> test $ 4 /^ lift (V2 2 4 :: V2 Double)
+-- V2 2.0 1.0
 --
 (/^) :: forall f a. (Functor f, A.Fractional a, Box f a)
      => Exp a
@@ -145,8 +150,8 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 
 -- | Addition with a scalar on the left
 --
--- >>> 2 +^ lift (V2 3 4 :: V2 Int)
--- (5,6)
+-- >>> test $ 2 +^ lift (V2 3 4 :: V2 Int)
+-- V2 5 6
 --
 (+^) :: forall f a. (Functor f, A.Num a, Box f a)
      => Exp a
@@ -156,8 +161,8 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 
 -- | Addition with a scalar on the right
 --
--- >>> lift (V2 1 2 :: V2 Int) ^+ 3
--- (4,5)
+-- >>> test $ lift (V2 1 2 :: V2 Int) ^+ 3
+-- V2 4 5
 --
 (^+) :: forall f a. (Functor f, A.Num a, Box f a)
      => Exp (f a)
@@ -167,8 +172,8 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 
 -- | Subtraction with a scalar on the left
 --
--- >>> 2 -^ lift (V2 3 4 :: V2 Int)
--- (-1,-2)
+-- >>> test $ 2 -^ lift (V2 3 4 :: V2 Int)
+-- V2 (-1) (-2)
 --
 (-^) :: forall f a. (Functor f, A.Num a, Box f a)
      => Exp a
@@ -178,8 +183,8 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 
 -- | Subtraction with a scalar on the right
 --
--- >>> lift (V2 1 2 :: V2 Int) ^- 3
--- (-2,-1)
+-- >>> test $ lift (V2 1 2 :: V2 Int) ^- 3
+-- V2 (-2) (-1)
 --
 (^-) :: forall f a. (Functor f, A.Num a, Box f a)
      => Exp (f a)

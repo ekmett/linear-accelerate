@@ -49,13 +49,19 @@ import Data.Traversable
 import Control.Applicative
 import Prelude                                  as P
 
+-- $setup
+-- >>> import Data.Array.Accelerate.Interpreter
+-- >>> :{
+--   let test :: Elt e => Exp e -> e
+--       test e = indexArray (run (unit e)) Z
+-- :}
 
 
 infixl 7 !*!
 -- | Matrix product. This can compute any combination of sparse and dense multiplication.
 --
--- >>> lift (V2 (V3 1 2 3) (V3 4 5 6) :: M23 Int) !*! lift (V3 (V2 1 2) (V2 3 4) (V2 4 5) :: M32 Int)
--- ((19,25),(43,58))
+-- >>> test $ lift (V2 (V3 1 2 3) (V3 4 5 6) :: M23 Int) !*! lift (V3 (V2 1 2) (V2 3 4) (V2 4 5) :: M32 Int)
+-- V2 (V2 19 25) (V2 43 58)
 --
 (!*!) :: (Functor m, Foldable t, Additive t, Additive n, A.Num a, Box2 m t a, Box2 t n a, Box2 m n a)
       => Exp (m (t a))
@@ -67,8 +73,8 @@ f !*! g = lift (unlift' f L.!*! unlift' g)
 infixl 6 !+!
 -- | Entry-wise matrix addition.
 --
--- >>> lift (V2 (V3 1 2 3) (V3 4 5 6) :: M23 Int) !+! lift (V2 (V3 7 8 9) (V3 1 2 3) :: M23 Int)
--- ((8,10,12),(5,7,9))
+-- >>> test $ lift (V2 (V3 1 2 3) (V3 4 5 6) :: M23 Int) !+! lift (V2 (V3 7 8 9) (V3 1 2 3) :: M23 Int)
+-- V2 (V3 8 10 12) (V3 5 7 9)
 --
 (!+!) :: (Additive m, Additive n, A.Num a, Box2 m n a)
       => Exp (m (n a))
@@ -80,8 +86,8 @@ f !+! g = lift (unlift' f L.!+! unlift' g)
 infixl 6 !-!
 -- | Entry-wise matrix subtraction.
 --
--- >>> lift (V2 (V3 1 2 3) (V3 4 5 6) :: M23 Int) !-! lift (V2 (V3 7 8 9) (V3 1 2 3) :: M23 Int)
--- ((-6,-6,-6),(3,3,3))
+-- >>> test $ lift (V2 (V3 1 2 3) (V3 4 5 6) :: M23 Int) !-! lift (V2 (V3 7 8 9) (V3 1 2 3) :: M23 Int)
+-- V2 (V3 (-6) (-6) (-6)) (V3 3 3 3)
 --
 (!-!) :: (Additive m, Additive n, A.Num a, Box2 m n a)
       => Exp (m (n a))
@@ -93,8 +99,8 @@ f !-! g = lift (unlift' f L.!-! unlift' g)
 infixl 7 !*
 -- | Matrix * column vector
 --
--- >>> lift (V2 (V3 1 2 3) (V3 4 5 6) :: M23 Int) !* lift (V3 7 8 9 :: V3 Int)
--- (50,122)
+-- >>> test $ lift (V2 (V3 1 2 3) (V3 4 5 6) :: M23 Int) !* lift (V3 7 8 9 :: V3 Int)
+-- V2 50 122
 --
 (!*) :: (Functor m, Foldable r, Additive r, A.Num a, Box2 m r a, Box m a)
      => Exp (m (r a))
@@ -106,8 +112,8 @@ m !* v = lift (unlift' m L.!* unlift v)
 infixl 7 *!
 -- | Row vector * matrix
 --
--- >>> lift (V2 1 2 :: V2 Int) *! lift (V2 (V3 3 4 5) (V3 6 7 8) :: M23 Int)
--- (15,18,21)
+-- >>> test $ lift (V2 1 2 :: V2 Int) *! lift (V2 (V3 3 4 5) (V3 6 7 8) :: M23 Int)
+-- V3 15 18 21
 
 -- (*!) :: (Metric r, Additive n, Num a) => r a -> r (n a) -> n a
 -- f *! g = dot f <$> distribute g
@@ -122,8 +128,8 @@ f *! g = lift (unlift f L.*! unlift' g)
 infixl 7 *!!
 -- | Scalar-matrix product
 --
--- >>> 5 *!! lift (V2 (V2 1 2) (V2 3 4) :: M22 Int)
--- ((5,10),(15,20))
+-- >>> test $ 5 *!! lift (V2 (V2 1 2) (V2 3 4) :: M22 Int)
+-- V2 (V2 5 10) (V2 15 20)
 --
 (*!!) :: (Functor m, Functor r, A.Num a, Box2 m r a)
       => Exp a
@@ -135,8 +141,8 @@ s *!! m = lift (unlift s L.*!! unlift' m)
 infixl 7 !!*
 -- | Matrix-scalar product
 --
--- >>> lift (V2 (V2 1 2) (V2 3 4) :: M22 Int) !!* 5
--- ((5,10),(15,20))
+-- >>> test $ lift (V2 (V2 1 2) (V2 3 4) :: M22 Int) !!* 5
+-- V2 (V2 5 10) (V2 15 20)
 --
 (!!*) :: (Functor m, Functor r, A.Num a, Box2 m r a)
       => Exp (m (r a))
@@ -157,15 +163,11 @@ m !!/ s = lift (unlift' m L.!!/ unlift s)
 
 -- |The identity matrix for any dimension vector.
 --
--- >>> identity :: Exp (M44 Int)
--- let x0 = 1 in
--- let x1 = 0
--- in ((x0,x1,x1,x1),(x1,x0,x1,x1),(x1,x1,x0,x1),(x1,x1,x1,x0))
+-- >>> test $ (identity :: Exp (M44 Int))
+-- V4 (V4 1 0 0 0) (V4 0 1 0 0) (V4 0 0 1 0) (V4 0 0 0 1)
 --
--- >>> identity :: Exp (V3 (V3 Int))
--- let x0 = 1 in
--- let x1 = 0
--- in ((x0,x1,x1),(x1,x0,x1),(x1,x1,x0))
+-- >>> test $ (identity :: Exp (V3 (V3 Int)))
+-- V3 (V3 1 0 0) (V3 0 1 0) (V3 0 0 1)
 --
 identity :: forall t a. (Traversable t, Applicative t, A.Num a, Box2 t t a) => Exp (t (t a))
 identity = lift (L.identity :: t (t (Exp a)))
@@ -173,7 +175,7 @@ identity = lift (L.identity :: t (t (Exp a)))
 
 -- | 'transpose' is just an alias for 'distribute'
 --
--- > transpose (V3 (V2 1 2) (V2 3 4) (V2 5 6))
+-- >>> test $ transpose $ lift (V3 (V2 1 2) (V2 3 4) (V2 5 6) :: M32 Int)
 -- V2 (V3 1 3 5) (V3 2 4 6)
 --
 transpose

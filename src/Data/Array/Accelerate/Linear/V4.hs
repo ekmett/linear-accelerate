@@ -60,6 +60,13 @@ import Linear.V4                                ( V4(..) )
 import qualified Linear.V4                      as L
 import Prelude                                  as P
 
+-- $setup
+-- >>> import Data.Array.Accelerate.Interpreter
+-- >>> :{
+--   let test :: Elt e => Exp e -> e
+--       test e = indexArray (run (unit e)) Z
+-- :}
+
 
 -- | Convert a 3-dimensional affine vector into a 4-dimensional homogeneous
 -- vector.
@@ -86,8 +93,11 @@ normalizePoint = lift1 (L.normalizePoint :: V4 (Exp a) -> V3 (Exp a))
 --
 class (L.R4 t, R3 t) => R4 t where
   -- |
-  -- >>> lift (V4 1 2 3 4 :: V4 Int) ^._w
+  -- >>> test $ lift (V4 1 2 3 4 :: V4 Int) ^._w
   -- 4
+  --
+  -- >>> test $ lift (V4 1 2 3 4 :: V4 Int) & _w .~ 42
+  -- V4 1 2 3 42
   --
   _w :: forall a. (Elt a, Box t a) => Lens' (Exp (t a)) (Exp a)
   _w = liftLens (L._w :: Lens' (t (Exp a)) (Exp a))
