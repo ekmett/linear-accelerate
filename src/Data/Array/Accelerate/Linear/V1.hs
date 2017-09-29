@@ -44,16 +44,23 @@ import Linear.V1                                ( V1(..) )
 import qualified Linear.V1                      as L
 import Prelude                                  as P
 
+-- $setup
+-- >>> import Data.Array.Accelerate.Interpreter
+-- >>> :{
+--   let test :: Elt e => Exp e -> e
+--       test e = indexArray (run (unit e)) Z
+-- :}
+
 
 -- | A space that has at least 1 basis vector '_x'.
 --
 class L.R1 t => R1 t where
   -- |
-  -- >>> lift (V1 2 :: V1 Int) ^._x
+  -- >>> test $ lift (V1 2 :: V1 Int) ^._x
   -- 2
   --
-  -- >>> lift (V1 2 :: V1 Int) & _x .~ 3
-  -- (3)
+  -- >>> test $ lift (V1 2 :: V1 Int) & _x .~ 3
+  -- V1 3
   --
   _x :: (Elt a, Box t a) => Lens' (Exp (t a)) (Exp a)
   _x = liftLens (L._x :: Lens' (t (Exp a)) (Exp a))
