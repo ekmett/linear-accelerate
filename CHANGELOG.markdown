@@ -7,6 +7,10 @@ project adheres to the [Haskell Package Versioning Policy
 (PVP)](https://pvp.haskell.org)
 
 
+## [0.5.0.1]
+
+* Fix [#10]: doctest failure with accelerate-1.1.1.0
+
 ## [0.5]
 
 * Fix [#25][acc-llvm#25]: "impossible evaluation" error with accelerate-llvm-native
@@ -34,6 +38,8 @@ project adheres to the [Haskell Package Versioning Policy
 
 * Repository initialized
 
+
+[0.5.0.1]:          https://github.com/ekmett/linear-accelerate/compare/v0.5...v0.5.0.1
 [0.5]:              https://github.com/ekmett/linear-accelerate/compare/v0.4.1...v0.5
 [0.4.1]:            https://github.com/ekmett/linear-accelerate/compare/v0.4...v0.4.1
 [0.4]:              https://github.com/ekmett/linear-accelerate/compare/v0.3...v0.4
@@ -42,5 +48,6 @@ project adheres to the [Haskell Package Versioning Policy
 [0.1]:              https://github.com/ekmett/linear-accelerate/compare/3db20f05af0a1488fcbc3ea28f8561ce73289b73...v0.1
 
 [#1]:               https://github.com/ekmett/linear-accelerate/issues/1
+[#10]:              https://github.com/ekmett/linear-accelerate/issues/10
 [acc-llvm#25]:      https://github.com/AccelerateHS/accelerate-llvm/issues/25
 
