@@ -217,12 +217,12 @@ instance A.Num a => P.Num (Exp (V4 a)) where
   negate          = lift1 (negate :: V4 (Exp a) -> V4 (Exp a))
   signum          = lift1 (signum :: V4 (Exp a) -> V4 (Exp a))
   abs             = lift1 (signum :: V4 (Exp a) -> V4 (Exp a))
-  fromInteger x   = lift (fromInteger x :: V4 (Exp a))
+  fromInteger x   = lift (P.fromInteger x :: V4 (Exp a))
 
 instance A.Floating a => P.Fractional (Exp (V4 a)) where
   (/)             = lift2 ((/) :: V4 (Exp a) -> V4 (Exp a) -> V4 (Exp a))
   recip           = lift1 (recip :: V4 (Exp a) -> V4 (Exp a))
-  fromRational x  = lift (fromRational x :: V4 (Exp a))
+  fromRational x  = lift (P.fromRational x :: V4 (Exp a))
 
 instance A.Floating a => P.Floating (Exp (V4 a)) where
   pi              = lift (pi :: V4 (Exp a))
