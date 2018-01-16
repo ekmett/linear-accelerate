@@ -45,6 +45,7 @@ library
 
   exposed-modules:
     Data.Array.Accelerate.Linear
+    Data.Array.Accelerate.Linear.Conjugate
     Data.Array.Accelerate.Linear.Epsilon
     Data.Array.Accelerate.Linear.Matrix
     Data.Array.Accelerate.Linear.Metric
