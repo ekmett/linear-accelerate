@@ -1,7 +1,6 @@
 {-# LANGUAGE ConstraintKinds       #-}
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE IncoherentInstances   #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
@@ -12,7 +11,7 @@
 -- |
 -- Module      : Data.Array.Accelerate.Linear.V1
 -- Copyright   : 2014 Edward Kmett, Charles Durham,
---               2015 Trevor L. McDonell
+--               [2015..2018] Trevor L. McDonell
 -- License     : BSD-style (see the file LICENSE)
 --
 -- Maintainer  : Edward Kmett <ekmett@gmail.com>
@@ -29,11 +28,13 @@ module Data.Array.Accelerate.Linear.V1 (
 ) where
 
 import Data.Array.Accelerate                    as A
+import Data.Array.Accelerate.Data.Functor       as A
 import Data.Array.Accelerate.Array.Sugar
 import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Type
 
+import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Lift
 import Data.Array.Accelerate.Linear.Metric
 import Data.Array.Accelerate.Linear.Type
@@ -41,8 +42,8 @@ import Data.Array.Accelerate.Linear.Vector
 
 import Control.Lens
 import Linear.V1                                ( V1(..) )
-import qualified Linear.V1                      as L
 import Prelude                                  as P
+import qualified Linear.V1                      as L
 
 -- $setup
 -- >>> import Data.Array.Accelerate.Interpreter
@@ -97,6 +98,25 @@ instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V1 a) where
 instance Elt a => Unlift Exp (V1 (Exp a)) where
   unlift t = V1 $ Exp $ ZeroTupIdx `Prj` t
 
+instance (Elt a, Elt b) => Each (Exp (V1 a)) (Exp (V1 b)) (Exp a) (Exp b) where
+  each = liftLens (each :: Traversal (V1 (Exp a)) (V1 (Exp b)) (Exp a) (Exp b))
+
+instance A.Eq a => A.Eq (V1 a) where
+  (unlift -> V1 x) == (unlift -> V1 y) = x A.== y
+  (unlift -> V1 x) /= (unlift -> V1 y) = x A./= y
+
+instance A.Ord a => A.Ord (V1 a) where
+  (unlift -> V1 x) <  (unlift -> V1 y) = x A.< y
+  (unlift -> V1 x) >  (unlift -> V1 y) = x A.> y
+  (unlift -> V1 x) >= (unlift -> V1 y) = x A.>= y
+  (unlift -> V1 x) <= (unlift -> V1 y) = x A.<= y
+  min (unlift -> V1 x) (unlift -> V1 y) = lift $ V1 (A.min x y)
+  max (unlift -> V1 x) (unlift -> V1 y) = lift $ V1 (A.max x y)
+
+instance A.Bounded a => P.Bounded (Exp (V1 a)) where
+  minBound = lift (V1 (minBound :: Exp a))
+  maxBound = lift (V1 (maxBound :: Exp a))
+
 instance A.Num a => P.Num (Exp (V1 a)) where
   (+)             = lift2 ((+) :: V1 (Exp a) -> V1 (Exp a) -> V1 (Exp a))
   (-)             = lift2 ((-) :: V1 (Exp a) -> V1 (Exp a) -> V1 (Exp a))
@@ -104,12 +124,12 @@ instance A.Num a => P.Num (Exp (V1 a)) where
   negate          = lift1 (negate :: V1 (Exp a) -> V1 (Exp a))
   signum          = lift1 (signum :: V1 (Exp a) -> V1 (Exp a))
   abs             = lift1 (signum :: V1 (Exp a) -> V1 (Exp a))
-  fromInteger x   = lift (fromInteger x :: V1 (Exp a))
+  fromInteger x   = lift (P.fromInteger x :: V1 (Exp a))
 
 instance A.Floating a => P.Fractional (Exp (V1 a)) where
   (/)             = lift2 ((/) :: V1 (Exp a) -> V1 (Exp a) -> V1 (Exp a))
   recip           = lift1 (recip :: V1 (Exp a) -> V1 (Exp a))
-  fromRational x  = lift (fromRational x :: V1 (Exp a))
+  fromRational x  = lift (P.fromRational x :: V1 (Exp a))
 
 instance A.Floating a => P.Floating (Exp (V1 a)) where
   pi              = lift (pi :: V1 (Exp a))
@@ -128,6 +148,10 @@ instance A.Floating a => P.Floating (Exp (V1 a)) where
   acosh           = lift1 (acosh :: V1 (Exp a) -> V1 (Exp a))
   atanh           = lift1 (atanh :: V1 (Exp a) -> V1 (Exp a))
 
-instance (Elt a, Elt b) => Each (Exp (V1 a)) (Exp (V1 b)) (Exp a) (Exp b) where
-  each = liftLens (each :: Traversal (V1 (Exp a)) (V1 (Exp b)) (Exp a) (Exp b))
+instance Epsilon a => Epsilon (V1 a) where
+  nearZero (unlift -> V1 x) = nearZero x
+
+instance A.Functor V1 where
+  fmap f (unlift -> V1 x) = lift (V1 (f x))
+  x <$ _                  = lift (V1 x)
 

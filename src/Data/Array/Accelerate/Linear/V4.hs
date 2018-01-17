@@ -1,7 +1,6 @@
 {-# LANGUAGE ConstraintKinds       #-}
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE IncoherentInstances   #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
@@ -12,7 +11,7 @@
 -- |
 -- Module      : Data.Array.Accelerate.Linear.V4
 -- Copyright   : 2014 Edward Kmett, Charles Durham,
---               2015 Trevor L. McDonell
+--               [2015..2018] Trevor L. McDonell
 -- License     : BSD-style (see the file LICENSE)
 --
 -- Maintainer  : Edward Kmett <ekmett@gmail.com>
@@ -43,10 +42,12 @@ module Data.Array.Accelerate.Linear.V4 (
 ) where
 
 import Data.Array.Accelerate                    as A
+import Data.Array.Accelerate.Data.Functor       as A
 import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
+import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Lift
 import Data.Array.Accelerate.Linear.Metric
 import Data.Array.Accelerate.Linear.Type
@@ -56,9 +57,10 @@ import Data.Array.Accelerate.Linear.V3
 import Data.Array.Accelerate.Linear.Vector
 
 import Control.Lens
+import Data.Function
 import Linear.V4                                ( V4(..) )
-import qualified Linear.V4                      as L
 import Prelude                                  as P
+import qualified Linear.V4                      as L
 
 -- $setup
 -- >>> import Data.Array.Accelerate.Interpreter
@@ -85,7 +87,7 @@ point = lift1 (L.point :: V3 (Exp a) -> V4 (Exp a))
 -- the projective, homogenous, coordinate @[x:y:z:w]@ is one of many associated
 -- with a single point @(x\/w, y\/w, z\/w)@.
 --
-normalizePoint :: forall a. A.Floating a => Exp (V4 a) -> Exp (V3 a)
+normalizePoint :: forall a. A.Fractional a => Exp (V4 a) -> Exp (V3 a)
 normalizePoint = lift1 (L.normalizePoint :: V4 (Exp a) -> V3 (Exp a))
 
 -- | A space that distinguishes orthogonal basis vectors '_x', '_y', '_z', and '_w'.
@@ -210,6 +212,31 @@ instance Elt a => Unlift Exp (V4 (Exp a)) where
                 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
                 (Exp $ ZeroTupIdx `Prj` t)
 
+instance (Elt a, Elt b) => Each (Exp (V4 a)) (Exp (V4 b)) (Exp a) (Exp b) where
+  each = liftLens (each :: Traversal (V4 (Exp a)) (V4 (Exp b)) (Exp a) (Exp b))
+
+instance A.Eq a => A.Eq (V4 a) where
+  (==) = (A.==) `on` t4
+  (/=) = (A./=) `on` t4
+
+instance A.Ord a => A.Ord (V4 a) where
+  (<)  = (A.<) `on` t4
+  (>)  = (A.>) `on` t4
+  (<=) = (A.<=) `on` t4
+  (>=) = (A.>=) `on` t4
+  min  = v4 $$ on A.min t4
+  max  = v4 $$ on A.max t4
+
+t4 :: Elt a => Exp (V4 a) -> Exp (a,a,a,a)
+t4 (unlift -> V4 x y z w) = tup4 (x,y,z,w)
+
+v4 :: Elt a => Exp (a,a,a,a) -> Exp (V4 a)
+v4 (untup4 -> (x,y,z,w)) = lift (V4 x y z w)
+
+instance A.Bounded a => P.Bounded (Exp (V4 a)) where
+  minBound = lift (V4 (minBound :: Exp a) (minBound :: Exp a) (minBound :: Exp a) (minBound :: Exp a))
+  maxBound = lift (V4 (maxBound :: Exp a) (maxBound :: Exp a) (maxBound :: Exp a) (maxBound :: Exp a))
+
 instance A.Num a => P.Num (Exp (V4 a)) where
   (+)             = lift2 ((+) :: V4 (Exp a) -> V4 (Exp a) -> V4 (Exp a))
   (-)             = lift2 ((-) :: V4 (Exp a) -> V4 (Exp a) -> V4 (Exp a))
@@ -217,12 +244,12 @@ instance A.Num a => P.Num (Exp (V4 a)) where
   negate          = lift1 (negate :: V4 (Exp a) -> V4 (Exp a))
   signum          = lift1 (signum :: V4 (Exp a) -> V4 (Exp a))
   abs             = lift1 (signum :: V4 (Exp a) -> V4 (Exp a))
-  fromInteger x   = lift (fromInteger x :: V4 (Exp a))
+  fromInteger x   = lift (P.fromInteger x :: V4 (Exp a))
 
 instance A.Floating a => P.Fractional (Exp (V4 a)) where
   (/)             = lift2 ((/) :: V4 (Exp a) -> V4 (Exp a) -> V4 (Exp a))
   recip           = lift1 (recip :: V4 (Exp a) -> V4 (Exp a))
-  fromRational x  = lift (fromRational x :: V4 (Exp a))
+  fromRational x  = lift (P.fromRational x :: V4 (Exp a))
 
 instance A.Floating a => P.Floating (Exp (V4 a)) where
   pi              = lift (pi :: V4 (Exp a))
@@ -241,6 +268,10 @@ instance A.Floating a => P.Floating (Exp (V4 a)) where
   acosh           = lift1 (acosh :: V4 (Exp a) -> V4 (Exp a))
   atanh           = lift1 (atanh :: V4 (Exp a) -> V4 (Exp a))
 
-instance (Elt a, Elt b) => Each (Exp (V4 a)) (Exp (V4 b)) (Exp a) (Exp b) where
-  each = liftLens (each :: Traversal (V4 (Exp a)) (V4 (Exp b)) (Exp a) (Exp b))
+instance Epsilon a => Epsilon (V4 a) where
+  nearZero = nearZero . quadrance
+
+instance A.Functor V4 where
+  fmap f (unlift -> V4 x y z w) = lift (V4 (f x) (f y) (f z) (f w))
+  x <$ _                        = lift (V4 x x x x)
 

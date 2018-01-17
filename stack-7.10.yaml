@@ -1,15 +1,27 @@
 # For more information, see: https://github.com/commercialhaskell/stack/blob/release/doc/yaml_configuration.md
 # vim: nospell
 
-resolver: lts-6.30
+resolver: lts-6.35
 
 packages:
 - '.'
 
 extra-deps:
-- 'accelerate-1.1.1.0'
-- 'cabal-doctest-1.0.2'
+- git:    https://github.com/tmcdonell/accelerate.git
+  commit: 99ea5b8f9266cb06e4dfca2983f6d6bd56155786
+
+- 'comonad-5.0.2'
+- 'hedgehog-0.5'
+- 'kan-extensions-5.0.2'
+- 'lens-4.15.4'
+- 'profunctors-5.2.1'
+- 'tagged-0.8.5'
+- 'tasty-hedgehog-0.1.0.1'
+- 'th-abstraction-0.2.6.0'
+- 'transformers-0.5.5.0'
+- 'transformers-compat-0.5.1.4'
 - 'unique-0'
+- 'wl-pprint-annotated-0.1.0.0'
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
