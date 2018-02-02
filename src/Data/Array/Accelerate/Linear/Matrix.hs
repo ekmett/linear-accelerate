@@ -200,7 +200,7 @@ mkTransformation = lift2 (L.mkTransformation :: Quaternion (Exp a) -> V3 (Exp a)
 -- | Build a transformation matrix from a rotation matrix and a translation
 -- vector.
 --
-mkTransformationMat :: forall a. A.Num a => Exp (M33 a) -> Exp (V3 a) -> Exp (M44 a)
+mkTransformationMat :: A.Num a => Exp (M33 a) -> Exp (V3 a) -> Exp (M44 a)
 mkTransformationMat m v =
   let r = L.mkTransformationMat (unlift' m) (unlift v)
   in  lift r
@@ -208,7 +208,7 @@ mkTransformationMat m v =
 -- | Convert a 4x3 matrix to a 4x4 matrix, extending it with @[ 0 0 0 1 ]@
 -- column vector
 --
-m43_to_m44 :: forall a. A.Num a => Exp (M43 a) -> Exp (M44 a)
+m43_to_m44 :: A.Num a => Exp (M43 a) -> Exp (M44 a)
 m43_to_m44 m43 =
   let m44 = L.m43_to_m44 (unlift' m43)
   in  lift m44
@@ -216,7 +216,7 @@ m43_to_m44 m43 =
 -- | Convert a 3x3 matrix to a 4x4 matrix extending it with zeros in the new row
 -- and column.
 --
-m33_to_m44 :: forall a. A.Num a => Exp (M33 a) -> Exp (M44 a)
+m33_to_m44 :: A.Num a => Exp (M33 a) -> Exp (M44 a)
 m33_to_m44 m33 =
   let m44 = L.m33_to_m44 (unlift' m33)
   in  lift m44
