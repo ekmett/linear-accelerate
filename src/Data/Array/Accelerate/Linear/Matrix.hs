@@ -52,6 +52,9 @@ import Prelude                                  as P
 
 -- $setup
 -- >>> import Data.Array.Accelerate.Interpreter
+-- >>> import Data.Array.Accelerate.Linear.V2
+-- >>> import Data.Array.Accelerate.Linear.V3
+-- >>> import Data.Array.Accelerate.Linear.V4
 -- >>> :{
 --   let test :: Elt e => Exp e -> e
 --       test e = indexArray (run (unit e)) Z
