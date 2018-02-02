@@ -27,17 +27,10 @@ module Data.Array.Accelerate.Linear.Matrix (
 ) where
 
 import Data.Array.Accelerate                    as A hiding ( transpose )
-import Data.Array.Accelerate.Data.Complex
 
 import Data.Array.Accelerate.Linear.Lift
-import Data.Array.Accelerate.Linear.Plucker
-import Data.Array.Accelerate.Linear.Quaternion
+import Data.Array.Accelerate.Linear.Trace
 import Data.Array.Accelerate.Linear.Type
-import Data.Array.Accelerate.Linear.V0
-import Data.Array.Accelerate.Linear.V1
-import Data.Array.Accelerate.Linear.V2
-import Data.Array.Accelerate.Linear.V3
-import Data.Array.Accelerate.Linear.V4
 import Data.Array.Accelerate.Linear.Vector
 
 import Linear.Matrix                            ( M22, M23, M24, M32, M33, M34, M42, M43, M44 )
@@ -183,23 +176,4 @@ transpose
     => Exp (f (g a))
     -> Exp (g (f a))
 transpose = lift . L.transpose . unlift'
-
-
-class L.Trace m => Trace m where
-  -- | Compute the trace of a matrix
-  trace :: (A.Num a, Box2 m m a) => Exp (m (m a)) -> Exp a
-  trace = lift . L.trace . unlift'
-
-  -- | Compute the diagonal of a matrix
-  diagonal :: Box2 m m a => Exp (m (m a)) -> Exp (m a)
-  diagonal = lift . L.diagonal . unlift'
-
-instance Trace Complex
-instance Trace V0
-instance Trace V1
-instance Trace V2
-instance Trace V3
-instance Trace V4
-instance Trace Plucker
-instance Trace Quaternion
 

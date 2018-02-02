@@ -48,6 +48,7 @@ library
     Data.Array.Accelerate.Linear.Conjugate
     Data.Array.Accelerate.Linear.Epsilon
     Data.Array.Accelerate.Linear.Matrix
+    Data.Array.Accelerate.Linear.Trace
     Data.Array.Accelerate.Linear.Metric
     Data.Array.Accelerate.Linear.Plucker
     Data.Array.Accelerate.Linear.Quaternion
