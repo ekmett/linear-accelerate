@@ -18,11 +18,17 @@
 
 module Data.Array.Accelerate.Linear.Matrix (
 
-  M22, M23, M24, M32, M33, M34, M42, M43, M44,
   (!*!), (!+!), (!-!), (!*), (*!), (!!*), (*!!), (!!/),
-  transpose,
+  M22, M23, M24, M32, M33, M34, M42, M43, M44,
+  m33_to_m44, m43_to_m44,
+  det22, det33, det44,
+  inv22, inv33, inv44,
   identity,
+  transpose,
   Trace(..),
+  fromQuaternion,
+  mkTransformation,
+  mkTransformationMat,
 
 ) where
 
@@ -31,6 +37,8 @@ import Data.Array.Accelerate                    as A hiding ( transpose )
 import Data.Array.Accelerate.Linear.Lift
 import Data.Array.Accelerate.Linear.Trace
 import Data.Array.Accelerate.Linear.Type
+import Data.Array.Accelerate.Linear.Quaternion
+import Data.Array.Accelerate.Linear.V3
 import Data.Array.Accelerate.Linear.Vector
 
 import Linear.Matrix                            ( M22, M23, M24, M32, M33, M34, M42, M43, M44 )
@@ -176,4 +184,76 @@ transpose
     => Exp (f (g a))
     -> Exp (g (f a))
 transpose = lift . L.transpose . unlift'
+
+
+-- | Build a rotation matrix from a unit 'Quaternion'
+--
+fromQuaternion :: forall a. A.Num a => Exp (Quaternion a) -> Exp (M33 a)
+fromQuaternion = lift1 (L.fromQuaternion :: Quaternion (Exp a) -> M33 (Exp a))
+
+-- | Build a transformation matrix from a rotation expressed as a 'Quaternion'
+-- and a translation vector.
+--
+mkTransformation :: forall a. A.Num a => Exp (Quaternion a) -> Exp (V3 a) -> Exp (M44 a)
+mkTransformation = lift2 (L.mkTransformation :: Quaternion (Exp a) -> V3 (Exp a) -> M44 (Exp a))
+
+-- | Build a transformation matrix from a rotation matrix and a translation
+-- vector.
+--
+mkTransformationMat :: forall a. A.Num a => Exp (M33 a) -> Exp (V3 a) -> Exp (M44 a)
+mkTransformationMat m v =
+  let r = L.mkTransformationMat (unlift' m) (unlift v)
+  in  lift r
+
+-- | Convert a 4x3 matrix to a 4x4 matrix, extending it with @[ 0 0 0 1 ]@
+-- column vector
+--
+m43_to_m44 :: forall a. A.Num a => Exp (M43 a) -> Exp (M44 a)
+m43_to_m44 m43 =
+  let m44 = L.m43_to_m44 (unlift' m43)
+  in  lift m44
+
+-- | Convert a 3x3 matrix to a 4x4 matrix extending it with zeros in the new row
+-- and column.
+--
+m33_to_m44 :: forall a. A.Num a => Exp (M33 a) -> Exp (M44 a)
+m33_to_m44 m33 =
+  let m44 = L.m33_to_m44 (unlift' m33)
+  in  lift m44
+
+-- | 2x2 matrix determinant
+--
+det22 :: A.Num a => Exp (M22 a) -> Exp a
+det22 = L.det22 . unlift'
+
+-- | 3x3 matrix determinant
+--
+det33 :: A.Num a => Exp (M33 a) -> Exp a
+det33 = L.det33 . unlift'
+
+-- | 4x4 matrix determinant
+--
+det44 :: A.Num a => Exp (M44 a) -> Exp a
+det44 = L.det44 . unlift'
+
+-- | 2x2 matrix inverse
+--
+inv22 :: A.Fractional a => Exp (M22 a) -> Exp (M22 a)
+inv22 m =
+  let r = L.inv22 (unlift' m)
+  in  lift r
+
+-- | 3x3 matrix inverse
+--
+inv33 :: A.Fractional a => Exp (M33 a) -> Exp (M33 a)
+inv33 m =
+  let r = L.inv33 (unlift' m)
+  in  lift r
+
+-- | 4x4 matrix inverse
+--
+inv44 :: A.Fractional a => Exp (M44 a) -> Exp (M44 a)
+inv44 m =
+  let r = L.inv44 (unlift' m)
+  in  lift r
 
