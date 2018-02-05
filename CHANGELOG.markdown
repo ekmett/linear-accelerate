@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and the
 project adheres to the [Haskell Package Versioning Policy
 (PVP)](https://pvp.haskell.org)
 
+## [next]
+
+* Disambiguate uses of `fromInteger` and `fromRational`.
 
 ## [0.5.0.1]
 
