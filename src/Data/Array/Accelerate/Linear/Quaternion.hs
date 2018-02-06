@@ -75,7 +75,7 @@ slerp q p t =
 
 -- | 'asin' with a specified branch cut
 --
-asinq :: RealFloat a => Exp (Quaternion a) -> Exp (Quaternion a) -> Exp (Quaternion a)
+asinq :: (RealFloat a, Elt (Complex a)) => Exp (Quaternion a) -> Exp (Quaternion a) -> Exp (Quaternion a)
 asinq q@(unlift -> Quaternion e _) u =
   if qiq /= 0.0 || e >= -1 && e <= 1
     then asin q
@@ -85,7 +85,7 @@ asinq q@(unlift -> Quaternion e _) u =
 
 -- | 'acos' with a specified branch cut
 --
-acosq :: RealFloat a => Exp (Quaternion a) -> Exp (Quaternion a) -> Exp (Quaternion a)
+acosq :: (RealFloat a, Elt (Complex a)) => Exp (Quaternion a) -> Exp (Quaternion a) -> Exp (Quaternion a)
 acosq q@(unlift -> Quaternion e _) u =
   if qiq /= 0.0 || e >= -1 && e <= 1
     then acos q
@@ -95,7 +95,7 @@ acosq q@(unlift -> Quaternion e _) u =
 
 -- | 'atan' with a specified branch cut
 --
-atanq :: RealFloat a => Exp (Quaternion a) -> Exp (Quaternion a) -> Exp (Quaternion a)
+atanq :: (RealFloat a, Elt (Complex a)) => Exp (Quaternion a) -> Exp (Quaternion a) -> Exp (Quaternion a)
 atanq q@(unlift -> Quaternion e _) u =
   if e /= 0.0 || qiq >= -1 && qiq <= 1
     then atan q
@@ -105,7 +105,7 @@ atanq q@(unlift -> Quaternion e _) u =
 
 -- | 'asinh' with a specified branch cut
 --
-asinhq :: RealFloat a => Exp (Quaternion a) -> Exp (Quaternion a) -> Exp (Quaternion a)
+asinhq :: (RealFloat a, Elt (Complex a)) => Exp (Quaternion a) -> Exp (Quaternion a) -> Exp (Quaternion a)
 asinhq q@(unlift -> Quaternion e _) u =
   if e /= 0.0 || qiq >= -1 && qiq <= 1
     then asinh q
@@ -115,7 +115,7 @@ asinhq q@(unlift -> Quaternion e _) u =
 
 -- | 'acosh' with a specified branch cut
 --
-acoshq :: RealFloat a => Exp (Quaternion a) -> Exp (Quaternion a) -> Exp (Quaternion a)
+acoshq :: (RealFloat a, Elt (Complex a)) => Exp (Quaternion a) -> Exp (Quaternion a) -> Exp (Quaternion a)
 acoshq q@(unlift -> Quaternion e _) u =
   if qiq /= 0.0 || e >= 1
     then asinh q
@@ -125,7 +125,7 @@ acoshq q@(unlift -> Quaternion e _) u =
 
 -- | 'atanh' with a specified branch cut
 --
-atanhq :: RealFloat a => Exp (Quaternion a) -> Exp (Quaternion a) -> Exp (Quaternion a)
+atanhq :: (RealFloat a, Elt (Complex a)) => Exp (Quaternion a) -> Exp (Quaternion a) -> Exp (Quaternion a)
 atanhq q@(unlift -> Quaternion e _) u =
   if qiq /= 0.0 || e > -1 && e < 1
     then atanh q
@@ -140,7 +140,7 @@ absi = sqrt . qi
 
 -- | raise a 'Quaternion' to a scalar power
 --
-pow :: RealFloat a => Exp (Quaternion a) -> Exp a -> Exp (Quaternion a)
+pow :: (RealFloat a, Elt (Complex a)) => Exp (Quaternion a) -> Exp a -> Exp (Quaternion a)
 pow q t = exp (t *^ log q)
 
 -- | Apply a rotation to a vector
@@ -268,7 +268,7 @@ instance RealFloat a => P.Fractional (Exp (Quaternion a)) where
 
   fromRational x = lift (Quaternion (fromRational x) (V3 0 0 0))
 
-instance RealFloat a => P.Floating (Exp (Quaternion a)) where
+instance (RealFloat a, Elt (Complex a)) => P.Floating (Exp (Quaternion a)) where
   pi = lift (Quaternion pi (V3 0 0 0))
 
   exp q@(unlift -> Quaternion e v) =
@@ -372,7 +372,7 @@ reimagine r s (unlift -> Quaternion _ v) =
 
 -- | Helper for calculating with specific branch cuts
 --
-cut :: RealFloat a => (Exp (Complex a) -> Exp (Complex a)) -> Exp (Quaternion a) -> Exp (Quaternion a)
+cut :: (RealFloat a, Elt (Complex a)) => (Exp (Complex a) -> Exp (Complex a)) -> Exp (Quaternion a) -> Exp (Quaternion a)
 cut f q@(unlift -> Quaternion e (V3 _ y z)) =
   if qiq == 0 then lift $ Quaternion a (V3 b y z)
               else reimagine a (b / ai) q
@@ -383,7 +383,7 @@ cut f q@(unlift -> Quaternion e (V3 _ y z)) =
 
 -- | Helper for calculating with specific branch cuts
 --
-cutWith :: RealFloat a => Exp (Complex a) -> Exp (Quaternion a) -> Exp (Quaternion a)
+cutWith :: (RealFloat a, Elt (Complex a)) => Exp (Complex a) -> Exp (Quaternion a) -> Exp (Quaternion a)
 cutWith (unlift -> r :+ im) q@(unlift -> Quaternion e v) =
   if e /= 0 || qiq == 0 || isNaN qiq || isInfinite qiq
     then 0/0 -- error "bad cut"  -- TLM: argh

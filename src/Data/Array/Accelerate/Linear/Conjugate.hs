@@ -43,7 +43,7 @@ instance Conjugate (Exp Float)
 instance Conjugate (Exp CFloat)
 instance Conjugate (Exp CDouble)
 
-instance (Conjugate (Exp a), A.RealFloat a) => Conjugate (Exp (Complex a)) where
+instance (Conjugate (Exp a), A.RealFloat a, Elt (Complex a)) => Conjugate (Exp (Complex a)) where
   conjugate (unlift -> a :+ b :: Complex (Exp a)) = lift $ conjugate a :+ negate b
 
 instance TrivialConjugate (Exp Int)

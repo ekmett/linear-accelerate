@@ -81,7 +81,7 @@ instance R1 V1
 type instance EltRepr (V1 a) = ((), EltRepr a)
 
 instance Elt a => Elt (V1 a) where
-  eltType _ = PairTuple UnitTuple (eltType (undefined :: a))
+  eltType _ = TypeRpair TypeRunit (eltType (undefined :: a))
   toElt ((), x) = V1 (toElt x)
   fromElt (V1 x) = ((), fromElt x)
 
