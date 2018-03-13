@@ -81,7 +81,7 @@ test-suite doctests
 
   build-depends:
       base              == 4.*
-    , doctest           >= 0.11.1 && < 0.15
+    , doctest           >= 0.11.1 && < 0.16
     , linear-accelerate
 
   other-modules:
