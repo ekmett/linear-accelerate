@@ -41,6 +41,10 @@ matrix:
       compiler: "GHC 8.2"
       addons: { apt: { sources: [ *apt_sources ], packages: [ *apt_packages, cabal-install-2.0 ] }}
 
+    - env: GHC=8.4.1 CABAL=2.0
+      compiler: "GHC 8.4"
+      addons: { apt: { sources: [ *apt_sources ], packages: [ *apt_packages, cabal-install-2.0 ] }}
+
     # - env: GHC=head CABAL=head
     #   compiler: "GHC HEAD"
     #   addons: { apt: { sources: [ *apt_sources ], packages: [ *apt_packages, ghc-head, cabal-install-head ] }}
@@ -58,6 +62,7 @@ install:
   - echo "$(ghc --version) [$(ghc --print-project-git-commit-id 2> /dev/null || echo '?')]"
   - cabal --version
   - stack --version
+  - stack build --no-terminal --dry-run
   - travis_retry travis_wait 60 stack build --fast --test --only-dependencies --no-terminal --no-copy-bins
 
 script:
