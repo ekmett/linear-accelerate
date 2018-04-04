@@ -8,7 +8,7 @@
 -- |
 -- Module      : Data.Array.Accelerate.Linear.Vector
 -- Copyright   : 2014 Edward Kmett, Charles Durham,
---               2015 Trevor L. McDonell
+--               [2015..2018] Trevor L. McDonell
 -- License     : BSD-style (see the file LICENSE)
 --
 -- Maintainer  : Edward Kmett <ekmett@gmail.com>
@@ -83,7 +83,7 @@ class L.Additive f => Additive f where
   lerp = lift3 (L.lerp :: Exp a -> f (Exp a) -> f (Exp a) -> f (Exp a))
 
 
-type IsAdditive f a = (Additive f, Box f a)
+-- type IsAdditive f a = (Additive f, Box f a)
 
 
 -- | Basis element

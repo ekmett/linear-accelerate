@@ -5,7 +5,7 @@
 -----------------------------------------------------------------------------
 -- |
 -- Module      : Data.Array.Accelerate.Linear.Lift
--- Copyright   : 2015 Trevor L. McDonell
+-- Copyright   : [2015..2018] Trevor L. McDonell
 -- License     : BSD-style (see the file LICENSE)
 --
 -- Maintainer  : Trevor L. McDonell <tmcdonell@cse.unsw.edu.au>

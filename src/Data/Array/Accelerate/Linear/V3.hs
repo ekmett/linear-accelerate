@@ -1,7 +1,6 @@
 {-# LANGUAGE ConstraintKinds       #-}
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE IncoherentInstances   #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
@@ -12,7 +11,7 @@
 -- |
 -- Module      : Data.Array.Accelerate.Linear.V3
 -- Copyright   : 2014 Edward Kmett, Charles Durham,
---               2015 Trevor L. McDonell
+--               [2015..2018] Trevor L. McDonell
 -- License     : BSD-style (see the file LICENSE)
 --
 -- Maintainer  : Edward Kmett <ekmett@gmail.com>
@@ -36,10 +35,12 @@ module Data.Array.Accelerate.Linear.V3 (
 ) where
 
 import Data.Array.Accelerate                    as A
+import Data.Array.Accelerate.Data.Functor       as A
 import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
+import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Lift
 import Data.Array.Accelerate.Linear.Metric
 import Data.Array.Accelerate.Linear.Type
@@ -48,9 +49,10 @@ import Data.Array.Accelerate.Linear.V2
 import Data.Array.Accelerate.Linear.Vector
 
 import Control.Lens
+import Data.Function
 import Linear.V3                                ( V3(..) )
-import qualified Linear.V3                      as L
 import Prelude                                  as P
+import qualified Linear.V3                      as L
 
 -- $setup
 -- >>> import Data.Array.Accelerate.Interpreter
@@ -140,6 +142,31 @@ instance Elt a => Unlift Exp (V3 (Exp a)) where
                 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
                 (Exp $ ZeroTupIdx `Prj` t)
 
+instance (Elt a, Elt b) => Each (Exp (V3 a)) (Exp (V3 b)) (Exp a) (Exp b) where
+  each = liftLens (each :: Traversal (V3 (Exp a)) (V3 (Exp b)) (Exp a) (Exp b))
+
+instance A.Eq a => A.Eq (V3 a) where
+  (==) = (A.==) `on` t3
+  (/=) = (A./=) `on` t3
+
+instance A.Ord a => A.Ord (V3 a) where
+  (<)  = (A.<) `on` t3
+  (>)  = (A.>) `on` t3
+  (<=) = (A.<=) `on` t3
+  (>=) = (A.>=) `on` t3
+  min  = v3 $$ on A.min t3
+  max  = v3 $$ on A.max t3
+
+t3 :: Elt a => Exp (V3 a) -> Exp (a,a,a)
+t3 (unlift -> V3 x y z) = tup3 (x,y,z)
+
+v3 :: Elt a => Exp (a,a,a) -> Exp (V3 a)
+v3 (untup3 -> (x,y,z)) = lift (V3 x y z)
+
+instance A.Bounded a => P.Bounded (Exp (V3 a)) where
+  minBound = lift (V3 (minBound :: Exp a) (minBound :: Exp a) (minBound :: Exp a))
+  maxBound = lift (V3 (maxBound :: Exp a) (maxBound :: Exp a) (maxBound :: Exp a))
+
 instance A.Num a => P.Num (Exp (V3 a)) where
   (+)             = lift2 ((+) :: V3 (Exp a) -> V3 (Exp a) -> V3 (Exp a))
   (-)             = lift2 ((-) :: V3 (Exp a) -> V3 (Exp a) -> V3 (Exp a))
@@ -147,12 +174,12 @@ instance A.Num a => P.Num (Exp (V3 a)) where
   negate          = lift1 (negate :: V3 (Exp a) -> V3 (Exp a))
   signum          = lift1 (signum :: V3 (Exp a) -> V3 (Exp a))
   abs             = lift1 (signum :: V3 (Exp a) -> V3 (Exp a))
-  fromInteger x   = lift (fromInteger x :: V3 (Exp a))
+  fromInteger x   = lift (P.fromInteger x :: V3 (Exp a))
 
 instance A.Floating a => P.Fractional (Exp (V3 a)) where
   (/)             = lift2 ((/) :: V3 (Exp a) -> V3 (Exp a) -> V3 (Exp a))
   recip           = lift1 (recip :: V3 (Exp a) -> V3 (Exp a))
-  fromRational x  = lift (fromRational x :: V3 (Exp a))
+  fromRational x  = lift (P.fromRational x :: V3 (Exp a))
 
 instance A.Floating a => P.Floating (Exp (V3 a)) where
   pi              = lift (pi :: V3 (Exp a))
@@ -171,8 +198,12 @@ instance A.Floating a => P.Floating (Exp (V3 a)) where
   acosh           = lift1 (acosh :: V3 (Exp a) -> V3 (Exp a))
   atanh           = lift1 (atanh :: V3 (Exp a) -> V3 (Exp a))
 
-instance (Elt a, Elt b) => Each (Exp (V3 a)) (Exp (V3 b)) (Exp a) (Exp b) where
-  each = liftLens (each :: Traversal (V3 (Exp a)) (V3 (Exp b)) (Exp a) (Exp b))
+instance Epsilon a => Epsilon (V3 a) where
+  nearZero = nearZero . quadrance
+
+instance A.Functor V3 where
+  fmap f (unlift -> V3 x y z) = lift (V3 (f x) (f y) (f z))
+  x <$ _                      = lift (V3 x x x)
 
 -- $liftAcc
 --

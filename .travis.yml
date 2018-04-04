@@ -3,17 +3,18 @@
 # Basic template to test with GHC=[7.8, 7.10, 8.0]. Caches the 'stack' build
 # directory to speed subsequent compilations.
 #
-language: generic
+# https://docs.travis-ci.com/user/reference/overview/
+#
+language: minimal
 dist: trusty
-sudo: false
+sudo: true      # more storage available on sudo-enabled instances
 
 cache:
   directories:
-    - $HOME/.stack
+    - $HOME/.stack/snapshots
     - .stack-work/install
 
 before_cache:
-  - rm -rf $(stack path --local-install-root)/bin
   - rm -rf $(stack path --local-install-root)/doc
 
 addons:
@@ -28,10 +29,6 @@ addons:
 
 matrix:
   include:
-    - env: GHC=7.8.4 CABAL=1.24
-      compiler: "GHC 7.8"
-      addons: { apt: { sources: [ *apt_sources ], packages: [ *apt_packages, cabal-install-1.24 ] }}
-
     - env: GHC=7.10.3 CABAL=1.24
       compiler: "GHC 7.10"
       addons: { apt: { sources: [ *apt_sources ], packages: [ *apt_packages, cabal-install-1.24 ] }}
@@ -40,9 +37,13 @@ matrix:
       compiler: "GHC 8.0"
       addons: { apt: { sources: [ *apt_sources ], packages: [ *apt_packages, cabal-install-1.24 ] }}
 
-    - env: GHC=8.2.0 CABAL=1.24
+    - env: GHC=8.2.2 CABAL=2.0
       compiler: "GHC 8.2"
-      addons: { apt: { sources: [ *apt_sources ], packages: [ *apt_packages, cabal-install-1.24 ] }}
+      addons: { apt: { sources: [ *apt_sources ], packages: [ *apt_packages, cabal-install-2.0 ] }}
+
+    - env: GHC=8.4.1 CABAL=2.0
+      compiler: "GHC 8.4"
+      addons: { apt: { sources: [ *apt_sources ], packages: [ *apt_packages, cabal-install-2.0 ] }}
 
     # - env: GHC=head CABAL=head
     #   compiler: "GHC HEAD"
@@ -61,21 +62,12 @@ install:
   - echo "$(ghc --version) [$(ghc --print-project-git-commit-id 2> /dev/null || echo '?')]"
   - cabal --version
   - stack --version
-  - |
-      if [ ${GHC} == head -o ! -e stack.yaml ]; then
-        travis_retry cabal install --only-dependencies
-      else
-        travis_retry stack build --only-dependencies --no-terminal --no-haddock-deps
-      fi
+  - stack build --no-terminal --dry-run
+  - travis_retry travis_wait 60 stack build --fast --test --only-dependencies --no-terminal --no-copy-bins
 
 script:
-  - |
-      if [ ${GHC} == head -o ! -e stack.yaml ]; then
-        cabal install
-        cabal haddock
-      else
-        stack test --no-terminal --haddock --no-haddock-deps
-      fi
+  - stack build --no-terminal --fast --test --haddock --no-haddock-deps --no-run-tests
+  - stack test
 
 after_success:
   - source .travis/update-accelerate-buildbot.sh

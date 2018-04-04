@@ -4,7 +4,7 @@
 -----------------------------------------------------------------------------
 -- |
 -- Module      : Data.Array.Accelerate.Linear.Type
--- Copyright   : 2015 Trevor L. McDonell
+-- Copyright   : [2015..2018] Trevor L. McDonell
 -- License     : BSD-style (see the file LICENSE)
 --
 -- Maintainer  : Edward Kmett <ekmett@gmail.com>
