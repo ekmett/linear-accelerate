@@ -7,9 +7,7 @@ packages:
 - '.'
 
 extra-deps:
-- git:    https://github.com/tmcdonell/accelerate.git
-  commit: 0a5d8f622f9c7541afbbf3d6848d6fa636e510d2
-
+- 'accelerate-1.2.0.0'
 - 'hashtables-1.2.3.0'
 - 'tasty-hedgehog-0.2.0.0'
 

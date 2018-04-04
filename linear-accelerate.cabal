@@ -84,9 +84,6 @@ test-suite doctests
     , doctest           >= 0.11.1 && < 0.16
     , linear-accelerate
 
-  other-modules:
-    Build_doctests
-
   default-language:
     Haskell2010
 
