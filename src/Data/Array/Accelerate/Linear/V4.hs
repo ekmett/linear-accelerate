@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE PatternSynonyms       #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
@@ -23,7 +24,8 @@
 
 module Data.Array.Accelerate.Linear.V4 (
 
-  V4(..), vector, point, normalizePoint,
+  V4(..), pattern V4',
+  vector, point, normalizePoint,
   R1(..),
   R2(..),
   _yx,
@@ -176,27 +178,17 @@ ew = E _w
 -- Instances
 -- ---------
 
+pattern V4' :: Elt a => Exp a -> Exp a -> Exp a -> Exp a -> Exp (V4 a)
+pattern V4' x y z w = Pattern (x,y,z,w)
+
 instance Metric V4
 instance Additive V4
 instance R1 V4
 instance R2 V4
 instance R3 V4
 instance R4 V4
-
-type instance EltRepr (V4 a) = EltRepr (a, a, a, a)
-
-instance Elt a => Elt (V4 a) where
-  eltType _ = eltType (undefined :: (a,a,a,a))
-  toElt p = case toElt p of
-     (x, y, z, w) -> V4 x y z w
-  fromElt (V4 x y z w) = fromElt (x, y, z, w)
-
-instance cst a => IsProduct cst (V4 a) where
-  type ProdRepr (V4 a) = ProdRepr (a,a,a,a)
-  fromProd p (V4 x y z w) = fromProd p (x,y,z,w)
-  toProd p t = case toProd p t of
-     (x, y, z, w) -> V4 x y z w
-  prod p _ = prod p (undefined :: (a,a,a,a))
+instance Elt a => Elt (V4 a)
+instance Elt a => IsProduct Elt (V4 a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V4 a) where
   type Plain (V4 a) = V4 (Plain a)

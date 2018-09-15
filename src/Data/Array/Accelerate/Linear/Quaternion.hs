@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE PatternSynonyms       #-}
 {-# LANGUAGE RebindableSyntax      #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
@@ -24,7 +25,7 @@
 
 module Data.Array.Accelerate.Linear.Quaternion (
 
-  Quaternion(..),
+  Quaternion(..), pattern Quaternion',
 
   slerp,
   asinq,
@@ -162,38 +163,22 @@ axisAngle axis theta = lift $ Quaternion (cos half) (unlift (sin half *^ normali
 -- Instances
 -- ---------
 
+pattern Quaternion' :: Elt a => Exp a -> Exp (V3 a) -> Exp (Quaternion a)
+pattern Quaternion' x v = Pattern (x,v)
+
 instance Metric Quaternion
 instance Additive Quaternion
-
-type instance EltRepr (Quaternion a) = EltRepr (a, a, a, a)
-
-instance Elt a => Elt (Quaternion a) where
-  eltType _ = eltType (undefined :: (a,a,a,a))
-  toElt p = case toElt p of
-     (x, y, z, w) -> Quaternion x (V3 y z w)
-  fromElt (Quaternion x (V3 y z w)) = fromElt (x, y, z, w)
-
-instance cst a => IsProduct cst (Quaternion a) where
-  type ProdRepr (Quaternion a) = ProdRepr (a,a,a,a)
-  fromProd p (Quaternion x (V3 y z w)) = fromProd p (x,y,z,w)
-  toProd p t = case toProd p t of
-     (x, y, z, w) -> Quaternion x (V3 y z w)
-  prod p _ = prod p (undefined :: (a,a,a,a))
+instance Elt a => Elt (Quaternion a)
+instance Elt a => IsProduct Elt (Quaternion a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Quaternion a) where
   type Plain (Quaternion a) = Quaternion (Plain a)
-  --lift = Exp . Tuple . F.foldl SnocTup NilTup
-  lift (Quaternion x (V3 y z w)) = Exp $ Tuple $ NilTup `SnocTup`
-                                   lift x `SnocTup`
-                                   lift y `SnocTup`
-                                   lift z `SnocTup`
-                                   lift w
+  lift (Quaternion x v) = Exp $ Tuple $ NilTup `SnocTup` lift x
+                                               `SnocTup` lift v
 
 instance Elt a => Unlift Exp (Quaternion (Exp a)) where
-  unlift t = Quaternion (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx)) `Prj` t)
-                    (V3 (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
-                        (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
-                        (Exp $ ZeroTupIdx `Prj` t))
+  unlift t = Quaternion (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
+                (unlift (Exp $ ZeroTupIdx `Prj` t))
 
 instance (Elt a, Elt b) => Each (Exp (Quaternion a)) (Exp (Quaternion b)) (Exp a) (Exp b) where
   each = liftLens (each :: Traversal (Quaternion (Exp a)) (Quaternion (Exp b)) (Exp a) (Exp b))

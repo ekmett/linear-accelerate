@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE PatternSynonyms       #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
@@ -23,7 +24,8 @@
 
 module Data.Array.Accelerate.Linear.V3 (
 
-  V3(..), cross, triple,
+  V3(..), pattern V3',
+  cross, triple,
   R1(..),
   R2(..),
   _yx,
@@ -112,26 +114,16 @@ ez = E _z
 -- Instances
 -- ---------
 
+pattern V3' :: Elt a => Exp a -> Exp a -> Exp a -> Exp (V3 a)
+pattern V3' x y z = Pattern (x,y,z)
+
 instance Metric V3
 instance Additive V3
 instance R1 V3
 instance R2 V3
 instance R3 V3
-
-type instance EltRepr (V3 a) = EltRepr (a, a, a)
-
-instance Elt a => Elt (V3 a) where
-  eltType _ = eltType (undefined :: (a,a,a))
-  toElt p = case toElt p of
-     (x, y, z) -> V3 x y z
-  fromElt (V3 x y z) = fromElt (x, y, z)
-
-instance cst a => IsProduct cst (V3 a) where
-  type ProdRepr (V3 a) = ProdRepr (a,a,a)
-  fromProd p (V3 x y z) = fromProd p (x,y,z)
-  toProd p t = case toProd p t of
-     (x, y, z) -> V3 x y z
-  prod p _ = prod p (undefined :: (a,a,a))
+instance Elt a => Elt (V3 a)
+instance Elt a => IsProduct Elt (V3 a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V3 a) where
   type Plain (V3 a) = V3 (Plain a)

@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE PatternSynonyms       #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
@@ -23,7 +24,9 @@
 
 module Data.Array.Accelerate.Linear.V2 (
 
-  V2(..), R1(..), R2(..),
+  V2(..), pattern V2',
+  R1(..),
+  R2(..),
   _yx,
   ex, ey,
   perp, angle,
@@ -105,25 +108,15 @@ ey = E _y
 -- Instances
 -- ---------
 
+pattern V2' :: Elt a => Exp a -> Exp a -> Exp (V2 a)
+pattern V2' x y = Pattern (x,y)
+
 instance Metric V2
 instance Additive V2
 instance R1 V2
 instance R2 V2
-
-type instance EltRepr (V2 a) = EltRepr (a, a)
-
-instance Elt a => Elt (V2 a) where
-  eltType _ = eltType (undefined :: (a,a))
-  toElt p = case toElt p of
-     (x, y) -> V2 x y
-  fromElt (V2 x y) = fromElt (x, y)
-
-instance cst a => IsProduct cst (V2 a) where
-  type ProdRepr (V2 a) = ProdRepr (a,a)
-  fromProd p (V2 x y) = fromProd p (x,y)
-  toProd p t = case toProd p t of
-     (x, y) -> V2 x y
-  prod p _ = prod p (undefined :: (a,a))
+instance Elt a => Elt (V2 a)
+instance Elt a => IsProduct Elt (V2 a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V2 a) where
   type Plain (V2 a) = V2 (Plain a)

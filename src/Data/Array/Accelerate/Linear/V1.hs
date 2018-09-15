@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE PatternSynonyms       #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
@@ -23,7 +24,9 @@
 
 module Data.Array.Accelerate.Linear.V1 (
 
-  V1(..), R1(..), ex,
+  V1(..), pattern V1',
+  R1(..),
+  ex,
 
 ) where
 
@@ -32,7 +35,6 @@ import Data.Array.Accelerate.Data.Functor       as A
 import Data.Array.Accelerate.Array.Sugar
 import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Smart
-import Data.Array.Accelerate.Type
 
 import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Lift
@@ -74,22 +76,14 @@ ex = E _x
 -- Instances
 -- ---------
 
+pattern V1' :: Elt a => Exp a -> Exp (V1 a)
+pattern V1' x = Pattern x
+
 instance Metric V1
 instance Additive V1
 instance R1 V1
-
-type instance EltRepr (V1 a) = ((), EltRepr a)
-
-instance Elt a => Elt (V1 a) where
-  eltType _ = TypeRpair TypeRunit (eltType (undefined :: a))
-  toElt ((), x) = V1 (toElt x)
-  fromElt (V1 x) = ((), fromElt x)
-
-instance cst a => IsProduct cst (V1 a) where
-  type ProdRepr (V1 a) = ((), a)
-  fromProd _ (V1 x) = ((), x)
-  toProd _ ((), x) = V1 x
-  prod _ _ = ProdRsnoc ProdRunit
+instance Elt a => Elt (V1 a)
+instance Elt a => IsProduct Elt (V1 a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V1 a) where
   type Plain (V1 a) = V1 (Plain a)

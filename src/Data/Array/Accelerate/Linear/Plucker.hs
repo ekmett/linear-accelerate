@@ -3,9 +3,11 @@
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE PatternSynonyms       #-}
 {-# LANGUAGE RebindableSyntax      #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE StandaloneDeriving    #-}
+{-# LANGUAGE TypeApplications      #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
 {-# LANGUAGE ViewPatterns          #-}
@@ -27,7 +29,7 @@
 
 module Data.Array.Accelerate.Linear.Plucker (
 
-  Plucker(..),
+  Plucker(..), pattern Plucker',
 
   squaredError,
   isotropic,
@@ -215,23 +217,13 @@ anti k f = k (P.fmap negate . f . negate)
 
 deriving instance Typeable Plucker
 
+pattern Plucker' :: Elt a => Exp a -> Exp a -> Exp a -> Exp a -> Exp a -> Exp a -> Exp (Plucker a)
+pattern Plucker' a b c d e f = Pattern (a,b,c,d,e,f)
+
 instance Metric Plucker
 instance Additive Plucker
-
-type instance EltRepr (Plucker a) = EltRepr (a, a, a, a, a, a)
-
-instance Elt a => Elt (Plucker a) where
-  eltType _ = eltType (undefined :: (a,a,a,a,a,a))
-  toElt p = case toElt p of
-     (x, y, z, w, u, v) -> Plucker x y z w u v
-  fromElt (Plucker x y z w u v) = fromElt (x, y, z, w, u, v)
-
-instance cst a => IsProduct cst (Plucker a) where
-  type ProdRepr (Plucker a) = ProdRepr (a,a,a,a,a,a)
-  fromProd p (Plucker x y z w u v) = fromProd p (x, y, z, w, u, v)
-  toProd p t = case toProd p t of
-     (x, y, z, w, u, v) -> Plucker x y z w u v
-  prod p _ = prod p (undefined :: (a,a,a,a,a,a))
+instance Elt a => Elt (Plucker a)
+instance Elt a => IsProduct Elt (Plucker a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Plucker a) where
   type Plain (Plucker a) = Plucker (Plain a)
@@ -317,10 +309,9 @@ instance Functor Plucker where
   x <$ _                                 = lift (Plucker x x x x x x)
 
 
-type instance EltRepr LinePass = Int8
-
 instance Elt LinePass where
-  eltType _ = eltType (undefined::Int8)
+  type instance EltRepr LinePass = Int8
+  eltType = eltType @Int8
 
   toElt x = let (==) = (P.==)   -- -XRebindableSyntax hax
             in  case x of

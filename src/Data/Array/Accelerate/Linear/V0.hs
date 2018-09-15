@@ -1,9 +1,10 @@
 {-# LANGUAGE ConstraintKinds       #-}
+{-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE PatternSynonyms       #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
-{-# LANGUAGE UndecidableInstances  #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 -----------------------------------------------------------------------------
 -- |
@@ -21,7 +22,7 @@
 
 module Data.Array.Accelerate.Linear.V0 (
 
-  V0(..),
+  V0(..), pattern V0',
 
 ) where
 
@@ -43,21 +44,13 @@ import Prelude                                  as P
 -- Instances
 -- ---------
 
+pattern V0' :: Exp (V0 a)
+pattern V0' = Pattern ()
+
 instance Metric V0
 instance Additive V0
-
-type instance EltRepr (V0 a) = ()
-
-instance Elt a => Elt (V0 a) where
-  eltType _ = eltType ()
-  toElt () = V0
-  fromElt V0 = ()
-
-instance IsProduct cst (V0 a) where
-  type ProdRepr (V0 a) = ()
-  fromProd _ V0 = ()
-  toProd _ () = V0
-  prod _ _ = ProdRunit
+instance Elt a => Elt (V0 a)
+instance Elt a => IsProduct Elt (V0 a)
 
 instance Lift Exp (V0 a) where
   type Plain (V0 a) = ()
