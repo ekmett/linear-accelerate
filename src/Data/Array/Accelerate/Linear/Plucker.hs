@@ -310,7 +310,7 @@ instance Functor Plucker where
 
 
 instance Elt LinePass where
-  type instance EltRepr LinePass = Int8
+  type EltRepr LinePass = Int8
   eltType = eltType @Int8
 
   toElt x = let (==) = (P.==)   -- -XRebindableSyntax hax
