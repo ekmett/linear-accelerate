@@ -44,7 +44,7 @@ import Prelude                                  as P
 -- Instances
 -- ---------
 
-pattern V0' :: Exp (V0 a)
+pattern V0' :: Elt a => Exp (V0 a)
 pattern V0' = Pattern ()
 
 instance Metric V0
