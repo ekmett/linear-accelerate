@@ -7,9 +7,13 @@ packages:
 - '.'
 
 extra-deps:
-- 'accelerate-1.2.0.0'
-- 'hashtables-1.2.3.0'
-- 'tasty-hedgehog-0.2.0.0'
+- git: https://github.com/tmcdonell/accelerate.git
+  commit: 99b5de898f9fe600c1a053fd53887407fa836b10
+
+- half-0.3
+- hashtables-1.2.3.0
+- primitive-0.6.4.0
+- tasty-hedgehog-0.2.0.0
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

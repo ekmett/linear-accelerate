@@ -7,7 +7,8 @@ packages:
 - '.'
 
 extra-deps:
-- 'accelerate-1.2.0.0'
+- git: https://github.com/tmcdonell/accelerate.git
+  commit: 99b5de898f9fe600c1a053fd53887407fa836b10
 - 'constraints-0.9.1'
 - 'hashtables-1.2.3.0'
 - 'hedgehog-0.5.3'
