@@ -3,6 +3,7 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE TypeApplications      #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
 {-# LANGUAGE ViewPatterns          #-}
@@ -118,20 +119,13 @@ instance R1 V3
 instance R2 V3
 instance R3 V3
 
-type instance EltRepr (V3 a) = EltRepr (a, a, a)
-
 instance Elt a => Elt (V3 a) where
-  eltType _ = eltType (undefined :: (a,a,a))
-  toElt p = case toElt p of
-     (x, y, z) -> V3 x y z
+  type EltRepr (V3 a) = EltRepr (a, a, a)
+  eltType = eltType @(a, a, a)
+  toElt t = let (x, y, z) = toElt t in V3 x y z
   fromElt (V3 x y z) = fromElt (x, y, z)
 
-instance cst a => IsProduct cst (V3 a) where
-  type ProdRepr (V3 a) = ProdRepr (a,a,a)
-  fromProd p (V3 x y z) = fromProd p (x,y,z)
-  toProd p t = case toProd p t of
-     (x, y, z) -> V3 x y z
-  prod p _ = prod p (undefined :: (a,a,a))
+instance cst a => IsProduct cst (V3 a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V3 a) where
   type Plain (V3 a) = V3 (Plain a)

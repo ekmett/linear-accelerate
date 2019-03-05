@@ -6,6 +6,7 @@
 {-# LANGUAGE RebindableSyntax      #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE StandaloneDeriving    #-}
+{-# LANGUAGE TypeApplications      #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
 {-# LANGUAGE ViewPatterns          #-}
@@ -218,20 +219,17 @@ deriving instance Typeable Plucker
 instance Metric Plucker
 instance Additive Plucker
 
-type instance EltRepr (Plucker a) = EltRepr (a, a, a, a, a, a)
-
 instance Elt a => Elt (Plucker a) where
-  eltType _ = eltType (undefined :: (a,a,a,a,a,a))
-  toElt p = case toElt p of
-     (x, y, z, w, u, v) -> Plucker x y z w u v
+  type EltRepr (Plucker a) = EltRepr (a, a, a, a, a, a)
+  eltType = eltType @(a, a, a, a, a, a)
+  toElt p = let (x, y, z, w, u, v) = toElt p in Plucker x y z w u v
   fromElt (Plucker x y z w u v) = fromElt (x, y, z, w, u, v)
 
 instance cst a => IsProduct cst (Plucker a) where
-  type ProdRepr (Plucker a) = ProdRepr (a,a,a,a,a,a)
-  fromProd p (Plucker x y z w u v) = fromProd p (x, y, z, w, u, v)
-  toProd p t = case toProd p t of
-     (x, y, z, w, u, v) -> Plucker x y z w u v
-  prod p _ = prod p (undefined :: (a,a,a,a,a,a))
+  type ProdRepr (Plucker a) = ProdRepr (a, a, a, a, a, a)
+  fromProd (Plucker x y z w u v) = fromProd @cst (x, y, z, w, u, v)
+  toProd p = let (x, y, z, w, u, v) = toProd @cst p in Plucker x y z w u v
+  prod = prod @cst @(a, a, a, a, a, a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Plucker a) where
   type Plain (Plucker a) = Plucker (Plain a)
@@ -317,10 +315,10 @@ instance Functor Plucker where
   x <$ _                                 = lift (Plucker x x x x x x)
 
 
-type instance EltRepr LinePass = Int8
-
 instance Elt LinePass where
-  eltType _ = eltType (undefined::Int8)
+  type EltRepr LinePass = Int8
+
+  eltType = eltType @Int8
 
   toElt x = let (==) = (P.==)   -- -XRebindableSyntax hax
             in  case x of

@@ -3,6 +3,7 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE TypeApplications      #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
 {-# LANGUAGE ViewPatterns          #-}
@@ -32,7 +33,6 @@ import Data.Array.Accelerate.Data.Functor       as A
 import Data.Array.Accelerate.Array.Sugar
 import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Smart
-import Data.Array.Accelerate.Type
 
 import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Lift
@@ -78,18 +78,13 @@ instance Metric V1
 instance Additive V1
 instance R1 V1
 
-type instance EltRepr (V1 a) = ((), EltRepr a)
-
 instance Elt a => Elt (V1 a) where
-  eltType _ = TypeRpair TypeRunit (eltType (undefined :: a))
-  toElt ((), x) = V1 (toElt x)
-  fromElt (V1 x) = ((), fromElt x)
+  type EltRepr (V1 a) = EltRepr a
+  eltType = eltType @a
+  toElt x = V1 $ toElt x
+  fromElt (V1 x) = fromElt x
 
-instance cst a => IsProduct cst (V1 a) where
-  type ProdRepr (V1 a) = ((), a)
-  fromProd _ (V1 x) = ((), x)
-  toProd _ ((), x) = V1 x
-  prod _ _ = ProdRsnoc ProdRunit
+instance cst a => IsProduct cst (V1 a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V1 a) where
   type Plain (V1 a) = V1 (Plain a)
@@ -154,4 +149,3 @@ instance Epsilon a => Epsilon (V1 a) where
 instance A.Functor V1 where
   fmap f (unlift -> V1 x) = lift (V1 (f x))
   x <$ _                  = lift (V1 x)
-

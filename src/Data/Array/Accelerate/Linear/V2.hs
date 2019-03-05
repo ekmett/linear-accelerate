@@ -3,6 +3,7 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE TypeApplications      #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
 {-# LANGUAGE ViewPatterns          #-}
@@ -110,20 +111,13 @@ instance Additive V2
 instance R1 V2
 instance R2 V2
 
-type instance EltRepr (V2 a) = EltRepr (a, a)
-
 instance Elt a => Elt (V2 a) where
-  eltType _ = eltType (undefined :: (a,a))
-  toElt p = case toElt p of
-     (x, y) -> V2 x y
+  type EltRepr (V2 a) = EltRepr (a, a)
+  eltType = eltType @(a, a)
+  toElt t = let (x, y) = toElt t in V2 x y
   fromElt (V2 x y) = fromElt (x, y)
 
-instance cst a => IsProduct cst (V2 a) where
-  type ProdRepr (V2 a) = ProdRepr (a,a)
-  fromProd p (V2 x y) = fromProd p (x,y)
-  toProd p t = case toProd p t of
-     (x, y) -> V2 x y
-  prod p _ = prod p (undefined :: (a,a))
+instance cst a => IsProduct cst (V2 a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V2 a) where
   type Plain (V2 a) = V2 (Plain a)

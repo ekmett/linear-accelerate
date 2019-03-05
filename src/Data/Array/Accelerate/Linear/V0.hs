@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE TypeApplications      #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
@@ -46,18 +47,13 @@ import Prelude                                  as P
 instance Metric V0
 instance Additive V0
 
-type instance EltRepr (V0 a) = ()
-
 instance Elt a => Elt (V0 a) where
-  eltType _ = eltType ()
+  type EltRepr (V0 a) = ()
+  eltType = eltType @()
   toElt () = V0
   fromElt V0 = ()
 
-instance IsProduct cst (V0 a) where
-  type ProdRepr (V0 a) = ()
-  fromProd _ V0 = ()
-  toProd _ () = V0
-  prod _ _ = ProdRunit
+instance IsProduct cst (V0 a)
 
 instance Lift Exp (V0 a) where
   type Plain (V0 a) = ()

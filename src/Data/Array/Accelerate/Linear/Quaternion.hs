@@ -4,6 +4,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RebindableSyntax      #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE TypeApplications      #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
 {-# LANGUAGE ViewPatterns          #-}
@@ -165,20 +166,17 @@ axisAngle axis theta = lift $ Quaternion (cos half) (unlift (sin half *^ normali
 instance Metric Quaternion
 instance Additive Quaternion
 
-type instance EltRepr (Quaternion a) = EltRepr (a, a, a, a)
-
 instance Elt a => Elt (Quaternion a) where
-  eltType _ = eltType (undefined :: (a,a,a,a))
-  toElt p = case toElt p of
-     (x, y, z, w) -> Quaternion x (V3 y z w)
+  type EltRepr (Quaternion a) = EltRepr (a, a, a, a)
+  eltType = eltType @(a, a, a, a)
+  toElt t = let (x, y, z, w) = toElt t in Quaternion x (V3 y z w)
   fromElt (Quaternion x (V3 y z w)) = fromElt (x, y, z, w)
 
 instance cst a => IsProduct cst (Quaternion a) where
-  type ProdRepr (Quaternion a) = ProdRepr (a,a,a,a)
-  fromProd p (Quaternion x (V3 y z w)) = fromProd p (x,y,z,w)
-  toProd p t = case toProd p t of
-     (x, y, z, w) -> Quaternion x (V3 y z w)
-  prod p _ = prod p (undefined :: (a,a,a,a))
+  type ProdRepr (Quaternion a) = ProdRepr (a, a, a, a)
+  fromProd (Quaternion x (V3 y z w)) = fromProd @cst (x, y, z, w)
+  toProd t = let (x, y, z, w) = toProd @cst t in Quaternion x (V3 y z w)
+  prod = prod @cst @(a, a, a, a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Quaternion a) where
   type Plain (Quaternion a) = Quaternion (Plain a)
