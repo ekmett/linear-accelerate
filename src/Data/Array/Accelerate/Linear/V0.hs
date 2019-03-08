@@ -29,7 +29,6 @@ module Data.Array.Accelerate.Linear.V0 (
 import Data.Array.Accelerate                    as A
 import Data.Array.Accelerate.Data.Functor       as A
 import Data.Array.Accelerate.Smart
-import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Metric
