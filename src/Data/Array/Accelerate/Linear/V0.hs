@@ -53,7 +53,11 @@ instance Elt a => Elt (V0 a) where
   toElt () = V0
   fromElt V0 = ()
 
-instance IsProduct cst (V0 a)
+instance IsProduct cst (V0 a) where
+  type ProdRepr (V0 a) = ()
+  fromProd V0 = ()
+  toProd _ = V0
+  prod = prod @cst @()
 
 instance Lift Exp (V0 a) where
   type Plain (V0 a) = ()

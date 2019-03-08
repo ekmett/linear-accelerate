@@ -117,7 +117,11 @@ instance Elt a => Elt (V2 a) where
   toElt t = let (x, y) = toElt t in V2 x y
   fromElt (V2 x y) = fromElt (x, y)
 
-instance cst a => IsProduct cst (V2 a)
+instance cst a => IsProduct cst (V2 a) where
+  type ProdRepr (V2 a) = ProdRepr (a, a)
+  fromProd (V2 x y) = fromProd @cst (x, y)
+  toProd t = let (x, y) = toProd @cst t in V2 x y
+  prod = prod @cst @(a, a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V2 a) where
   type Plain (V2 a) = V2 (Plain a)
