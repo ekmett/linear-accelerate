@@ -29,7 +29,7 @@ addons:
 
 matrix:
   include:
-    - env: GHC=8.6.1 CABAL=2.2
+    - env: GHC=8.6.3 CABAL=2.2
       compiler: "GHC 8.6"
       addons: { apt: { sources: [ *apt_sources ], packages: [ *apt_packages, cabal-install-2.2 ] }}
 
