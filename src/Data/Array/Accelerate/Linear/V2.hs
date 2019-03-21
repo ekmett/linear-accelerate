@@ -110,6 +110,7 @@ ey = E _y
 
 pattern V2' :: Elt a => Exp a -> Exp a -> Exp (V2 a)
 pattern V2' x y = Pattern (x,y)
+{-# COMPLETE V2' #-}
 
 instance Metric V2
 instance Additive V2

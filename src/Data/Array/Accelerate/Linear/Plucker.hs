@@ -219,6 +219,7 @@ deriving instance Typeable Plucker
 
 pattern Plucker' :: Elt a => Exp a -> Exp a -> Exp a -> Exp a -> Exp a -> Exp a -> Exp (Plucker a)
 pattern Plucker' a b c d e f = Pattern (a,b,c,d,e,f)
+{-# COMPLETE Plucker' #-}
 
 instance Metric Plucker
 instance Additive Plucker

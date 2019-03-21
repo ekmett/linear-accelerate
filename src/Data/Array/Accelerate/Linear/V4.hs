@@ -180,6 +180,7 @@ ew = E _w
 
 pattern V4' :: Elt a => Exp a -> Exp a -> Exp a -> Exp a -> Exp (V4 a)
 pattern V4' x y z w = Pattern (x,y,z,w)
+{-# COMPLETE V4' #-}
 
 instance Metric V4
 instance Additive V4

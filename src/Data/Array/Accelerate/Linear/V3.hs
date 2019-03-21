@@ -116,6 +116,7 @@ ez = E _z
 
 pattern V3' :: Elt a => Exp a -> Exp a -> Exp a -> Exp (V3 a)
 pattern V3' x y z = Pattern (x,y,z)
+{-# COMPLETE V3' #-}
 
 instance Metric V3
 instance Additive V3

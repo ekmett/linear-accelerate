@@ -165,6 +165,7 @@ axisAngle axis theta = lift $ Quaternion (cos half) (unlift (sin half *^ normali
 
 pattern Quaternion' :: Elt a => Exp a -> Exp (V3 a) -> Exp (Quaternion a)
 pattern Quaternion' x v = Pattern (x,v)
+{-# COMPLETE Quaternion' #-}
 
 instance Metric Quaternion
 instance Additive Quaternion

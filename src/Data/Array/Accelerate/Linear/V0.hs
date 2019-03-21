@@ -45,6 +45,7 @@ import Prelude                                  as P
 
 pattern V0' :: Elt a => Exp (V0 a)
 pattern V0' = Pattern ()
+{-# COMPLETE V0' #-}
 
 instance Metric V0
 instance Additive V0

@@ -78,6 +78,7 @@ ex = E _x
 
 pattern V1' :: Elt a => Exp a -> Exp (V1 a)
 pattern V1' x = Pattern x
+{-# COMPLETE V1' #-}
 
 instance Metric V1
 instance Additive V1
