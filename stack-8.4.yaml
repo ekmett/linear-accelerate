@@ -4,11 +4,11 @@
 resolver: lts-12.26
 
 packages:
-- '.'
+- .
 
 extra-deps:
 - git:    https://github.com/tmcdonell/accelerate.git
-  commit: ae15f6531e74b32577d80ea29ebb54075926799a
+  commit: cfa1f48bef0e8d5bf2bec60a11ade2cac2153a9d
 
 - doctest-0.15.1
 - primitive-0.6.4.0
