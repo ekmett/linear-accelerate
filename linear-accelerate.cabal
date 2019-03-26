@@ -41,17 +41,18 @@ library
     , accelerate        >= 1.3
     , distributive      >= 0.2.2        && < 1
     , lens              >= 4            && < 5
-    , linear            >= 1.10         && < 2
+    , linear            >= 1.15         && < 2
 
   exposed-modules:
     Data.Array.Accelerate.Linear
     Data.Array.Accelerate.Linear.Conjugate
     Data.Array.Accelerate.Linear.Epsilon
     Data.Array.Accelerate.Linear.Matrix
-    Data.Array.Accelerate.Linear.Trace
     Data.Array.Accelerate.Linear.Metric
     Data.Array.Accelerate.Linear.Plucker
+    Data.Array.Accelerate.Linear.Projection
     Data.Array.Accelerate.Linear.Quaternion
+    Data.Array.Accelerate.Linear.Trace
     Data.Array.Accelerate.Linear.Type
     Data.Array.Accelerate.Linear.V0
     Data.Array.Accelerate.Linear.V1
