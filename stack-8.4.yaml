@@ -7,8 +7,8 @@ packages:
 - .
 
 extra-deps:
-- git:    https://github.com/tmcdonell/accelerate.git
-  commit: cfa1f48bef0e8d5bf2bec60a11ade2cac2153a9d
+- github: tmcdonell/accelerate
+  commit: 5c2c1db205fcf1e0777ef9399959100b75e7bbec
 
 - doctest-0.15.1
 - primitive-0.6.4.0
