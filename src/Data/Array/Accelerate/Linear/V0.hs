@@ -22,7 +22,7 @@
 
 module Data.Array.Accelerate.Linear.V0 (
 
-  V0(..), pattern V0',
+  V0(..), pattern V0_,
 
 ) where
 
@@ -43,9 +43,9 @@ import Prelude                                  as P
 -- Instances
 -- ---------
 
-pattern V0' :: Elt a => Exp (V0 a)
-pattern V0' = Pattern ()
-{-# COMPLETE V0' #-}
+pattern V0_ :: Elt a => Exp (V0 a)
+pattern V0_ = Pattern ()
+{-# COMPLETE V0_ #-}
 
 instance Metric V0
 instance Additive V0

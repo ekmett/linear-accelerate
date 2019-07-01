@@ -24,7 +24,7 @@
 
 module Data.Array.Accelerate.Linear.V4 (
 
-  V4(..), pattern V4',
+  V4(..), pattern V4_,
   vector, point, normalizePoint,
   R1(..),
   R2(..),
@@ -178,9 +178,9 @@ ew = E _w
 -- Instances
 -- ---------
 
-pattern V4' :: Elt a => Exp a -> Exp a -> Exp a -> Exp a -> Exp (V4 a)
-pattern V4' x y z w = Pattern (x,y,z,w)
-{-# COMPLETE V4' #-}
+pattern V4_ :: Elt a => Exp a -> Exp a -> Exp a -> Exp a -> Exp (V4 a)
+pattern V4_ x y z w = Pattern (x,y,z,w)
+{-# COMPLETE V4_ #-}
 
 instance Metric V4
 instance Additive V4

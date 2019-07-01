@@ -29,7 +29,7 @@
 
 module Data.Array.Accelerate.Linear.Plucker (
 
-  Plucker(..), pattern Plucker',
+  Plucker(..), pattern Plucker_,
 
   squaredError,
   isotropic,
@@ -217,9 +217,9 @@ anti k f = k (P.fmap negate . f . negate)
 
 deriving instance Typeable Plucker
 
-pattern Plucker' :: Elt a => Exp a -> Exp a -> Exp a -> Exp a -> Exp a -> Exp a -> Exp (Plucker a)
-pattern Plucker' a b c d e f = Pattern (a,b,c,d,e,f)
-{-# COMPLETE Plucker' #-}
+pattern Plucker_ :: Elt a => Exp a -> Exp a -> Exp a -> Exp a -> Exp a -> Exp a -> Exp (Plucker a)
+pattern Plucker_ a b c d e f = Pattern (a,b,c,d,e,f)
+{-# COMPLETE Plucker_ #-}
 
 instance Metric Plucker
 instance Additive Plucker

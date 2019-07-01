@@ -24,7 +24,7 @@
 
 module Data.Array.Accelerate.Linear.V3 (
 
-  V3(..), pattern V3',
+  V3(..), pattern V3_,
   cross, triple,
   R1(..),
   R2(..),
@@ -114,9 +114,9 @@ ez = E _z
 -- Instances
 -- ---------
 
-pattern V3' :: Elt a => Exp a -> Exp a -> Exp a -> Exp (V3 a)
-pattern V3' x y z = Pattern (x,y,z)
-{-# COMPLETE V3' #-}
+pattern V3_ :: Elt a => Exp a -> Exp a -> Exp a -> Exp (V3 a)
+pattern V3_ x y z = Pattern (x,y,z)
+{-# COMPLETE V3_ #-}
 
 instance Metric V3
 instance Additive V3

@@ -25,7 +25,7 @@
 
 module Data.Array.Accelerate.Linear.Quaternion (
 
-  Quaternion(..), pattern Quaternion',
+  Quaternion(..), pattern Quaternion_,
 
   slerp,
   asinq,
@@ -163,9 +163,9 @@ axisAngle axis theta = lift $ Quaternion (cos half) (unlift (sin half *^ normali
 -- Instances
 -- ---------
 
-pattern Quaternion' :: Elt a => Exp a -> Exp (V3 a) -> Exp (Quaternion a)
-pattern Quaternion' x v = Pattern (x,v)
-{-# COMPLETE Quaternion' #-}
+pattern Quaternion_ :: Elt a => Exp a -> Exp (V3 a) -> Exp (Quaternion a)
+pattern Quaternion_ x v = Pattern (x,v)
+{-# COMPLETE Quaternion_ #-}
 
 instance Metric Quaternion
 instance Additive Quaternion

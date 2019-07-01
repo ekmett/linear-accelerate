@@ -24,7 +24,7 @@
 
 module Data.Array.Accelerate.Linear.V1 (
 
-  V1(..), pattern V1',
+  V1(..), pattern V1_,
   R1(..),
   ex,
 
@@ -76,9 +76,9 @@ ex = E _x
 -- Instances
 -- ---------
 
-pattern V1' :: Elt a => Exp a -> Exp (V1 a)
-pattern V1' x = Pattern x
-{-# COMPLETE V1' #-}
+pattern V1_ :: Elt a => Exp a -> Exp (V1 a)
+pattern V1_ x = Pattern x
+{-# COMPLETE V1_ #-}
 
 instance Metric V1
 instance Additive V1
