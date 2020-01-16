@@ -46,8 +46,6 @@ module Data.Array.Accelerate.Linear.V4 (
 import Data.Array.Accelerate                    as A
 import Data.Array.Accelerate.Data.Functor       as A
 import Data.Array.Accelerate.Smart
-import Data.Array.Accelerate.Product
-import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Lift
@@ -193,17 +191,10 @@ instance Elt a => IsProduct Elt (V4 a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V4 a) where
   type Plain (V4 a) = V4 (Plain a)
-  lift (V4 x y z w) =
-    Exp $ Tuple $ NilTup `SnocTup` lift x
-                         `SnocTup` lift y
-                         `SnocTup` lift z
-                         `SnocTup` lift w
+  lift (V4 x y z w) = V4_ (lift x) (lift y) (lift z) (lift w)
 
 instance Elt a => Unlift Exp (V4 (Exp a)) where
-  unlift t = V4 (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx)) `Prj` t)
-                (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
-                (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
-                (Exp $ ZeroTupIdx `Prj` t)
+  unlift (V4_ x y z w) = V4 x y z w
 
 instance (Elt a, Elt b) => Each (Exp (V4 a)) (Exp (V4 b)) (Exp a) (Exp b) where
   each = liftLens (each :: Traversal (V4 (Exp a)) (V4 (Exp b)) (Exp a) (Exp b))
@@ -221,14 +212,14 @@ instance A.Ord a => A.Ord (V4 a) where
   max  = v4 $$ on A.max t4
 
 t4 :: Elt a => Exp (V4 a) -> Exp (a,a,a,a)
-t4 (unlift -> V4 x y z w) = tup4 (x,y,z,w)
+t4 (V4_ x y z w) = T4 x y z w
 
 v4 :: Elt a => Exp (a,a,a,a) -> Exp (V4 a)
-v4 (untup4 -> (x,y,z,w)) = lift (V4 x y z w)
+v4 (T4 x y z w) = V4_ x y z w
 
 instance A.Bounded a => P.Bounded (Exp (V4 a)) where
-  minBound = lift (V4 (minBound :: Exp a) (minBound :: Exp a) (minBound :: Exp a) (minBound :: Exp a))
-  maxBound = lift (V4 (maxBound :: Exp a) (maxBound :: Exp a) (maxBound :: Exp a) (maxBound :: Exp a))
+  minBound = V4_ minBound minBound minBound minBound
+  maxBound = V4_ maxBound maxBound maxBound maxBound
 
 instance A.Num a => P.Num (Exp (V4 a)) where
   (+)             = lift2 ((+) :: V4 (Exp a) -> V4 (Exp a) -> V4 (Exp a))
@@ -265,6 +256,6 @@ instance Epsilon a => Epsilon (V4 a) where
   nearZero = nearZero . quadrance
 
 instance A.Functor V4 where
-  fmap f (unlift -> V4 x y z w) = lift (V4 (f x) (f y) (f z) (f w))
-  x <$ _                        = lift (V4 x x x x)
+  fmap f (V4_ x y z w) = V4_ (f x) (f y) (f z) (f w)
+  x <$ _               = V4_ x x x x
 

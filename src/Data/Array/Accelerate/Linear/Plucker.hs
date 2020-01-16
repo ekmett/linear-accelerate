@@ -57,7 +57,6 @@ module Data.Array.Accelerate.Linear.Plucker (
 import Data.Array.Accelerate                    hiding ( fromInteger )
 import Data.Array.Accelerate.Data.Functor
 import Data.Array.Accelerate.Smart
-import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Epsilon
@@ -125,47 +124,47 @@ passes a b =
   if s > 0      then constant Counterclockwise
                 else constant Clockwise
   where
-    s        = (lift u1 `dot` lift v2) + (lift u2 `dot` lift v1)
-    V2 u1 v1 = toUV a
-    V2 u2 v2 = toUV b
+    s        = (u1 `dot` v2) + (u2 `dot` v1)
+    V2_ u1 v1 = toUV a
+    V2_ u2 v2 = toUV b
 
 -- | Checks if two lines are parallel.
 --
 parallel :: Epsilon a => Exp (Plucker a) -> Exp (Plucker a) -> Exp Bool
-parallel a b = nearZero $ lift u1 `cross` lift u2
+parallel a b = nearZero $ u1 `cross` u2
   where
-    V2 u1 _ = toUV a
-    V2 u2 _ = toUV b
+    V2_ u1 _ = toUV a
+    V2_ u2 _ = toUV b
 
 -- | Represent a Plücker coordinate as a pair of 3-tuples, typically denoted
 -- U and V.
 --
-toUV :: Elt a => Exp (Plucker a) -> V2 (V3 (Exp a))
-toUV (unlift -> Plucker a b c d e f) = V2 (V3 a b c) (V3 d e f)
+toUV :: Elt a => Exp (Plucker a) -> Exp (V2 (V3 a))
+toUV (Plucker_ a b c d e f) = V2_ (V3_ a b c) (V3_ d e f)
 
 -- | The minimum squared distance of a line from the origin.
 --
 quadranceToOrigin :: Fractional a => Exp (Plucker a) -> Exp a
-quadranceToOrigin p = (lift v `dot` lift v) / (lift u `dot` lift u)
+quadranceToOrigin p = (v `dot` v) / (u `dot` u)
   where
-    V2 u v = toUV p
+    V2_ u v = toUV p
 
 -- | The point where a line is closest to the origin.
 --
 closestToOrigin :: Fractional a => Exp (Plucker a) -> Exp (V3 a)
-closestToOrigin p = normalizePoint . lift $ V4 x y z (lift u `dot` lift u)
+closestToOrigin p = normalizePoint $ V4_ x y z (u `dot` u)
   where
-    V2 u v   = toUV p
-    V3 x y z = unlift $ lift v `cross` lift u
+    V2_ u v   = toUV p
+    V3_ x y z = v `cross` u
 
 -- | Not all 6-dimensional points correspond to a line in 3D. This predicate
 -- tests that a Plücker coordinate lies on the Grassmann manifold, and does
 -- indeed represent a 3D line.
 --
 isLine :: Epsilon a => Exp (Plucker a) -> Exp Bool
-isLine p = nearZero $ lift u `dot` lift v
+isLine p = nearZero $ u `dot` v
   where
-    V2 u v = toUV p
+    V2_ u v = toUV p
 
 
 -- | These elements form a basis for the Plücker space, or the Grassmanian
@@ -228,24 +227,11 @@ instance Elt a => IsProduct Elt (Plucker a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Plucker a) where
   type Plain (Plucker a) = Plucker (Plain a)
-  -- lift = Exp . Tuple . F.foldl SnocTup NilTup
   lift (Plucker x y z w u v) =
-    Exp $ Tuple $
-      NilTup `SnocTup` lift x
-             `SnocTup` lift y
-             `SnocTup` lift z
-             `SnocTup` lift w
-             `SnocTup` lift u
-             `SnocTup` lift v
+    Plucker_ (lift x) (lift y) (lift z) (lift w) (lift u) (lift v)
 
 instance Elt a => Unlift Exp (Plucker (Exp a)) where
-  unlift t = Plucker
-    (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx)))) `Prj` t)
-    (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx))) `Prj` t)
-    (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx)) `Prj` t)
-    (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
-    (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
-    (Exp $ ZeroTupIdx `Prj` t)
+  unlift (Plucker_ x y z w u v) = Plucker x y z w u v
 
 instance (Elt a, Elt b) => Each (Exp (Plucker a)) (Exp (Plucker b)) (Exp a) (Exp b) where
   each = liftLens (each :: Traversal (Plucker (Exp a)) (Plucker (Exp b)) (Exp a) (Exp b))
@@ -263,10 +249,10 @@ instance Ord a => Ord (Plucker a) where
   max  = pl $$ on max t6
 
 t6 :: Elt a => Exp (Plucker a) -> Exp (a,a,a,a,a,a)
-t6 (unlift -> Plucker a b c d e f) = tup6 (a,b,c,d,e,f)
+t6 (Plucker_ a b c d e f) = T6 a b c d e f
 
 pl :: Elt a => Exp (a,a,a,a,a,a) -> Exp (Plucker a)
-pl (untup6 -> (a,b,c,d,e,f)) = lift (Plucker a b c d e f)
+pl (T6 a b c d e f) = Plucker_ a b c d e f
 
 instance Num a => P.Num (Exp (Plucker a)) where
   (+)           = lift2 ((+) :: Plucker (Exp a) -> Plucker (Exp a) -> Plucker (Exp a))
@@ -306,8 +292,8 @@ instance Epsilon a => Epsilon (Plucker a) where
   nearZero = nearZero . quadrance
 
 instance Functor Plucker where
-  fmap g (unlift -> Plucker a b c d e f) = lift (Plucker (g a) (g b) (g c) (g d) (g e) (g f))
-  x <$ _                                 = lift (Plucker x x x x x x)
+  fmap g (Plucker_ a b c d e f) = Plucker_ (g a) (g b) (g c) (g d) (g e) (g f)
+  x <$ _                        = Plucker_ x x x x x x
 
 
 instance Elt LinePass where

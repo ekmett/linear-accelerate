@@ -36,8 +36,6 @@ module Data.Array.Accelerate.Linear.V2 (
 import Data.Array.Accelerate                    as A
 import Data.Array.Accelerate.Data.Functor       as A
 import Data.Array.Accelerate.Smart
-import Data.Array.Accelerate.Product
-import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Lift
@@ -121,11 +119,10 @@ instance Elt a => IsProduct Elt (V2 a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V2 a) where
   type Plain (V2 a) = V2 (Plain a)
-  lift (V2 x y) = Exp $ Tuple $ NilTup `SnocTup` lift x `SnocTup` lift y
+  lift (V2 x y) = V2_ (lift x) (lift y)
 
 instance Elt a => Unlift Exp (V2 (Exp a)) where
-  unlift t = V2 (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
-                (Exp $ ZeroTupIdx `Prj` t)
+  unlift (V2_ x y) = V2 x y
 
 instance (Elt a, Elt b) => Each (Exp (V2 a)) (Exp (V2 b)) (Exp a) (Exp b) where
   each = liftLens (each :: Traversal (V2 (Exp a)) (V2 (Exp b)) (Exp a) (Exp b))
@@ -143,14 +140,14 @@ instance A.Ord a => A.Ord (V2 a) where
   max  = v2 $$ on A.max t2
 
 t2 :: Elt a => Exp (V2 a) -> Exp (a,a)
-t2 (unlift -> V2 x y) = tup2 (x,y)
+t2 (V2_ x y) = T2 x y
 
 v2 :: Elt a => Exp (a,a) -> Exp (V2 a)
-v2 (untup2 -> (x,y)) = lift (V2 x y)
+v2 (T2 x y) = V2_ x y
 
 instance A.Bounded a => P.Bounded (Exp (V2 a)) where
-  minBound = lift (V2 (minBound :: Exp a) (minBound :: Exp a))
-  maxBound = lift (V2 (maxBound :: Exp a) (maxBound :: Exp a))
+  minBound = V2_ minBound minBound
+  maxBound = V2_ maxBound maxBound
 
 instance A.Num a => P.Num (Exp (V2 a)) where
   (+)             = lift2 ((+) :: V2 (Exp a) -> V2 (Exp a) -> V2 (Exp a))
@@ -187,6 +184,6 @@ instance Epsilon a => Epsilon (V2 a) where
   nearZero = nearZero . quadrance
 
 instance A.Functor V2 where
-  fmap f (unlift -> V2 x y) = lift (V2 (f x) (f y))
-  x <$ _                    = lift (V2 x x)
+  fmap f (V2_ x y) = V2_ (f x) (f y)
+  x <$ _           = V2_ x x
 

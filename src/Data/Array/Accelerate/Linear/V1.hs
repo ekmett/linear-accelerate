@@ -32,9 +32,6 @@ module Data.Array.Accelerate.Linear.V1 (
 
 import Data.Array.Accelerate                    as A
 import Data.Array.Accelerate.Data.Functor       as A
-import Data.Array.Accelerate.Array.Sugar
-import Data.Array.Accelerate.Product
-import Data.Array.Accelerate.Smart
 
 import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Lift
@@ -88,29 +85,29 @@ instance Elt a => IsProduct Elt (V1 a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V1 a) where
   type Plain (V1 a) = V1 (Plain a)
-  lift (V1 x) = Exp . Tuple $ NilTup `SnocTup` lift x
+  lift (V1 x) = V1_ (lift x)
 
 instance Elt a => Unlift Exp (V1 (Exp a)) where
-  unlift t = V1 $ Exp $ ZeroTupIdx `Prj` t
+  unlift (V1_ x) = V1 x
 
 instance (Elt a, Elt b) => Each (Exp (V1 a)) (Exp (V1 b)) (Exp a) (Exp b) where
   each = liftLens (each :: Traversal (V1 (Exp a)) (V1 (Exp b)) (Exp a) (Exp b))
 
 instance A.Eq a => A.Eq (V1 a) where
-  (unlift -> V1 x) == (unlift -> V1 y) = x A.== y
-  (unlift -> V1 x) /= (unlift -> V1 y) = x A./= y
+  V1_ x == V1_ y = x A.== y
+  V1_ x /= V1_ y = x A./= y
 
 instance A.Ord a => A.Ord (V1 a) where
-  (unlift -> V1 x) <  (unlift -> V1 y) = x A.< y
-  (unlift -> V1 x) >  (unlift -> V1 y) = x A.> y
-  (unlift -> V1 x) >= (unlift -> V1 y) = x A.>= y
-  (unlift -> V1 x) <= (unlift -> V1 y) = x A.<= y
-  min (unlift -> V1 x) (unlift -> V1 y) = lift $ V1 (A.min x y)
-  max (unlift -> V1 x) (unlift -> V1 y) = lift $ V1 (A.max x y)
+  V1_ x <  V1_ y = x A.< y
+  V1_ x >  V1_ y = x A.> y
+  V1_ x >= V1_ y = x A.>= y
+  V1_ x <= V1_ y = x A.<= y
+  min (V1_ x) (V1_ y) = V1_ (A.min x y)
+  max (V1_ x) (V1_ y) = V1_ (A.max x y)
 
 instance A.Bounded a => P.Bounded (Exp (V1 a)) where
-  minBound = lift (V1 (minBound :: Exp a))
-  maxBound = lift (V1 (maxBound :: Exp a))
+  minBound = V1_ minBound
+  maxBound = V1_ maxBound
 
 instance A.Num a => P.Num (Exp (V1 a)) where
   (+)             = lift2 ((+) :: V1 (Exp a) -> V1 (Exp a) -> V1 (Exp a))
@@ -119,15 +116,15 @@ instance A.Num a => P.Num (Exp (V1 a)) where
   negate          = lift1 (negate :: V1 (Exp a) -> V1 (Exp a))
   signum          = lift1 (signum :: V1 (Exp a) -> V1 (Exp a))
   abs             = lift1 (signum :: V1 (Exp a) -> V1 (Exp a))
-  fromInteger x   = lift (P.fromInteger x :: V1 (Exp a))
+  fromInteger x   = V1_ (P.fromInteger x)
 
 instance A.Floating a => P.Fractional (Exp (V1 a)) where
   (/)             = lift2 ((/) :: V1 (Exp a) -> V1 (Exp a) -> V1 (Exp a))
   recip           = lift1 (recip :: V1 (Exp a) -> V1 (Exp a))
-  fromRational x  = lift (P.fromRational x :: V1 (Exp a))
+  fromRational x  = V1_ (P.fromRational x)
 
 instance A.Floating a => P.Floating (Exp (V1 a)) where
-  pi              = lift (pi :: V1 (Exp a))
+  pi              = V1_ pi
   log             = lift1 (log :: V1 (Exp a) -> V1 (Exp a))
   exp             = lift1 (exp :: V1 (Exp a) -> V1 (Exp a))
   sin             = lift1 (sin :: V1 (Exp a) -> V1 (Exp a))
@@ -144,9 +141,9 @@ instance A.Floating a => P.Floating (Exp (V1 a)) where
   atanh           = lift1 (atanh :: V1 (Exp a) -> V1 (Exp a))
 
 instance Epsilon a => Epsilon (V1 a) where
-  nearZero (unlift -> V1 x) = nearZero x
+  nearZero (V1_ x) = nearZero x
 
 instance A.Functor V1 where
-  fmap f (unlift -> V1 x) = lift (V1 (f x))
-  x <$ _                  = lift (V1 x)
+  fmap f (V1_ x) = V1_ (f x)
+  x <$ _         = V1_ x
 

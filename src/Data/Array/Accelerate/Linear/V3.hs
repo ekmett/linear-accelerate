@@ -39,8 +39,6 @@ module Data.Array.Accelerate.Linear.V3 (
 import Data.Array.Accelerate                    as A
 import Data.Array.Accelerate.Data.Functor       as A
 import Data.Array.Accelerate.Smart
-import Data.Array.Accelerate.Product
-import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Lift
@@ -128,12 +126,10 @@ instance Elt a => IsProduct Elt (V3 a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V3 a) where
   type Plain (V3 a) = V3 (Plain a)
-  lift (V3 x y z) = Exp $ Tuple $ NilTup `SnocTup` lift x `SnocTup` lift y `SnocTup` lift z
+  lift (V3 x y z) = V3_ (lift x) (lift y) (lift z)
 
 instance Elt a => Unlift Exp (V3 (Exp a)) where
-  unlift t = V3 (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
-                (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
-                (Exp $ ZeroTupIdx `Prj` t)
+  unlift (V3_ x y z) = V3 x y z
 
 instance (Elt a, Elt b) => Each (Exp (V3 a)) (Exp (V3 b)) (Exp a) (Exp b) where
   each = liftLens (each :: Traversal (V3 (Exp a)) (V3 (Exp b)) (Exp a) (Exp b))
@@ -151,14 +147,14 @@ instance A.Ord a => A.Ord (V3 a) where
   max  = v3 $$ on A.max t3
 
 t3 :: Elt a => Exp (V3 a) -> Exp (a,a,a)
-t3 (unlift -> V3 x y z) = tup3 (x,y,z)
+t3 (V3_ x y z) = T3 x y z
 
 v3 :: Elt a => Exp (a,a,a) -> Exp (V3 a)
-v3 (untup3 -> (x,y,z)) = lift (V3 x y z)
+v3 (T3 x y z) = V3_ x y z
 
 instance A.Bounded a => P.Bounded (Exp (V3 a)) where
-  minBound = lift (V3 (minBound :: Exp a) (minBound :: Exp a) (minBound :: Exp a))
-  maxBound = lift (V3 (maxBound :: Exp a) (maxBound :: Exp a) (maxBound :: Exp a))
+  minBound = V3_ minBound minBound minBound
+  maxBound = V3_ maxBound maxBound maxBound
 
 instance A.Num a => P.Num (Exp (V3 a)) where
   (+)             = lift2 ((+) :: V3 (Exp a) -> V3 (Exp a) -> V3 (Exp a))
@@ -195,8 +191,8 @@ instance Epsilon a => Epsilon (V3 a) where
   nearZero = nearZero . quadrance
 
 instance A.Functor V3 where
-  fmap f (unlift -> V3 x y z) = lift (V3 (f x) (f y) (f z))
-  x <$ _                      = lift (V3 x x x)
+  fmap f (V3_ x y z) = V3_ (f x) (f y) (f z)
+  x <$ _             = V3_ x x x
 
 -- $liftAcc
 --
