@@ -53,7 +53,7 @@ instance Elt a => Elt (V0 a)
 
 instance Lift Exp (V0 a) where
   type Plain (V0 a) = ()
-  lift V0 = Exp (Tuple NilTup)
+  lift _ = Exp (SmartExp Nil)
 
 instance Unlift Exp (V0 a) where
   unlift _ = V0

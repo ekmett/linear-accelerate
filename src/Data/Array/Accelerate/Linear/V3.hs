@@ -126,12 +126,10 @@ instance Elt a => Elt (V3 a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V3 a) where
   type Plain (V3 a) = V3 (Plain a)
-  lift (V3 x y z) = Exp $ Tuple $ NilTup `SnocTup` lift x `SnocTup` lift y `SnocTup` lift z
+  lift (V3 x y z) = V3_ (lift x) (lift y) (lift z)
 
 instance Elt a => Unlift Exp (V3 (Exp a)) where
-  unlift t = V3 (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
-                (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
-                (Exp $ ZeroTupIdx `Prj` t)
+  unlift (V3_ x y z) = V3 x y z
 
 instance (Elt a, Elt b) => Each (Exp (V3 a)) (Exp (V3 b)) (Exp a) (Exp b) where
   each = liftLens (each :: Traversal (V3 (Exp a)) (V3 (Exp b)) (Exp a) (Exp b))

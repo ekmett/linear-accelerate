@@ -226,24 +226,11 @@ instance Elt a => Elt (Plucker a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Plucker a) where
   type Plain (Plucker a) = Plucker (Plain a)
-  -- lift = Exp . Tuple . F.foldl SnocTup NilTup
   lift (Plucker x y z w u v) =
-    Exp $ Tuple $
-      NilTup `SnocTup` lift x
-             `SnocTup` lift y
-             `SnocTup` lift z
-             `SnocTup` lift w
-             `SnocTup` lift u
-             `SnocTup` lift v
+    Plucker_ (lift x) (lift y) (lift z) (lift w) (lift u) (lift v)
 
 instance Elt a => Unlift Exp (Plucker (Exp a)) where
-  unlift t = Plucker
-    (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx)))) `Prj` t)
-    (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx))) `Prj` t)
-    (Exp $ SuccTupIdx (SuccTupIdx (SuccTupIdx ZeroTupIdx)) `Prj` t)
-    (Exp $ SuccTupIdx (SuccTupIdx ZeroTupIdx) `Prj` t)
-    (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
-    (Exp $ ZeroTupIdx `Prj` t)
+  unlift (Plucker_ x y z w u v) = Plucker x y z w u v
 
 instance (Elt a, Elt b) => Each (Exp (Plucker a)) (Exp (Plucker b)) (Exp a) (Exp b) where
   each = liftLens (each :: Traversal (Plucker (Exp a)) (Plucker (Exp b)) (Exp a) (Exp b))

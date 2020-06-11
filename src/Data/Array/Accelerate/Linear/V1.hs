@@ -86,10 +86,10 @@ instance Elt a => Elt (V1 a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V1 a) where
   type Plain (V1 a) = V1 (Plain a)
-  lift (V1 x) = Exp . Tuple $ NilTup `SnocTup` lift x
+  lift (V1 x) = V1_ (lift x)
 
 instance Elt a => Unlift Exp (V1 (Exp a)) where
-  unlift t = V1 $ Exp $ ZeroTupIdx `Prj` t
+  unlift (V1_ x) = V1 x
 
 instance (Elt a, Elt b) => Each (Exp (V1 a)) (Exp (V1 b)) (Exp a) (Exp b) where
   each = liftLens (each :: Traversal (V1 (Exp a)) (V1 (Exp b)) (Exp a) (Exp b))

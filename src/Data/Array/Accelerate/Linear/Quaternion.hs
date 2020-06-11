@@ -172,12 +172,10 @@ instance Elt a => Elt (Quaternion a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Quaternion a) where
   type Plain (Quaternion a) = Quaternion (Plain a)
-  lift (Quaternion x v) = Exp $ Tuple $ NilTup `SnocTup` lift x
-                                               `SnocTup` lift v
+  lift (Quaternion x v) = Quaternion_ (lift x) (lift v)
 
 instance Elt a => Unlift Exp (Quaternion (Exp a)) where
-  unlift t = Quaternion (Exp $ SuccTupIdx ZeroTupIdx `Prj` t)
-                (unlift (Exp $ ZeroTupIdx `Prj` t))
+  unlift (Quaternion_ x v) = Quaternion x (unlift v)
 
 instance (Elt a, Elt b) => Each (Exp (Quaternion a)) (Exp (Quaternion b)) (Exp a) (Exp b) where
   each = liftLens (each :: Traversal (Quaternion (Exp a)) (Quaternion (Exp b)) (Exp a) (Exp b))
