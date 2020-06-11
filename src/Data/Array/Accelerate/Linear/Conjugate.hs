@@ -1,3 +1,4 @@
+{-# LANGUAGE MonoLocalBinds      #-}
 {-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE FlexibleInstances   #-}
 {-# LANGUAGE ScopedTypeVariables #-}

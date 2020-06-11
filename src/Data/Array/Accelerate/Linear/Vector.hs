@@ -1,5 +1,6 @@
 {-# LANGUAGE ConstraintKinds     #-}
 {-# LANGUAGE FlexibleContexts    #-}
+{-# LANGUAGE PatternSynonyms     #-}
 {-# LANGUAGE RankNTypes          #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies        #-}
@@ -21,7 +22,7 @@
 module Data.Array.Accelerate.Linear.Vector
   where
 
-import Data.Array.Accelerate                    as A
+import Data.Array.Accelerate                    as A hiding ( pattern V2 )
 import Data.Array.Accelerate.Linear.Type
 
 import Control.Lens

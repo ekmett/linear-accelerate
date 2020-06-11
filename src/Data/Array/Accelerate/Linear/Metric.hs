@@ -1,6 +1,7 @@
 {-# LANGUAGE ConstraintKinds     #-}
 {-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE NoImplicitPrelude   #-}
+{-# LANGUAGE PatternSynonyms     #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies        #-}
 -----------------------------------------------------------------------------
@@ -20,7 +21,7 @@
 module Data.Array.Accelerate.Linear.Metric
   where
 
-import Data.Array.Accelerate                    as A
+import Data.Array.Accelerate                    as A hiding ( pattern V2 )
 import Data.Array.Accelerate.Linear.Type
 import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Vector
