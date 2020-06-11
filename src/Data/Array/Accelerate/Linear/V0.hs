@@ -50,7 +50,6 @@ pattern V0_ = Pattern ()
 instance Metric V0
 instance Additive V0
 instance Elt a => Elt (V0 a)
-instance Elt a => IsProduct Elt (V0 a)
 
 instance Lift Exp (V0 a) where
   type Plain (V0 a) = ()

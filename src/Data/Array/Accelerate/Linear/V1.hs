@@ -33,7 +33,6 @@ module Data.Array.Accelerate.Linear.V1 (
 import Data.Array.Accelerate                    as A
 import Data.Array.Accelerate.Data.Functor       as A
 import Data.Array.Accelerate.Array.Sugar
-import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Smart
 
 import Data.Array.Accelerate.Linear.Epsilon
@@ -84,7 +83,6 @@ instance Metric V1
 instance Additive V1
 instance R1 V1
 instance Elt a => Elt (V1 a)
-instance Elt a => IsProduct Elt (V1 a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V1 a) where
   type Plain (V1 a) = V1 (Plain a)

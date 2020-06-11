@@ -57,7 +57,6 @@ module Data.Array.Accelerate.Linear.Plucker (
 import Data.Array.Accelerate                    hiding ( fromInteger )
 import Data.Array.Accelerate.Data.Functor
 import Data.Array.Accelerate.Smart
-import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Epsilon
@@ -224,7 +223,6 @@ pattern Plucker_ a b c d e f = Pattern (a,b,c,d,e,f)
 instance Metric Plucker
 instance Additive Plucker
 instance Elt a => Elt (Plucker a)
-instance Elt a => IsProduct Elt (Plucker a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Plucker a) where
   type Plain (Plucker a) = Plucker (Plain a)

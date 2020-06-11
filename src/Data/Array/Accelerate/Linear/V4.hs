@@ -46,7 +46,6 @@ module Data.Array.Accelerate.Linear.V4 (
 import Data.Array.Accelerate                    as A
 import Data.Array.Accelerate.Data.Functor       as A
 import Data.Array.Accelerate.Smart
-import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Epsilon
@@ -189,7 +188,6 @@ instance R2 V4
 instance R3 V4
 instance R4 V4
 instance Elt a => Elt (V4 a)
-instance Elt a => IsProduct Elt (V4 a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V4 a) where
   type Plain (V4 a) = V4 (Plain a)

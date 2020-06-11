@@ -45,7 +45,6 @@ import Data.Array.Accelerate
 import Data.Array.Accelerate.Array.Sugar
 import Data.Array.Accelerate.Data.Complex       hiding ( conjugate )
 import Data.Array.Accelerate.Data.Functor
-import Data.Array.Accelerate.Product
 import Data.Array.Accelerate.Smart
 
 import Data.Array.Accelerate.Linear.Conjugate
@@ -170,7 +169,6 @@ pattern Quaternion_ x v = Pattern (x,v)
 instance Metric Quaternion
 instance Additive Quaternion
 instance Elt a => Elt (Quaternion a)
-instance Elt a => IsProduct Elt (Quaternion a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Quaternion a) where
   type Plain (Quaternion a) = Quaternion (Plain a)
