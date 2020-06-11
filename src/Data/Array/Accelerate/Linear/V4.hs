@@ -44,6 +44,10 @@ module Data.Array.Accelerate.Linear.V4 (
 ) where
 
 import Data.Array.Accelerate                    as A
+                                         hiding ( pattern V2
+                                                , pattern V3
+                                                , pattern V4
+                                                )
 import Data.Array.Accelerate.Data.Functor       as A
 import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Array.Sugar
@@ -211,11 +215,11 @@ instance A.Ord a => A.Ord (V4 a) where
   min  = v4 $$ on A.min t4
   max  = v4 $$ on A.max t4
 
-t4 :: Elt a => Exp (V4 a) -> Exp (a,a,a,a)
-t4 (unlift -> V4 x y z w) = tup4 (x,y,z,w)
+t4 :: Exp (V4 a) -> Exp (a, a, a, a)
+t4 (Exp e) = Exp e
 
-v4 :: Elt a => Exp (a,a,a,a) -> Exp (V4 a)
-v4 (untup4 -> (x,y,z,w)) = lift (V4 x y z w)
+v4 :: Exp (a, a, a, a) -> Exp (V4 a)
+v4 (Exp e) = Exp e
 
 instance A.Bounded a => P.Bounded (Exp (V4 a)) where
   minBound = lift (V4 (minBound :: Exp a) (minBound :: Exp a) (minBound :: Exp a) (minBound :: Exp a))

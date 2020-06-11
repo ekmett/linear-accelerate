@@ -54,7 +54,11 @@ module Data.Array.Accelerate.Linear.Plucker (
 
 ) where
 
-import Data.Array.Accelerate                    hiding ( fromInteger )
+import Data.Array.Accelerate             hiding ( fromInteger
+                                                , pattern V2
+                                                , pattern V3
+                                                , pattern V4
+                                                )
 import Data.Array.Accelerate.Data.Functor
 import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Array.Sugar
@@ -247,11 +251,11 @@ instance Ord a => Ord (Plucker a) where
   min  = pl $$ on min t6
   max  = pl $$ on max t6
 
-t6 :: Elt a => Exp (Plucker a) -> Exp (a,a,a,a,a,a)
-t6 (unlift -> Plucker a b c d e f) = tup6 (a,b,c,d,e,f)
+t6 :: Exp (Plucker a) -> Exp (a, a, a, a, a, a)
+t6 (Exp e) = Exp e
 
-pl :: Elt a => Exp (a,a,a,a,a,a) -> Exp (Plucker a)
-pl (untup6 -> (a,b,c,d,e,f)) = lift (Plucker a b c d e f)
+pl :: Exp (a, a, a, a, a, a) -> Exp (Plucker a)
+pl (Exp e) = Exp e
 
 instance Num a => P.Num (Exp (Plucker a)) where
   (+)           = lift2 ((+) :: Plucker (Exp a) -> Plucker (Exp a) -> Plucker (Exp a))

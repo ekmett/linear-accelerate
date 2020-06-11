@@ -41,7 +41,7 @@ module Data.Array.Accelerate.Linear.Quaternion (
 
 ) where
 
-import Data.Array.Accelerate
+import Data.Array.Accelerate                    hiding ( pattern V3 )
 import Data.Array.Accelerate.Array.Sugar
 import Data.Array.Accelerate.Data.Complex       hiding ( conjugate )
 import Data.Array.Accelerate.Data.Functor
@@ -62,16 +62,19 @@ import qualified Prelude                        as P
 
 -- | Spherical linear interpolation between two quaternions
 --
-slerp :: RealFloat a => Exp (Quaternion a) -> Exp (Quaternion a) -> Exp a -> Exp (Quaternion a)
-slerp q p t =
-  if 1.0 - cosphi < 1.0e-8
-    then q
-    else ((sin ((1-t)*phi) *^ q) + sin (t*phi) *^ fp) ^/ sin phi
-  where
-    dqp = dot q p
-    phi = acos cosphi
-    (cosphi, fp) = unlift $ if dqp < 0 then tup2 (-dqp, negate p)
-                                       else tup2 (dqp, p)
+slerp
+  :: RealFloat a
+  => Exp (Quaternion a)
+  -> Exp (Quaternion a)
+  -> Exp a
+  -> Exp (Quaternion a)
+slerp q p t = if 1.0 - cosphi < 1.0e-8
+  then q
+  else ((sin ((1 - t) * phi) *^ q) + sin (t * phi) *^ fp) ^/ sin phi
+ where
+  dqp            = dot q p
+  phi            = acos cosphi
+  (T2 cosphi fp) = if dqp < 0 then T2 (-dqp) (negate p) else T2 dqp p
 
 -- | 'asin' with a specified branch cut
 --
@@ -148,7 +151,7 @@ pow q t = exp (t *^ log q)
 rotate :: forall a. (Conjugate (Exp a), RealFloat a) => Exp (Quaternion a) -> Exp (V3 a) -> Exp (V3 a)
 rotate q v = lift ijk
   where
-    Quaternion _ ijk = unlift $ q * (lift (Quaternion 0 (unlift v))) * conjugate q :: Quaternion (Exp a)
+    Quaternion_ _ ijk = q * (Quaternion_ 0 v) * conjugate q
 
 -- | @'axisAngle' axis theta@ builds a 'Quaternion' representing a rotation of
 -- @theta@ radians about @axis@.
@@ -192,18 +195,18 @@ instance Ord a => Ord (Quaternion a) where
   min  = qu $$ on min t4
   max  = qu $$ on max t4
 
-t4 :: Elt a => Exp (Quaternion a) -> Exp (a,a,a,a)
-t4 (unlift -> Quaternion x (V3 y z w)) = tup4 (x,y,z,w)
+t4 :: Elt a => Exp (Quaternion a) -> Exp (a, a, a, a)
+t4 (Quaternion_ w (V3_ x y z)) = T4 w x y z
 
-qu :: Elt a => Exp (a,a,a,a) -> Exp (Quaternion a)
-qu (untup4 -> (x,y,z,w)) = lift (Quaternion x (V3 y z w))
+qu :: Elt a => Exp (a, a, a, a) -> Exp (Quaternion a)
+qu (T4 w x y z) = Quaternion_ w (V3_ x y z)
 
 instance RealFloat a => P.Num (Exp (Quaternion a)) where
   (+)           = lift2 ((+) :: Quaternion (Exp a) -> Quaternion (Exp a) -> Quaternion (Exp a))
   (-)           = lift2 ((-) :: Quaternion (Exp a) -> Quaternion (Exp a) -> Quaternion (Exp a))
   negate        = fmap negate
-  abs z         = lift (Quaternion (norm z) (V3 0 0 0))
-  fromInteger x = lift (Quaternion (fromInteger x) (V3 0 0 0))
+  abs z         = Quaternion_ (norm z) (V3_ 0 0 0)
+  fromInteger x = Quaternion_ (fromInteger x) (V3_ 0 0 0)
 
   z1 * z2       = let Quaternion s1 v1' = unlift z1; v1 = lift v1'
                       Quaternion s2 v2' = unlift z2; v2 = lift v2'
@@ -215,10 +218,10 @@ instance RealFloat a => P.Num (Exp (Quaternion a)) where
     if m == 0.0                      then q else
     if not (isInfinite m || isNaN m) then q ^/ sqrt m else
     if ne || ni || nj || nk          then qNaN else
-    if not (ii || ij || ik)          then lift $ Quaternion 1 (V3 0 0 0) else
-    if not (ie || ij || ik)          then lift $ Quaternion 0 (V3 1 0 0) else
-    if not (ie || ii || ik)          then lift $ Quaternion 0 (V3 0 1 0) else
-    if not (ie || ii || ij)          then lift $ Quaternion 0 (V3 0 0 1)
+    if not (ii || ij || ik)          then Quaternion_ 1 (V3_ 0 0 0) else
+    if not (ie || ij || ik)          then Quaternion_ 0 (V3_ 1 0 0) else
+    if not (ie || ii || ik)          then Quaternion_ 0 (V3_ 0 1 0) else
+    if not (ie || ii || ij)          then Quaternion_ 0 (V3_ 0 0 1)
                                      else qNaN
     where
       m  = quadrance q
@@ -231,8 +234,8 @@ instance RealFloat a => P.Num (Exp (Quaternion a)) where
       nj = isNaN j
       nk = isNaN k
       --
-      qNaN = lift $ Quaternion fNaN (V3 fNaN fNaN fNaN)
-      fNaN = 0/0
+      qNaN = Quaternion_ fNaN (V3_ fNaN fNaN fNaN)
+      fNaN = 0 / 0
 
 instance RealFloat a => P.Fractional (Exp (Quaternion a)) where
   z1 / z2 =
@@ -248,10 +251,10 @@ instance RealFloat a => P.Fractional (Exp (Quaternion a)) where
   recip q = let Quaternion e v = unlift q :: Quaternion (Exp a)
             in  lift (Quaternion e (P.fmap negate v)) ^/ quadrance q
 
-  fromRational x = lift (Quaternion (fromRational x) (V3 0 0 0))
+  fromRational x = Quaternion_ (fromRational x) (V3_ 0 0 0)
 
 instance (RealFloat a, Elt (Complex a)) => P.Floating (Exp (Quaternion a)) where
-  pi = lift (Quaternion pi (V3 0 0 0))
+  pi = Quaternion_ pi (V3_ 0 0 0)
 
   exp q@(unlift -> Quaternion e v) =
     if qiq == 0
