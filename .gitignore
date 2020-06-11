@@ -17,6 +17,7 @@ wip
 cabal.sandbox.config
 .stack-work
 stack.yaml
+stack.yaml.lock
 cabal-dev
 *.chi
 *.chs.h
