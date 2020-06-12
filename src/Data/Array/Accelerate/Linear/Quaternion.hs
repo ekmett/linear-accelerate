@@ -42,7 +42,6 @@ module Data.Array.Accelerate.Linear.Quaternion (
 ) where
 
 import Data.Array.Accelerate                    hiding ( pattern V3 )
-import Data.Array.Accelerate.Array.Sugar
 import Data.Array.Accelerate.Data.Complex       hiding ( conjugate )
 import Data.Array.Accelerate.Data.Functor
 import Data.Array.Accelerate.Smart

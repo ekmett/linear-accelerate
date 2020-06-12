@@ -50,7 +50,6 @@ import Data.Array.Accelerate                    as A
                                                 )
 import Data.Array.Accelerate.Data.Functor       as A
 import Data.Array.Accelerate.Smart
-import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Lift

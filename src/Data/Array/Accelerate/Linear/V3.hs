@@ -39,7 +39,6 @@ module Data.Array.Accelerate.Linear.V3 (
 import Data.Array.Accelerate                    as A hiding ( pattern V2, pattern V3 )
 import Data.Array.Accelerate.Data.Functor       as A
 import Data.Array.Accelerate.Smart
-import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Lift
