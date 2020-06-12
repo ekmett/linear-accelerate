@@ -6,7 +6,6 @@
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
-{-# LANGUAGE ViewPatterns          #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 -----------------------------------------------------------------------------
 -- |
@@ -99,10 +98,10 @@ normalizePoint = lift1 (L.normalizePoint :: V4 (Exp a) -> V3 (Exp a))
 --
 class (L.R4 t, R3 t) => R4 t where
   -- |
-  -- >>> test $ lift (V4 1 2 3 4 :: V4 Int) ^._w
+  -- >>> test $ (V4_ 1 2 3 4 :: Exp (V4 Int)) ^. _w
   -- 4
   --
-  -- >>> test $ lift (V4 1 2 3 4 :: V4 Int) & _w .~ 42
+  -- >>> test $ (V4_ 1 2 3 4 :: Exp (V4 Int)) & _w .~ 42
   -- V4 1 2 3 42
   --
   _w :: forall a. (Elt a, Box t a) => Lens' (Exp (t a)) (Exp a)
@@ -221,8 +220,8 @@ v4 :: Exp (a, a, a, a) -> Exp (V4 a)
 v4 (Exp e) = Exp e
 
 instance A.Bounded a => P.Bounded (Exp (V4 a)) where
-  minBound = lift (V4 (minBound :: Exp a) (minBound :: Exp a) (minBound :: Exp a) (minBound :: Exp a))
-  maxBound = lift (V4 (maxBound :: Exp a) (maxBound :: Exp a) (maxBound :: Exp a) (maxBound :: Exp a))
+  minBound = V4_ minBound minBound minBound minBound
+  maxBound = V4_ maxBound maxBound maxBound maxBound
 
 instance A.Num a => P.Num (Exp (V4 a)) where
   (+)             = lift2 ((+) :: V4 (Exp a) -> V4 (Exp a) -> V4 (Exp a))
@@ -259,6 +258,5 @@ instance Epsilon a => Epsilon (V4 a) where
   nearZero = nearZero . quadrance
 
 instance A.Functor V4 where
-  fmap f (unlift -> V4 x y z w) = lift (V4 (f x) (f y) (f z) (f w))
-  x <$ _                        = lift (V4 x x x x)
-
+  fmap f (V4_ x y z w) = V4_ (f x) (f y) (f z) (f w)
+  x <$ _ = V4_ x x x x

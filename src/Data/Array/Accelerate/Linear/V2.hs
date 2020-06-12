@@ -6,7 +6,6 @@
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
-{-# LANGUAGE ViewPatterns          #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 -----------------------------------------------------------------------------
 -- |
@@ -60,7 +59,7 @@ import qualified Linear.V2                      as L
 
 -- | the counter-clockwise perpendicular vector
 --
--- >>> test $ perp $ lift (V2 10 20 :: V2 Int)
+-- >>> test $ perp $ (V2_ 10 20 :: Exp (V2 Int))
 -- V2 (-20) 10
 --
 perp :: forall a. A.Num a => Exp (V2 a) -> Exp (V2 a)
@@ -78,10 +77,10 @@ angle = lift . L.angle
 --
 class (L.R2 t, R1 t) => R2 t where
   -- |
-  -- >>> test $ lift (V2 1 2 :: V2 Int) ^._y
+  -- >>> test $ (V2_ 1 2 :: Exp (V2 Int)) ^. _y
   -- 2
   --
-  -- >>> test $ lift (V2 1 2 :: V2 Int) & _y .~ 3
+  -- >>> test $ (V2_ 1 2 :: Exp (V2 Int)) & _y .~ 3
   -- V2 1 3
   --
   _y :: (Elt a, Box t a) => Lens' (Exp (t a)) (Exp a)
@@ -92,7 +91,7 @@ class (L.R2 t, R1 t) => R2 t where
 
 
 -- |
--- >>> test $ lift (V2 1 2 :: V2 Int) ^. _yx
+-- >>> test $ (V2_ 1 2 :: Exp (V2 Int)) ^. _yx
 -- V2 2 1
 --
 _yx :: forall t a. (R2 t, Elt a, Box t a) => Lens' (Exp (t a)) (Exp (V2 a))
@@ -183,6 +182,5 @@ instance Epsilon a => Epsilon (V2 a) where
   nearZero = nearZero . quadrance
 
 instance A.Functor V2 where
-  fmap f (unlift -> V2 x y) = lift (V2 (f x) (f y))
-  x <$ _                    = lift (V2 x x)
-
+  fmap f (V2_ x y) = V2_ (f x) (f y)
+  x <$ _ = V2_ x x

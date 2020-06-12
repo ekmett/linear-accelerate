@@ -10,7 +10,6 @@
 {-# LANGUAGE TypeApplications      #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
-{-# LANGUAGE ViewPatterns          #-}
 {-# OPTIONS_GHC -fno-warn-name-shadowing #-}
 {-# OPTIONS_GHC -fno-warn-orphans        #-}
 -----------------------------------------------------------------------------
@@ -144,7 +143,7 @@ parallel a b = nearZero $ lift u1 `cross` lift u2
 -- U and V.
 --
 toUV :: Elt a => Exp (Plucker a) -> V2 (V3 (Exp a))
-toUV (unlift -> Plucker a b c d e f) = V2 (V3 a b c) (V3 d e f)
+toUV (Plucker_ a b c d e f) = V2 (V3 a b c) (V3 d e f)
 
 -- | The minimum squared distance of a line from the origin.
 --
@@ -157,9 +156,9 @@ quadranceToOrigin p = (lift v `dot` lift v) / (lift u `dot` lift u)
 --
 closestToOrigin :: Fractional a => Exp (Plucker a) -> Exp (V3 a)
 closestToOrigin p = normalizePoint . lift $ V4 x y z (lift u `dot` lift u)
-  where
-    V2 u v   = toUV p
-    V3 x y z = unlift $ lift v `cross` lift u
+ where
+  V2 u v    = toUV p
+  V3_ x y z = lift v `cross` lift u
 
 -- | Not all 6-dimensional points correspond to a line in 3D. This predicate
 -- tests that a Plücker coordinate lies on the Grassmann manifold, and does
@@ -295,8 +294,8 @@ instance Epsilon a => Epsilon (Plucker a) where
   nearZero = nearZero . quadrance
 
 instance Functor Plucker where
-  fmap g (unlift -> Plucker a b c d e f) = lift (Plucker (g a) (g b) (g c) (g d) (g e) (g f))
-  x <$ _                                 = lift (Plucker x x x x x x)
+  fmap g (Plucker_ a b c d e f) = Plucker_ (g a) (g b) (g c) (g d) (g e) (g f)
+  x <$ _ = Plucker_ x x x x x x
 
 
 instance Elt LinePass where

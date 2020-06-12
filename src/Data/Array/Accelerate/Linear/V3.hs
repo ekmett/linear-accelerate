@@ -6,7 +6,6 @@
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
-{-# LANGUAGE ViewPatterns          #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 -----------------------------------------------------------------------------
 -- |
@@ -78,10 +77,10 @@ triple = lift3 (L.triple :: V3 (Exp a) -> V3 (Exp a) -> V3 (Exp a) -> Exp a)
 --
 class (L.R3 t, R2 t) => R3 t where
   -- |
-  -- >>> test $ lift (V3 1 2 3 :: V3 Int) ^. _z
+  -- >>> test $ (V3_ 1 2 3 :: Exp (V3 Int)) ^. _z
   -- 3
   --
-  -- >>> test $ lift (V3 1 2 3 :: V3 Int) & _z .~ 42
+  -- >>> test $ (V3_ 1 2 3 :: Exp (V3 Int)) & _z .~ 42
   -- V3 1 2 42
   --
   _z :: forall a. (Elt a, Box t a) => Lens' (Exp (t a)) (Exp a)
@@ -152,8 +151,8 @@ v3 :: Exp (a, a, a) -> Exp (V3 a)
 v3 (Exp e) = Exp e
 
 instance A.Bounded a => P.Bounded (Exp (V3 a)) where
-  minBound = lift (V3 (minBound :: Exp a) (minBound :: Exp a) (minBound :: Exp a))
-  maxBound = lift (V3 (maxBound :: Exp a) (maxBound :: Exp a) (maxBound :: Exp a))
+  minBound = V3_ minBound minBound minBound
+  maxBound = V3_ maxBound maxBound maxBound
 
 instance A.Num a => P.Num (Exp (V3 a)) where
   (+)             = lift2 ((+) :: V3 (Exp a) -> V3 (Exp a) -> V3 (Exp a))
@@ -190,8 +189,8 @@ instance Epsilon a => Epsilon (V3 a) where
   nearZero = nearZero . quadrance
 
 instance A.Functor V3 where
-  fmap f (unlift -> V3 x y z) = lift (V3 (f x) (f y) (f z))
-  x <$ _                      = lift (V3 x x x)
+  fmap f (V3_ x y z) = V3_ (f x) (f y) (f z)
+  x <$ _ = V3_ x x x
 
 -- $liftAcc
 --

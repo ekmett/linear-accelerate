@@ -4,7 +4,6 @@
 {-# LANGUAGE RankNTypes          #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies        #-}
-{-# LANGUAGE ViewPatterns        #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      : Data.Array.Accelerate.Linear.Vector
@@ -33,8 +32,9 @@ infixl 6 ^+^, ^+, +^, ^-^, ^-, -^
 infixl 7 ^*, *^, ^/, /^
 
 -- $setup
+-- >>> :set -XPatternSynonyms
 -- >>> import Linear.V2
--- >>> import Data.Array.Accelerate.Linear.V2 ()
+-- >>> import Data.Array.Accelerate.Linear.V2 ( pattern V2_ )
 -- >>> import Data.Array.Accelerate.Interpreter
 -- >>> :{
 --   let test :: Elt e => Exp e -> e
@@ -54,7 +54,7 @@ class L.Additive f => Additive f where
 
   -- | Compute the sum of two vectors
   --
-  -- >>> test $ lift (V2 1 2 :: V2 Int) ^+^ lift (V2 3 4 :: V2 Int)
+  -- >>> test $ (V2_ 1 2 :: Exp (V2 Int)) ^+^ (V2_ 3 4 :: Exp (V2 Int))
   -- V2 4 6
   --
   (^+^) :: forall a. (A.Num a, Box f a)
@@ -65,7 +65,7 @@ class L.Additive f => Additive f where
 
   -- | Compute the difference between two vectors
   --
-  -- >>> test $ lift (V2 4 5 :: V2 Int) ^-^ lift (V2 3 1 :: V2 Int)
+  -- >>> test $ (V2_ 4 5 :: Exp (V2 Int)) ^-^ (V2_ 3 1 :: Exp (V2 Int))
   -- V2 1 4
   --
   (^-^) :: forall a. (A.Num a, Box f a)
@@ -96,7 +96,7 @@ newtype E t = E {
 
 -- | Compute the negation of a vector
 --
--- >>> test $ negated (lift (V2 2 4 :: V2 Int))
+-- >>> test $ negated (V2_ 2 4 :: Exp (V2 Int))
 -- V2 (-2) (-4)
 --
 negated
@@ -107,7 +107,7 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 
 -- | Compute the left scalar product
 --
--- >>> test $ 2 *^ lift (V2 3 4 :: V2 Int)
+-- >>> test $ 2 *^ (V2_ 3 4 :: Exp (V2 Int))
 -- V2 6 8
 --
 (*^) :: forall f a. (Functor f, A.Num a, Box f a)
@@ -118,7 +118,7 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 
 -- | Compute the right scalar product
 --
--- >>> test $ lift (V2 3 4 :: V2 Int) ^* 2
+-- >>> test $ (V2_ 3 4 :: Exp (V2 Int)) ^* 2
 -- V2 6 8
 --
 (^*) :: forall f a. (Functor f, A.Num a, Box f a)
@@ -129,7 +129,7 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 
 -- | Compute division by a scalar on the right
 --
--- >>> test $ lift (V2 4 6 :: V2 Double) ^/ 2
+-- >>> test $ (V2_ 4 6 :: Exp (V2 Double)) ^/ 2
 -- V2 2.0 3.0
 --
 (^/) :: forall f a. (Functor f, A.Fractional a, Box f a)
@@ -140,7 +140,7 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 
 -- | Compute division of a scalar on the left
 --
--- >>> test $ 4 /^ lift (V2 2 4 :: V2 Double)
+-- >>> test $ 4 /^ (V2_ 2 4 :: Exp (V2 Double))
 -- V2 2.0 1.0
 --
 (/^) :: forall f a. (Functor f, A.Fractional a, Box f a)
@@ -151,7 +151,7 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 
 -- | Addition with a scalar on the left
 --
--- >>> test $ 2 +^ lift (V2 3 4 :: V2 Int)
+-- >>> test $ 2 +^ (V2_ 3 4 :: Exp (V2 Int))
 -- V2 5 6
 --
 (+^) :: forall f a. (Functor f, A.Num a, Box f a)
@@ -162,7 +162,7 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 
 -- | Addition with a scalar on the right
 --
--- >>> test $ lift (V2 1 2 :: V2 Int) ^+ 3
+-- >>> test $ (V2_ 1 2 :: Exp (V2 Int)) ^+ 3
 -- V2 4 5
 --
 (^+) :: forall f a. (Functor f, A.Num a, Box f a)
@@ -173,7 +173,7 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 
 -- | Subtraction with a scalar on the left
 --
--- >>> test $ 2 -^ lift (V2 3 4 :: V2 Int)
+-- >>> test $ 2 -^ (V2_ 3 4 :: Exp (V2 Int))
 -- V2 (-1) (-2)
 --
 (-^) :: forall f a. (Functor f, A.Num a, Box f a)
@@ -184,7 +184,7 @@ negated = lift1 (L.negated :: f (Exp a) -> f (Exp a))
 
 -- | Subtraction with a scalar on the right
 --
--- >>> test $ lift (V2 1 2 :: V2 Int) ^- 3
+-- >>> test $ (V2_ 1 2 :: Exp (V2 Int)) ^- 3
 -- V2 (-2) (-1)
 --
 (^-) :: forall f a. (Functor f, A.Num a, Box f a)
