@@ -6,7 +6,6 @@
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
-{-# LANGUAGE ViewPatterns          #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 -----------------------------------------------------------------------------
 -- |
@@ -33,7 +32,7 @@ module Data.Array.Accelerate.Linear.V2 (
 
 ) where
 
-import Data.Array.Accelerate                    as A
+import Data.Array.Accelerate                    as A hiding ( pattern V2 )
 import Data.Array.Accelerate.Data.Functor       as A
 import Data.Array.Accelerate.Smart
 
@@ -60,7 +59,7 @@ import qualified Linear.V2                      as L
 
 -- | the counter-clockwise perpendicular vector
 --
--- >>> test $ perp $ lift (V2 10 20 :: V2 Int)
+-- >>> test $ perp $ (V2_ 10 20 :: Exp (V2 Int))
 -- V2 (-20) 10
 --
 perp :: forall a. A.Num a => Exp (V2 a) -> Exp (V2 a)
@@ -78,10 +77,10 @@ angle = lift . L.angle
 --
 class (L.R2 t, R1 t) => R2 t where
   -- |
-  -- >>> test $ lift (V2 1 2 :: V2 Int) ^._y
+  -- >>> test $ (V2_ 1 2 :: Exp (V2 Int)) ^. _y
   -- 2
   --
-  -- >>> test $ lift (V2 1 2 :: V2 Int) & _y .~ 3
+  -- >>> test $ (V2_ 1 2 :: Exp (V2 Int)) & _y .~ 3
   -- V2 1 3
   --
   _y :: (Elt a, Box t a) => Lens' (Exp (t a)) (Exp a)
@@ -92,7 +91,7 @@ class (L.R2 t, R1 t) => R2 t where
 
 
 -- |
--- >>> test $ lift (V2 1 2 :: V2 Int) ^. _yx
+-- >>> test $ (V2_ 1 2 :: Exp (V2 Int)) ^. _yx
 -- V2 2 1
 --
 _yx :: forall t a. (R2 t, Elt a, Box t a) => Lens' (Exp (t a)) (Exp (V2 a))
@@ -115,7 +114,6 @@ instance Additive V2
 instance R1 V2
 instance R2 V2
 instance Elt a => Elt (V2 a)
-instance Elt a => IsProduct Elt (V2 a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V2 a) where
   type Plain (V2 a) = V2 (Plain a)
@@ -139,11 +137,11 @@ instance A.Ord a => A.Ord (V2 a) where
   min  = v2 $$ on A.min t2
   max  = v2 $$ on A.max t2
 
-t2 :: Elt a => Exp (V2 a) -> Exp (a,a)
-t2 (V2_ x y) = T2 x y
+t2 :: Exp (V2 a) -> Exp (a, a)
+t2 (Exp e) = Exp e
 
-v2 :: Elt a => Exp (a,a) -> Exp (V2 a)
-v2 (T2 x y) = V2_ x y
+v2 :: Exp (a, a) -> Exp (V2 a)
+v2 (Exp e) = Exp e
 
 instance A.Bounded a => P.Bounded (Exp (V2 a)) where
   minBound = V2_ minBound minBound

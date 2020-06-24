@@ -1,14 +1,14 @@
 # For more information, see: https://github.com/commercialhaskell/stack/blob/release/doc/yaml_configuration.md
 # vim: nospell
 
-resolver: lts-14.20
+resolver: lts-14.27
 
 packages:
 - .
 
 extra-deps:
 - github: tmcdonell/accelerate
-  commit: b850fe43cd338f5555b447fa29329885ff7905d3
+  commit: 170a2474705544bc4037f0ac2814a44edeb0790e
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
@@ -33,4 +33,3 @@ extra-deps:
 # Extra directories used by stack for building
 # extra-include-dirs: [/path/to/dir]
 # extra-lib-dirs: [/path/to/dir]
-

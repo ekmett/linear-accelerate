@@ -10,7 +10,6 @@
 {-# LANGUAGE TypeApplications      #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
-{-# LANGUAGE ViewPatterns          #-}
 {-# OPTIONS_GHC -fno-warn-name-shadowing #-}
 {-# OPTIONS_GHC -fno-warn-orphans        #-}
 -----------------------------------------------------------------------------
@@ -54,7 +53,7 @@ module Data.Array.Accelerate.Linear.Plucker (
 
 ) where
 
-import Data.Array.Accelerate                    hiding ( fromInteger )
+import Data.Array.Accelerate                    hiding ( fromInteger, pattern V2, pattern V3, pattern V4 )
 import Data.Array.Accelerate.Data.Functor
 import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Array.Sugar
@@ -223,7 +222,6 @@ pattern Plucker_ a b c d e f = Pattern (a,b,c,d,e,f)
 instance Metric Plucker
 instance Additive Plucker
 instance Elt a => Elt (Plucker a)
-instance Elt a => IsProduct Elt (Plucker a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Plucker a) where
   type Plain (Plucker a) = Plucker (Plain a)
@@ -248,11 +246,11 @@ instance Ord a => Ord (Plucker a) where
   min  = pl $$ on min t6
   max  = pl $$ on max t6
 
-t6 :: Elt a => Exp (Plucker a) -> Exp (a,a,a,a,a,a)
-t6 (Plucker_ a b c d e f) = T6 a b c d e f
+t6 :: Exp (Plucker a) -> Exp (a, a, a, a, a, a)
+t6 (Exp e) = Exp e
 
-pl :: Elt a => Exp (a,a,a,a,a,a) -> Exp (Plucker a)
-pl (T6 a b c d e f) = Plucker_ a b c d e f
+pl :: Exp (a, a, a, a, a, a) -> Exp (Plucker a)
+pl (Exp e) = Exp e
 
 instance Num a => P.Num (Exp (Plucker a)) where
   (+)           = lift2 ((+) :: Plucker (Exp a) -> Plucker (Exp a) -> Plucker (Exp a))
@@ -294,7 +292,6 @@ instance Epsilon a => Epsilon (Plucker a) where
 instance Functor Plucker where
   fmap g (Plucker_ a b c d e f) = Plucker_ (g a) (g b) (g c) (g d) (g e) (g f)
   x <$ _                        = Plucker_ x x x x x x
-
 
 instance Elt LinePass where
   type EltRepr LinePass = Int8

@@ -1,5 +1,6 @@
 {-# LANGUAGE RebindableSyntax #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE PatternSynonyms  #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      : Data.Array.Accelerate.Linear.Projection
@@ -19,7 +20,7 @@
 module Data.Array.Accelerate.Linear.Projection
   where
 
-import Data.Array.Accelerate
+import Data.Array.Accelerate hiding ( pattern V3, pattern V4 )
 import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Matrix
@@ -34,22 +35,22 @@ import qualified Linear.Projection                        as L
 -- | Build a look at view matrix
 --
 lookAt
-    :: (Epsilon a, Floating a)
-    => Exp (V3 a)     -- ^ Eye
-    -> Exp (V3 a)     -- ^ Center
-    -> Exp (V3 a)     -- ^ Up
-    -> Exp (M44 a)
-lookAt eye center up = lift $
-  V4 (V4 (xa^._x)  (xa^._y)  (xa^._z)  xd)
-     (V4 (ya^._x)  (ya^._y)  (ya^._z)  yd)
-     (V4 (-za^._x) (-za^._y) (-za^._z) zd)
-     (V4 0         0         0          1)
-  where za = normalize $ center - eye
-        xa = normalize $ cross za up
-        ya = cross xa za
-        xd = -dot xa eye
-        yd = -dot ya eye
-        zd = dot za eye
+  :: (Epsilon a, Floating a)
+  => Exp (V3 a)     -- ^ Eye
+  -> Exp (V3 a)     -- ^ Center
+  -> Exp (V3 a)     -- ^ Up
+  -> Exp (M44 a)
+lookAt eye center up = V4_ (V4_ (xa ^. _x)  (xa ^. _y)  (xa ^. _z)  xd)
+                           (V4_ (ya ^. _x)  (ya ^. _y)  (ya ^. _z)  yd)
+                           (V4_ (-za ^. _x) (-za ^. _y) (-za ^. _z) zd)
+                           (V4_ 0           0           0           1)
+ where
+  za = normalize $ center - eye
+  xa = normalize $ cross za up
+  ya = cross xa za
+  xd = -dot xa eye
+  yd = -dot ya eye
+  zd = dot za eye
 
 
 -- | Build a matrix for a symmetric perspective-view frustum

@@ -1,7 +1,8 @@
+{-# LANGUAGE MonoLocalBinds      #-}
 {-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE FlexibleInstances   #-}
+{-# LANGUAGE PatternSynonyms     #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE ViewPatterns        #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 -----------------------------------------------------------------------------
 -- |
@@ -24,7 +25,7 @@ module Data.Array.Accelerate.Linear.Conjugate (
 ) where
 
 import Data.Array.Accelerate                                        as A
-import Data.Array.Accelerate.Data.Complex                           ( Complex(..) )
+import Data.Array.Accelerate.Data.Complex                           ( pattern (::+),  Complex(..) )
 
 import Linear.Conjugate
 
@@ -45,7 +46,7 @@ instance Conjugate (Exp CFloat)
 instance Conjugate (Exp CDouble)
 
 instance (Conjugate (Exp a), A.RealFloat a, Elt (Complex a)) => Conjugate (Exp (Complex a)) where
-  conjugate (unlift -> a :+ b :: Complex (Exp a)) = lift $ conjugate a :+ negate b
+  conjugate (a ::+ b) = conjugate a ::+ negate b
 
 instance TrivialConjugate (Exp Int)
 instance TrivialConjugate (Exp Int64)

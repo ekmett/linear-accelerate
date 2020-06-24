@@ -7,7 +7,6 @@
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
-{-# LANGUAGE ViewPatterns          #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 -----------------------------------------------------------------------------
 -- |
@@ -41,7 +40,7 @@ module Data.Array.Accelerate.Linear.Quaternion (
 
 ) where
 
-import Data.Array.Accelerate
+import Data.Array.Accelerate                    hiding ( pattern V3 )
 import Data.Array.Accelerate.Data.Complex       hiding ( conjugate )
 import Data.Array.Accelerate.Data.Functor
 import Data.Array.Accelerate.Smart
@@ -168,7 +167,6 @@ pattern Quaternion_ x v = Pattern (x,v)
 instance Metric Quaternion
 instance Additive Quaternion
 instance Elt a => Elt (Quaternion a)
-instance Elt a => IsProduct Elt (Quaternion a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (Quaternion a) where
   type Plain (Quaternion a) = Quaternion (Plain a)
@@ -239,11 +237,13 @@ instance RealFloat a => P.Fractional (Exp (Quaternion a)) where
     let Quaternion_ q0 (V3_ q1 q2 q3) = z1
         Quaternion_ r0 (V3_ r1 r2 r3) = z2
     in
-    (Quaternion_ (r0*q0+r1*q1+r2*q2+r3*q3)
-                 (V3_ (r0*q1-r1*q0-r2*q3+r3*q2)
-                      (r0*q2+r1*q3-r2*q0-r3*q1)
-                      (r0*q3-r1*q2+r2*q1-r3*q0)))
-      ^/ (r0*r0 + r1*r1 + r2*r2 + r3*r3)
+    Quaternion_
+        (r0 * q0 + r1 * q1 + r2 * q2 + r3 * q3)
+        (V3_ (r0 * q1 - r1 * q0 - r2 * q3 + r3 * q2)
+             (r0 * q2 + r1 * q3 - r2 * q0 - r3 * q1)
+             (r0 * q3 - r1 * q2 + r2 * q1 - r3 * q0)
+        )
+      ^/ (r0 * r0 + r1 * r1 + r2 * r2 + r3 * r3)
 
   recip q = let Quaternion_ e v = q
              in Quaternion_ e (fmap negate v) ^/ quadrance q
@@ -401,8 +401,7 @@ instance (RealFloat a, Epsilon a) => Epsilon (Quaternion a) where
   nearZero = nearZero . quadrance
 
 instance (RealFloat a, Conjugate (Exp a)) => Conjugate (Exp (Quaternion a)) where
-  conjugate (Quaternion_ e v) =
-    Quaternion_ (conjugate e) (negate v)
+  conjugate (Quaternion_ e v) = (Quaternion_ (conjugate e) (negate v))
 
 instance Functor Quaternion where
   fmap f (Quaternion_ e v) = Quaternion_ (f e) (fmap f v)

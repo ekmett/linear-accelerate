@@ -6,7 +6,6 @@
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
-{-# LANGUAGE ViewPatterns          #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 -----------------------------------------------------------------------------
 -- |
@@ -56,10 +55,10 @@ import qualified Linear.V1                      as L
 --
 class L.R1 t => R1 t where
   -- |
-  -- >>> test $ lift (V1 2 :: V1 Int) ^._x
+  -- >>> test $ (V1_ 2 :: Exp (V1 Int)) ^. _x
   -- 2
   --
-  -- >>> test $ lift (V1 2 :: V1 Int) & _x .~ 3
+  -- >>> test $ (V1_ 2 :: Exp (V1 Int)) & _x .~ 3
   -- V1 3
   --
   _x :: (Elt a, Box t a) => Lens' (Exp (t a)) (Exp a)
@@ -81,7 +80,6 @@ instance Metric V1
 instance Additive V1
 instance R1 V1
 instance Elt a => Elt (V1 a)
-instance Elt a => IsProduct Elt (V1 a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V1 a) where
   type Plain (V1 a) = V1 (Plain a)

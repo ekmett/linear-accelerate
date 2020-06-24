@@ -6,7 +6,6 @@
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
-{-# LANGUAGE ViewPatterns          #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 -----------------------------------------------------------------------------
 -- |
@@ -43,7 +42,7 @@ module Data.Array.Accelerate.Linear.V4 (
 
 ) where
 
-import Data.Array.Accelerate                    as A
+import Data.Array.Accelerate                    as A hiding ( pattern V2, pattern V3, pattern V4 )
 import Data.Array.Accelerate.Data.Functor       as A
 import Data.Array.Accelerate.Smart
 
@@ -95,10 +94,10 @@ normalizePoint = lift1 (L.normalizePoint :: V4 (Exp a) -> V3 (Exp a))
 --
 class (L.R4 t, R3 t) => R4 t where
   -- |
-  -- >>> test $ lift (V4 1 2 3 4 :: V4 Int) ^._w
+  -- >>> test $ (V4_ 1 2 3 4 :: Exp (V4 Int)) ^. _w
   -- 4
   --
-  -- >>> test $ lift (V4 1 2 3 4 :: V4 Int) & _w .~ 42
+  -- >>> test $ (V4_ 1 2 3 4 :: Exp (V4 Int)) & _w .~ 42
   -- V4 1 2 3 42
   --
   _w :: forall a. (Elt a, Box t a) => Lens' (Exp (t a)) (Exp a)
@@ -187,7 +186,6 @@ instance R2 V4
 instance R3 V4
 instance R4 V4
 instance Elt a => Elt (V4 a)
-instance Elt a => IsProduct Elt (V4 a)
 
 instance (Lift Exp a, Elt (Plain a)) => Lift Exp (V4 a) where
   type Plain (V4 a) = V4 (Plain a)
@@ -211,11 +209,11 @@ instance A.Ord a => A.Ord (V4 a) where
   min  = v4 $$ on A.min t4
   max  = v4 $$ on A.max t4
 
-t4 :: Elt a => Exp (V4 a) -> Exp (a,a,a,a)
-t4 (V4_ x y z w) = T4 x y z w
+t4 :: Exp (V4 a) -> Exp (a, a, a, a)
+t4 (Exp e) = Exp e
 
-v4 :: Elt a => Exp (a,a,a,a) -> Exp (V4 a)
-v4 (T4 x y z w) = V4_ x y z w
+v4 :: Exp (a, a, a, a) -> Exp (V4 a)
+v4 (Exp e) = Exp e
 
 instance A.Bounded a => P.Bounded (Exp (V4 a)) where
   minBound = V4_ minBound minBound minBound minBound
@@ -258,4 +256,3 @@ instance Epsilon a => Epsilon (V4 a) where
 instance A.Functor V4 where
   fmap f (V4_ x y z w) = V4_ (f x) (f y) (f z) (f w)
   x <$ _               = V4_ x x x x
-

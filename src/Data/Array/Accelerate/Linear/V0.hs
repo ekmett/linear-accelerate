@@ -29,7 +29,6 @@ module Data.Array.Accelerate.Linear.V0 (
 import Data.Array.Accelerate                    as A
 import Data.Array.Accelerate.Data.Functor       as A
 import Data.Array.Accelerate.Smart
-import Data.Array.Accelerate.Array.Sugar
 
 import Data.Array.Accelerate.Linear.Metric
 import Data.Array.Accelerate.Linear.Vector
@@ -50,11 +49,10 @@ pattern V0_ = Pattern ()
 instance Metric V0
 instance Additive V0
 instance Elt a => Elt (V0 a)
-instance Elt a => IsProduct Elt (V0 a)
 
 instance Lift Exp (V0 a) where
   type Plain (V0 a) = ()
-  lift V0 = Exp (Tuple NilTup)
+  lift _ = Exp (SmartExp Nil)
 
 instance Unlift Exp (V0 a) where
   unlift _ = V0
