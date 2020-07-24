@@ -56,7 +56,7 @@ module Data.Array.Accelerate.Linear.Plucker (
 import Data.Array.Accelerate                    hiding ( fromInteger, pattern V2, pattern V3, pattern V4 )
 import Data.Array.Accelerate.Data.Functor
 import Data.Array.Accelerate.Smart
-import Data.Array.Accelerate.Array.Sugar
+import Data.Array.Accelerate.Sugar.Elt
 
 import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Lift
@@ -294,8 +294,11 @@ instance Functor Plucker where
   x <$ _                        = Plucker_ x x x x x x
 
 instance Elt LinePass where
-  type EltRepr LinePass = Int8
-  eltType = eltType @Int8
+  type EltR LinePass = Int8
+
+  eltR = eltR @Int8
+
+  tagsR = tagsR @Int8
 
   toElt x = let (==) = (P.==)   -- -XRebindableSyntax hax
             in  case x of
