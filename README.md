@@ -1,15 +1,23 @@
-linear-accelerate
-=================
+<div align="center">
+<img width="450" src="https://github.com/AccelerateHS/accelerate/raw/master/images/accelerate-logo-text-v.png?raw=true" alt="henlo, my name is Theia"/>
 
-[![Hackage](https://img.shields.io/hackage/v/linear-accelerate.svg)](https://hackage.haskell.org/package/linear-accelerate) [![Build Status](https://secure.travis-ci.org/ekmett/linear-accelerate.png?branch=master)](http://travis-ci.org/ekmett/linear-accelerate)
+# linear-accelerate
 
-This package provides orphan instances that allows you to use `linear` vector spaces in `accelerate`.
+[![GitHub CI](https://github.com/tmcdonell/linear-accelerate/workflows/CI/badge.svg)](https://github.com/tmcdonell/linear-accelerate/actions)
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/AccelerateHS/Lobby)
+<br>
+[![Stackage LTS](https://stackage.org/package/linear-accelerate/badge/lts)](https://stackage.org/lts/package/linear-accelerate)
+[![Stackage Nightly](https://stackage.org/package/linear-accelerate/badge/nightly)](https://stackage.org/nightly/package/linear-accelerate)
+[![Hackage](https://img.shields.io/hackage/v/linear-accelerate.svg)](https://hackage.haskell.org/package/linear-accelerate)
 
-Contact Information
--------------------
+</div>
 
-Contributions and bug reports are welcome!
+Types and combinators to mix [linear][linear] with [accelerate][accelerate].
 
-Please feel free to contact me through github or on the `#haskell` or `#haskell-lens` IRC channels on `irc.freenode.net`.
+Contributions and bug reports are welcome!<br>
+Please feel free to contact me through GitHub or [gitter.im][gitter.im].
 
--Edward Kmett
+ [linear]:              https://github.com/ekmett/linear
+ [accelerate]:          https://github.com/AccelerateHS/accelerate
+ [gitter.im]:           https://gitter.im/AccelerateHS/Lobby
+
