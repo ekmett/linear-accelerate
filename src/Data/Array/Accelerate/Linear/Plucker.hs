@@ -2,14 +2,17 @@
 {-# LANGUAGE DeriveDataTypeable    #-}
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE GADTs                 #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE PatternSynonyms       #-}
 {-# LANGUAGE RebindableSyntax      #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE StandaloneDeriving    #-}
+{-# LANGUAGE TemplateHaskell       #-}
 {-# LANGUAGE TypeApplications      #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
+{-# LANGUAGE ViewPatterns          #-}
 {-# OPTIONS_GHC -fno-warn-name-shadowing #-}
 {-# OPTIONS_GHC -fno-warn-orphans        #-}
 -----------------------------------------------------------------------------
@@ -37,7 +40,7 @@ module Data.Array.Accelerate.Linear.Plucker (
   plucker3D,
 
   -- * operations on lines
-  LinePass(..),
+  LinePass(..), pattern Clockwise_, pattern Counterclockwise_, pattern Coplanar_,
   parallel,
   intersects,
   passes,
@@ -56,7 +59,7 @@ module Data.Array.Accelerate.Linear.Plucker (
 import Data.Array.Accelerate                    hiding ( fromInteger, pattern V2, pattern V3, pattern V4 )
 import Data.Array.Accelerate.Data.Functor
 import Data.Array.Accelerate.Smart
-import Data.Array.Accelerate.Sugar.Elt
+import Data.Array.Accelerate.Unsafe
 
 import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Lift
@@ -293,25 +296,11 @@ instance Functor Plucker where
   fmap g (Plucker_ a b c d e f) = Plucker_ (g a) (g b) (g c) (g d) (g e) (g f)
   x <$ _                        = Plucker_ x x x x x x
 
-instance Elt LinePass where
-  type EltR LinePass = Int8
-
-  eltR = eltR @Int8
-
-  tagsR = tagsR @Int8
-
-  toElt x = let (==) = (P.==)   -- -XRebindableSyntax hax
-            in  case x of
-                  0 -> Coplanar
-                  1 -> Clockwise
-                  2 -> Counterclockwise
-                  _ -> P.error "LinePass: unhandled constructor"
-
-  fromElt Coplanar         = 0
-  fromElt Clockwise        = 1
-  fromElt Counterclockwise = 2
+instance Elt LinePass
 
 instance Eq LinePass where
-  x == y = bitcast x == (bitcast y :: Exp Int8)
-  x /= y = bitcast x /= (bitcast y :: Exp Int8)
+  x == y = coerce x == (coerce y :: Exp Word8)
+  x /= y = coerce x /= (coerce y :: Exp Word8)
+
+mkPattern ''LinePass
 

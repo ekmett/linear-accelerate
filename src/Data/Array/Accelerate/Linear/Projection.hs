@@ -20,7 +20,7 @@
 module Data.Array.Accelerate.Linear.Projection
   where
 
-import Data.Array.Accelerate hiding ( pattern V3, pattern V4 )
+import Data.Array.Accelerate                              hiding ( pattern V3, pattern V4 )
 import Data.Array.Accelerate.Smart
 import Data.Array.Accelerate.Linear.Epsilon
 import Data.Array.Accelerate.Linear.Matrix

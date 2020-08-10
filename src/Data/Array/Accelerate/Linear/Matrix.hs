@@ -33,13 +33,7 @@ module Data.Array.Accelerate.Linear.Matrix (
 
 ) where
 
-import Data.Array.Accelerate                    as A
-                                         hiding ( transpose
-                                                , pattern V2
-                                                , pattern V3
-                                                , pattern V4
-                                                )
-
+import Data.Array.Accelerate                    as A hiding ( transpose, pattern V2, pattern V3, pattern V4 )
 import Data.Array.Accelerate.Linear.Lift
 import Data.Array.Accelerate.Linear.Trace
 import Data.Array.Accelerate.Linear.Type
