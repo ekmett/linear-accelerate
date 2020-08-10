@@ -13,9 +13,8 @@ copyright:     Copyright (C) 2014 Edward A. Kmett
 synopsis:      Lifting linear vector spaces into Accelerate
 description:   Lifting linear vector spaces into Accelerate
 build-type:    Custom
+
 extra-source-files:
-  .travis.yml
-  .vim.custom
   CHANGELOG.md
   README.md
   Warning.hs
@@ -93,4 +92,3 @@ test-suite doctests
     -threaded
 
 -- vim: nospell
-
