@@ -16,8 +16,8 @@ build-type:    Custom
 extra-source-files:
   .travis.yml
   .vim.custom
-  CHANGELOG.markdown
-  README.markdown
+  CHANGELOG.md
+  README.md
   Warning.hs
 
 source-repository head
