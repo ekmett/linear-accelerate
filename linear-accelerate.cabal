@@ -7,8 +7,8 @@ license-file:  LICENSE
 author:        Edward A. Kmett, Charles Durham, Trevor L. McDonell
 maintainer:    Trevor L. McDonell <trevor.mcdonell@gmail.com>
 stability:     provisional
-homepage:      http://github.com/ekmett/linear-accelerate/
-bug-reports:   http://github.com/ekmett/linear-accelerate/issues
+homepage:      http://github.com/tmcdonell/linear-accelerate/
+bug-reports:   http://github.com/tmcdonell/linear-accelerate/issues
 copyright:     Copyright (C) 2014 Edward A. Kmett
 synopsis:      Lifting linear vector spaces into Accelerate
 description:   Please see the README on GitHub at <https://github.com/tmcdonell/linear-accelerate#readme>
