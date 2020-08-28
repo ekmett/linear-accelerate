@@ -6,9 +6,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and the
 project adheres to the [Haskell Package Versioning Policy
 (PVP)](https://pvp.haskell.org)
 
-## [Unreleased]
+## [0.7.0.0] - 2020-08-26
+### Added
+  * embedded pattern synonyms such as `V3_`, etc.
+
 ### Changed
-  * Update for accelerate-1.4
+  * Update for accelerate-1.3
 
 ## [0.6.0.0] - 2018-04-03
 ### Changed
@@ -39,6 +42,7 @@ project adheres to the [Haskell Package Versioning Policy
 
 ## [0.3] - 2017-04-01
 ### Changed
+  * Rewritten by Trevor L. McDonell
   * Expanded API coverage
 
 ## [0.2] - 2014-09-15
@@ -49,7 +53,7 @@ project adheres to the [Haskell Package Versioning Policy
   * Repository initialized
 
 
-[next]:             https://github.com/ekmett/linear-accelerate/compare/v0.6.0.0...HEAD
+[0.7.0.0]:          https://github.com/ekmett/linear-accelerate/compare/v0.6.0.0...v0.7.0.0
 [0.6.0.0]:          https://github.com/ekmett/linear-accelerate/compare/v0.5.0.1...v0.6.0.0
 [0.5.0.1]:          https://github.com/ekmett/linear-accelerate/compare/v0.5...v0.5.0.1
 [0.5]:              https://github.com/ekmett/linear-accelerate/compare/v0.4.1...v0.5

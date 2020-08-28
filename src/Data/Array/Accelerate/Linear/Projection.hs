@@ -4,10 +4,10 @@
 -----------------------------------------------------------------------------
 -- |
 -- Module      : Data.Array.Accelerate.Linear.Projection
--- Copyright   : [2019] Trevor L. McDonell
+-- Copyright   : [2019..2020] Trevor L. McDonell
 -- License     : BSD-style (see the file LICENSE)
 --
--- Maintainer  : Edward Kmett <ekmett@gmail.com>
+-- Maintainer  : Trevor L. McDonell <trevor.mcdonell@gmail.com>
 -- Stability   : experimental
 -- Portability : non-portable
 --
