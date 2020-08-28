@@ -12,10 +12,10 @@
 -- |
 -- Module      : Data.Array.Accelerate.Linear.Quaternion
 -- Copyright   : 2014 Edward Kmett, Charles Durham,
---               [2015..2018] Trevor L. McDonell
+--               [2015..2020] Trevor L. McDonell
 -- License     : BSD-style (see the file LICENSE)
 --
--- Maintainer  : Edward Kmett <ekmett@gmail.com>
+-- Maintainer  : Trevor L. McDonell <trevor.mcdonell@gmail.com>
 -- Stability   : experimental
 -- Portability : non-portable
 --

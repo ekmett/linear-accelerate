@@ -15,7 +15,7 @@
 Types and combinators to mix [linear][linear] with [accelerate][accelerate].
 
 Contributions and bug reports are welcome!<br>
-Please feel free to contact me through GitHub or [gitter.im][gitter.im].
+Please feel free to contact me through [GitHub][accelerate] or [gitter.im][gitter.im].
 
  [linear]:              https://github.com/ekmett/linear
  [accelerate]:          https://github.com/AccelerateHS/accelerate

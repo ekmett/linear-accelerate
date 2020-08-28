@@ -3,7 +3,7 @@
 -- Module      :  Main (doctests)
 -- Copyright   :  (C) 2012-14 Edward Kmett
 -- License     :  BSD-style (see the file LICENSE)
--- Maintainer  :  Edward Kmett <ekmett@gmail.com>
+-- Maintainer  :  Trevor L. McDonell <trevor.mcdonell@gmail.com>
 -- Stability   :  provisional
 -- Portability :  portable
 --
